@@ -1,0 +1,429 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Cairo:wght@400;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --font-display: "Instrument Serif", serif;
+  --font-body: "Space Grotesk", sans-serif;
+  --font-urdu: "Noto Nastaliq Urdu", serif;
+  --font-arabic: "Cairo", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+body {
+  margin: 0;
+  background: #FAF7F2;
+  color: #1A1410;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+html[lang="ur"] body,
+html[lang="ur"] button,
+html[lang="ur"] input,
+html[lang="ur"] select,
+html[lang="ur"] textarea {
+  font-family: var(--font-urdu);
+}
+
+html[lang="ar"] body,
+html[lang="ar"] button,
+html[lang="ar"] input,
+html[lang="ar"] select,
+html[lang="ar"] textarea {
+  font-family: var(--font-arabic);
+}
+
+html[dir="rtl"] .text-align-flip {
+  text-align: right;
+}
+
+/* Holographic text effect */
+.holo-text {
+  background: linear-gradient(
+    120deg,
+    #ff8fb2 0%,
+    #ffd7a1 20%,
+    #a78bfa 40%,
+    #67e8f9 60%,
+    #ff8fb2 80%,
+    #ffd7a1 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: holo-shift 4s linear infinite;
+}
+
+@keyframes holo-shift {
+  to {
+    background-position: 300% center;
+  }
+}
+
+/* Glass panel */
+.glass {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 32px rgba(26, 20, 16, 0.06);
+}
+
+.glass-dark {
+  backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(26, 20, 16, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Buttons */
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold transition-all duration-300;
+  background: #1A1410;
+  color: #FAF7F2;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(26, 20, 16, 0.25);
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink/15 bg-white/40 px-7 py-3.5 text-sm font-semibold text-ink transition-all duration-300 backdrop-blur-md;
+}
+
+.btn-secondary:hover {
+  background: white;
+  border-color: ink/30;
+}
+
+.chip {
+  @apply inline-flex items-center rounded-full border border-ink/10 bg-white/50 px-3.5 py-1.5 text-xs font-medium text-ink/70 backdrop-blur-md;
+}
+
+.field {
+  @apply w-full rounded-2xl border border-ink/10 bg-white/70 px-4 py-3.5 text-ink outline-none backdrop-blur-md transition focus:border-ink/30 focus:bg-white;
+}
+
+.field::placeholder {
+  color: rgba(26, 20, 16, 0.35);
+}
+
+select.field option {
+  color: #1A1410;
+  background: white;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.section-shell {
+  @apply mx-auto w-full max-w-7xl px-5 md:px-8;
+}
+
+.display-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+/* Cursor glow follower */
+.cursor-glow {
+  pointer-events: none;
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 143, 178, 0.08) 0%,
+    transparent 70%
+  );
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  transition: opacity 0.3s;
+}
+
+/* ══════════════════════════════════════════
+   SCENE STAGE (cinematic no-scroll system)
+══════════════════════════════════════════ */
+.scene-stage {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.scene-scroller {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  padding-bottom: 118px;
+}
+
+.scene-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Per-scene aurora color field ── */
+.aurora-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aurora-blob {
+  position: absolute;
+  width: 75vmax;
+  height: 75vmax;
+  border-radius: 50%;
+  filter: blur(12px);
+  opacity: 0.9;
+  transition: background 1s ease;
+  will-change: transform;
+}
+
+.aurora-blob-0 {
+  top: -28vmax;
+  left: -18vmax;
+  animation: aurora-drift-a 16s ease-in-out infinite alternate;
+}
+
+.aurora-blob-1 {
+  bottom: -30vmax;
+  right: -20vmax;
+  animation: aurora-drift-b 21s ease-in-out infinite alternate;
+}
+
+.aurora-blob-2 {
+  top: 22%;
+  left: 34%;
+  width: 55vmax;
+  height: 55vmax;
+  animation: aurora-drift-c 26s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-drift-a {
+  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  100% { transform: translate(9vmax, 7vmax) scale(1.18) rotate(25deg); }
+}
+
+@keyframes aurora-drift-b {
+  0% { transform: translate(0, 0) scale(1.1) rotate(0deg); }
+  100% { transform: translate(-8vmax, -6vmax) scale(0.94) rotate(-20deg); }
+}
+
+@keyframes aurora-drift-c {
+  0% { transform: translate(0, 0) scale(0.9); }
+  100% { transform: translate(-7vmax, 5vmax) scale(1.15); }
+}
+
+/* ── Liquid-iris transition veil ── */
+.veil-root {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  overflow: hidden;
+}
+
+.veil-blade {
+  position: absolute;
+  top: -6vh;
+  height: 112vh;
+  will-change: transform;
+  box-shadow: 0 0 90px rgba(26, 20, 16, 0.18);
+}
+
+.veil-title {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.veil-numeral {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 16vw, 11rem);
+  line-height: 1;
+  color: rgba(255, 253, 249, 0.96);
+  text-shadow: 0 10px 60px rgba(26, 20, 16, 0.35);
+}
+
+.veil-label {
+  font-size: clamp(0.7rem, 2vw, 0.95rem);
+  font-weight: 700;
+  letter-spacing: 0.55em;
+  text-transform: uppercase;
+  color: rgba(255, 253, 249, 0.92);
+  text-shadow: 0 2px 24px rgba(26, 20, 16, 0.3);
+}
+
+.veil-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 46%,
+    rgba(255, 253, 249, 0.95) 0%,
+    rgba(255, 214, 153, 0.4) 34%,
+    transparent 72%
+  );
+}
+
+/* ── Desktop scene dock ── */
+.scene-dock {
+  position: fixed;
+  bottom: 1.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.45rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 18px 50px rgba(26, 20, 16, 0.14);
+}
+
+.scene-dock-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0.5rem 0.85rem;
+  border-radius: 9999px;
+  color: rgba(26, 20, 16, 0.55);
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.scene-dock-btn:hover {
+  color: #1A1410;
+  transform: translateY(-2px);
+}
+
+.scene-dock-btn[aria-pressed="true"] {
+  color: #FFFDf9;
+}
+
+.scene-dock-active {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  box-shadow: 0 8px 24px rgba(26, 20, 16, 0.22);
+}
+
+.scene-dock-label {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════
+   MORE COLOR, MORE LIFE
+══════════════════════════════════════════ */
+
+/* Richer holographic text */
+.holo-text {
+  background: linear-gradient(
+    120deg,
+    #ff5f96 0%,
+    #ffb347 16%,
+    #ffe66d 30%,
+    #4ade80 44%,
+    #22d3ee 58%,
+    #a78bfa 74%,
+    #f472b6 88%,
+    #ff5f96 100%
+  );
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: holo-shift 7s linear infinite;
+}
+
+/* Primary button gets a living gradient */
+.btn-primary {
+  background: linear-gradient(120deg, #1A1410 0%, #33241a 40%, #1A1410 100%);
+  background-size: 220% auto;
+  transition: all 0.35s ease;
+}
+
+.btn-primary:hover {
+  background-position: right center;
+  box-shadow: 0 14px 38px rgba(255, 95, 150, 0.35),
+    0 6px 18px rgba(167, 139, 250, 0.28);
+}
+
+/* Glass cards gain an iridescent edge on hover */
+.glass {
+  transition: box-shadow 0.4s ease, border-color 0.4s ease, transform 0.3s ease;
+}
+
+.glass:hover {
+  border-color: rgba(255, 143, 178, 0.45);
+  box-shadow: 0 14px 44px rgba(26, 20, 16, 0.1),
+    0 0 0 1px rgba(167, 139, 250, 0.12),
+    0 0 34px rgba(94, 234, 212, 0.14);
+}
+
+/* Chips get subtle color */
+.chip {
+  transition: all 0.3s ease;
+}
+
+.chip:hover {
+  border-color: rgba(255, 143, 178, 0.5);
+  background: rgba(255, 240, 246, 0.8);
+  transform: translateY(-1px);
+}
+
+/* Reduced motion: keep it calm */
+@media (prefers-reduced-motion: reduce) {
+  .aurora-blob,
+  .holo-text {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
