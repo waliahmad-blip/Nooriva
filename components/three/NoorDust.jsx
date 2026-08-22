@@ -1,9 +1,11 @@
-"use client";
+'use client';
 
-import { useMemo, useRef, useEffect } from "react";
-import { useFrame } from "@react-three/fiber";
-import * as THREE from "three";
-import useIsMobile from "@/hooks/useIsMobile";
+import { useMemo, useRef, useEffect } from 'react';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
+import useIsMobile from '@/hooks/useIsMobile';
+
+const BOUNDS = { x: 7, y: 6, z: 2.5 };
 
 export default function NoorDust() {
   const isMobile = useIsMobile();
@@ -20,11 +22,14 @@ export default function NoorDust() {
     const onTouch = (e) => {
       if (e.touches[0]) onMove(e.touches[0]);
     };
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("touchmove", onTouch, { passive: true });
+    const onTouchEnd = () => mouse.current.set(999, 999, 0); // release the field
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('touchmove', onTouch, { passive: true });
+    window.addEventListener('touchend', onTouchEnd);
     return () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("touchmove", onTouch);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('touchmove', onTouch);
+      window.removeEventListener('touchend', onTouchEnd);
     };
   }, []);
 
@@ -44,7 +49,7 @@ export default function NoorDust() {
 
   const colors = useMemo(() => {
     const arr = new Float32Array(count * 3);
-    const palette = ["#ff8fb2", "#ffd7a1", "#a78bfa", "#67e8f9"].map(
+    const palette = ['#ff8fb2', '#ffd7a1', '#a78bfa', '#67e8f9'].map(
       (c) => new THREE.Color(c)
     );
     for (let i = 0; i < count; i++) {
@@ -57,22 +62,24 @@ export default function NoorDust() {
   }, [count]);
 
   const sprite = useMemo(() => {
-    const canvas = document.createElement("canvas");
+    const canvas = document.createElement('canvas');
     canvas.width = 64;
     canvas.height = 64;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-    g.addColorStop(0, "rgba(255,255,255,1)");
-    g.addColorStop(0.4, "rgba(255,255,255,0.6)");
-    g.addColorStop(1, "rgba(255,255,255,0)");
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.4, 'rgba(255,255,255,0.6)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 64, 64);
     return new THREE.CanvasTexture(canvas);
   }, []);
 
   useFrame(() => {
-    if (!pointsRef.current) return;
+    if (!pointsRef.current || document.hidden) return; // battery: pause offscreen tabs
     const pos = pointsRef.current.geometry.attributes.position.array;
+    const R = 1.8;
+    const R2 = R * R;
 
     for (let i = 0; i < count; i++) {
       const ix = i * 3, iy = i * 3 + 1, iz = i * 3 + 2;
@@ -81,16 +88,23 @@ export default function NoorDust() {
       pos[ix] += velocities[ix];
       pos[iz] += velocities[iz];
 
-      if (pos[iy] > 6) pos[iy] = -6;
+      // full wrap on all axes — field never empties out
+      if (pos[iy] > BOUNDS.y) pos[iy] = -BOUNDS.y;
+      if (pos[iy] < -BOUNDS.y) pos[iy] = BOUNDS.y;
+      if (pos[ix] > BOUNDS.x) pos[ix] = -BOUNDS.x;
+      if (pos[ix] < -BOUNDS.x) pos[ix] = BOUNDS.x;
+      if (pos[iz] > BOUNDS.z) pos[iz] = -BOUNDS.z;
+      if (pos[iz] < -BOUNDS.z) pos[iz] = BOUNDS.z;
 
+      // pointer repulsion (squared distance — no sqrt)
       const dx = pos[ix] - mouse.current.x;
       const dy = pos[iy] - mouse.current.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const radius = 1.8;
-      if (dist < radius && dist > 0.0001) {
-        const force = ((radius - dist) / radius) * 0.06;
-        pos[ix] += (dx / dist) * force;
-        pos[iy] += (dy / dist) * force;
+      const d2 = dx * dx + dy * dy;
+      if (d2 < R2 && d2 > 0.0001) {
+        const d = Math.sqrt(d2);
+        const force = ((R - d) / R) * 0.06;
+        pos[ix] += (dx / d) * force;
+        pos[iy] += (dy / d) * force;
       }
     }
     pointsRef.current.geometry.attributes.position.needsUpdate = true;
