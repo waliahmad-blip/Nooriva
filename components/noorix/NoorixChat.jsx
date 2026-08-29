@@ -149,13 +149,14 @@ const FEATURES = [
     highlights: ['AM/PM ritual design', 'Ingredient pairing', 'Results timeline'],
   },
   {
-    id: 'freeChat',
+    id: 'voiceOutput',
     icon: MessageCircle,
     needsImage: false,
-    color: '#1A1410',
-    tagline: 'Open Conversation',
+    color: '#a78bfa',
+    tagline: '✨ Noorix Chat',
     description: 'Have a free-form conversation with Noorix about anything — skin concerns, nutrition questions, product recommendations, wellness advice, or just chat about your glow journey. Ask anything, anytime.',
     highlights: ['Ask anything', 'Multi-turn memory', 'Personalized advice'],
+    featured: true,
   },
   {
     id: 'voiceOutput',
@@ -237,6 +238,16 @@ const FEATURES = [
     tagline: 'Night Mode',
     description: 'Switch to a beautiful dark theme for nighttime use. Easier on the eyes, better for sleep, and looks stunning with the Noorix orb.',
     highlights: ['Dark theme', 'Sleep friendly', 'Eye comfort'],
+  },
+  {
+    id: 'freeChat',
+    icon: MessageCircle,
+    needsImage: false,
+    color: '#a78bfa',
+    tagline: '✨ Noorix Chat',
+    description: 'Have a free-form conversation with Noorix about anything — skin concerns, nutrition questions, product recommendations, wellness advice, or just chat about your glow journey. Ask anything, anytime.',
+    highlights: ['Ask anything', 'Multi-turn memory', 'Personalized advice'],
+    featured: true,
   },
   {
     id: 'medicalImage',
@@ -1546,8 +1557,12 @@ export default function NoorixChat() {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.1 + i * 0.04 }}
                               onClick={function() { openChat(f.id); }}
-                              className="group glass rounded-2xl p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer"
+                              className={'group rounded-2xl p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer ' + (f.featured ? 'relative overflow-hidden ring-2 ring-purple-400/40 shadow-lg' : 'glass')}
+                              style={f.featured ? { background: 'linear-gradient(135deg, rgba(167,139,250,0.15), rgba(255,143,178,0.1), rgba(103,232,249,0.1))' } : {}}
                             >
+                              {f.featured && (
+                                <div className="absolute inset-0 opacity-30" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)', animation: 'noorix-shimmer 3s ease-in-out infinite' }} />
+                              )}
                               {/* Icon + Tagline */}
                               <div className="flex items-start justify-between mb-3">
                                 <div
@@ -1669,8 +1684,10 @@ export default function NoorixChat() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -40 }}
                     transition={{ duration: 0.3 }}
-                    className="h-full flex flex-col"
+                    className="h-full flex flex-col relative"
                   >
+                    {/* Chat background gradient */}
+                    <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(167,139,250,0.03) 0%, transparent 30%, rgba(255,143,178,0.02) 100%)' }} />
                     {/* Context form */}
                     {showContext && messages.length === 0 && contextConfig && contextConfig.fields && contextConfig.fields.length > 0 && (
                       <div className="flex-1 overflow-y-auto no-scrollbar px-5 py-4">
@@ -1737,8 +1754,10 @@ export default function NoorixChat() {
                         <div className="mx-auto max-w-xl space-y-4">
                           {/* Welcome message */}
                           {messages.length === 0 && !showContext && (
-                            <div className="flex items-start gap-3">
-                              <NoorixOrb size={32} className="shrink-0 mt-1" />
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex items-start gap-3">
+                              <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 3, repeat: Infinity }}>
+                                <NoorixOrb size={36} className="shrink-0 mt-1" />
+                              </motion.div>
                               <div className="glass rounded-2xl rounded-tl-md p-4 max-w-[80%]">
                                 <p className="text-sm text-ink/80">
                                   {feature && feature.needsImage
@@ -1746,14 +1765,14 @@ export default function NoorixChat() {
                                     : 'Tell me more — tap selections below or type your question.'}
                                 </p>
                               </div>
-                            </div>
+                            </motion.div>
                           )}
 
                           {/* Message list */}
                           {messages.map(function(msg, i) {
                             if (msg.role === 'user') {
                               return (
-                                <div key={i} className="flex justify-end">
+                                <motion.div key={i} initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.3 }} className="flex justify-end">
                                   <div className="max-w-[80%] space-y-2">
                                     {msg.image && (
                                       <div className="rounded-2xl overflow-hidden w-48 h-48 ml-auto">
@@ -1769,8 +1788,8 @@ export default function NoorixChat() {
                                 </div>
                               );
                             }
-                            return (
-                              <div key={i} className="flex justify-start">
+                              return (
+                                <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }} className="flex justify-start">
                                 <div className="max-w-[85%] flex items-start gap-2.5">
                                   <NoorixOrb size={28} className="shrink-0 mt-1" />
                                   <div className="space-y-2">
