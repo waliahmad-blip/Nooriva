@@ -68,15 +68,12 @@ export default function NoorixEntrance() {
         <div className="relative flex flex-col md:flex-row items-center gap-8">
           {/* Orb + Logo */}
           <div className="flex flex-col items-center md:items-start gap-4">
-            <NoorixOrb size={80} />
-            <div>
-              <span
-                className="display-heading holo-text text-4xl"
-              >
-                Noorix
-              </span>
-              <p className="text-sm text-ink/50 mt-1">AI-Powered Health &amp; Beauty</p>
-            </div>
+            <motion.div
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <NoorixOrb size={100} />
+            </motion.div>
           </div>
 
           {/* Content */}

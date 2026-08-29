@@ -947,7 +947,7 @@ export default function NoorixChat() {
           />
           {noorixOpen
             ? <X size={22} className="relative z-10 text-white" strokeWidth={2.5} />
-            : <span className="relative z-10 text-white font-bold text-sm tracking-wider" style={{ fontFamily: 'var(--font-display)' }}>N</span>
+            : <div className="relative z-10 w-7 h-7 rounded-full" style={{ background: 'conic-gradient(from 0deg, #ff8fb2, #ffd7a1, #a78bfa, #67e8f9, #ff8fb2)', animation: 'noorix-btn-spin 4s linear infinite', boxShadow: '0 0 12px rgba(167,139,250,0.6)' }} />
           }
         </motion.button>
         <style jsx>{'\n          @keyframes noorix-btn-spin { to { transform: rotate(360deg); } }\n          @keyframes noorix-shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }\n        '}</style>
@@ -1080,6 +1080,59 @@ export default function NoorixChat() {
                         >
                           Choose a feature to begin your personalized experience. Tap, snap, or select — no typing required.
                         </motion.p>
+
+                        {/* Introduction stats */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.7 }}
+                          className="mt-6 flex flex-wrap justify-center gap-4"
+                        >
+                          {[
+                            { num: '15', label: 'AI Features', color: '#ff8fb2' },
+                            { num: '24/7', label: 'Always Available', color: '#a78bfa' },
+                            { num: '100%', label: 'Privacy First', color: '#67e8f9' },
+                            { num: '0', label: 'Data Stored', color: '#5eead4' },
+                          ].map(function(stat, i) {
+                            return (
+                              <motion.div
+                                key={stat.label}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.8 + i * 0.1 }}
+                                className="flex flex-col items-center px-4 py-2"
+                              >
+                                <span className="text-2xl font-bold display-heading" style={{ color: stat.color }}>{stat.num}</span>
+                                <span className="text-[10px] text-ink/40 font-medium uppercase tracking-wider">{stat.label}</span>
+                              </motion.div>
+                            );
+                          })}
+                        </motion.div>
+
+                        {/* How it works */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 1 }}
+                          className="mt-6 flex flex-wrap justify-center gap-6"
+                        >
+                          {[
+                            { icon: '📸', title: 'Snap', desc: 'Upload a photo of skin, meal, or product' },
+                            { icon: '🤖', title: 'Analyze', desc: 'AI processes and identifies patterns' },
+                            { icon: '✨', title: 'Glow', desc: 'Get personalized recommendations' },
+                          ].map(function(step, i) {
+                            return (
+                              <div key={step.title} className="flex items-center gap-3 text-left">
+                                <div className="text-2xl">{step.icon}</div>
+                                <div>
+                                  <p className="text-sm font-semibold text-ink">{step.title}</p>
+                                  <p className="text-[11px] text-ink/45 max-w-[140px]">{step.desc}</p>
+                                </div>
+                                {i < 2 && <span className="text-ink/20 text-lg ml-2 hidden sm:block">→</span>}
+                              </div>
+                            );
+                          })}
+                        </motion.div>
                       </motion.div>
 
                       {/* Feature Cards */}
