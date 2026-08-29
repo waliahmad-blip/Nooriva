@@ -950,7 +950,7 @@ export default function NoorixChat() {
             : <span className="relative z-10 text-white font-bold text-sm tracking-wider" style={{ fontFamily: 'var(--font-display)' }}>N</span>
           }
         </motion.button>
-        <style jsx>{'\n          @keyframes noorix-btn-spin { to { transform: rotate(360deg); } }\n        '}</style>
+        <style jsx>{'\n          @keyframes noorix-btn-spin { to { transform: rotate(360deg); } }\n          @keyframes noorix-shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }\n        '}</style>
       </div>
 
       {/* ═══ Full-Screen Overlay ═══ */}
@@ -991,23 +991,48 @@ export default function NoorixChat() {
                 {noorixPlan !== 'lite' || true ? (
                   <button
                     onClick={function() { setPlansOpen(true); }}
-                    className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold transition-colors hover:bg-ink/10"
+                    className="relative flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden"
                     style={{
-                      background: noorixPlan === 'lite' ? '#94a3b820' : noorixPlan === 'glow' ? '#ff8fb220' : noorixPlan === 'pro' ? '#a78bfa20' : '#f59e0b20',
-                      color: noorixPlan === 'lite' ? '#94a3b8' : noorixPlan === 'glow' ? '#ff8fb2' : noorixPlan === 'pro' ? '#a78bfa' : '#f59e0b',
+                      background: noorixPlan === 'lite'
+                        ? 'linear-gradient(135deg, #94a3b8, #cbd5e1)'
+                        : noorixPlan === 'glow'
+                        ? 'linear-gradient(135deg, #ff8fb2, #ffd7a1)'
+                        : noorixPlan === 'pro'
+                        ? 'linear-gradient(135deg, #a78bfa, #67e8f9)'
+                        : 'linear-gradient(135deg, #f59e0b, #ef4444)',
+                      color: 'white',
+                      boxShadow: noorixPlan === 'lite'
+                        ? '0 4px 15px rgba(148,163,184,0.4)'
+                        : noorixPlan === 'glow'
+                        ? '0 4px 15px rgba(255,143,178,0.4)'
+                        : noorixPlan === 'pro'
+                        ? '0 4px 15px rgba(167,139,250,0.4)'
+                        : '0 4px 15px rgba(245,158,11,0.4)',
                     }}
                   >
-                    {noorixPlan === 'lite' ? 'Free' : noorixPlan === 'glow' ? 'Glow' : noorixPlan === 'pro' ? 'Pro' : 'Max'}
-                    {noorixPlan === 'lite' && (() => {
-                      var today = new Date().toDateString();
-                      var used = (noorixDailyDate === today) ? noorixDailyUsed : 0;
-                      return ' · ' + used + '/5';
-                    })()}
-                    {noorixPlan === 'glow' && (() => {
-                      var today = new Date().toDateString();
-                      var used = (noorixDailyDate === today) ? noorixDailyUsed : 0;
-                      return ' · ' + used + '/25';
-                    })()}
+                    {/* Animated shimmer */}
+                    <div
+                      className="absolute inset-0 opacity-30"
+                      style={{
+                        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
+                        animation: 'noorix-shimmer 2s ease-in-out infinite',
+                      }}
+                    />
+                    <span className="relative z-10 flex items-center gap-1.5">
+                      {noorixPlan === 'lite' ? '⚡' : noorixPlan === 'glow' ? '✨' : noorixPlan === 'pro' ? '👑' : '💎'}
+                      {noorixPlan === 'lite' ? 'Free' : noorixPlan === 'glow' ? 'Glow' : noorixPlan === 'pro' ? 'Pro' : 'Max'}
+                      {noorixPlan === 'lite' && (() => {
+                        var today = new Date().toDateString();
+                        var used = (noorixDailyDate === today) ? noorixDailyUsed : 0;
+                        return ' · ' + used + '/5';
+                      })()}
+                      {noorixPlan === 'glow' && (() => {
+                        var today = new Date().toDateString();
+                        var used = (noorixDailyDate === today) ? noorixDailyUsed : 0;
+                        return ' · ' + used + '/25';
+                      })()}
+                      {noorixPlan === 'lite' && ' · Upgrade'}
+                    </span>
                   </button>
                 ) : null}
                 <button onClick={closeNoorix} className="rounded-full bg-ink/5 p-2.5 hover:bg-ink/10 transition-colors">
@@ -1114,6 +1139,71 @@ export default function NoorixChat() {
                           );
                         })}
                       </div>
+
+                      {/* Upgrade Banner */}
+                      {noorixPlan === 'lite' && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.8 }}
+                          className="mt-8 relative overflow-hidden rounded-2xl p-6 cursor-pointer group"
+                          onClick={function() { setPlansOpen(true); }}
+                          style={{
+                            background: 'linear-gradient(135deg, #ff8fb2, #a78bfa, #67e8f9)',
+                          }}
+                        >
+                          {/* Animated shimmer */}
+                          <div
+                            className="absolute inset-0 opacity-20"
+                            style={{
+                              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)',
+                              animation: 'noorix-shimmer 3s ease-in-out infinite',
+                            }}
+                          />
+                          <div className="relative flex items-center justify-between">
+                            <div>
+                              <h4 className="text-white font-bold text-lg">Unlock All 15 Features</h4>
+                              <p className="text-white/80 text-sm mt-1">Upgrade to Noorix Glow for unlimited AI-powered wellness</p>
+                            </div>
+                            <div className="flex items-center gap-2 text-white font-bold text-sm group-hover:translate-x-1 transition-transform">
+                              From Rs4,999/mo
+                              <span className="text-lg">→</span>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {/* Pro upsell for Glow users */}
+                      {noorixPlan === 'glow' && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.8 }}
+                          className="mt-8 relative overflow-hidden rounded-2xl p-6 cursor-pointer group"
+                          onClick={function() { setPlansOpen(true); }}
+                          style={{
+                            background: 'linear-gradient(135deg, #a78bfa, #67e8f9)',
+                          }}
+                        >
+                          <div
+                            className="absolute inset-0 opacity-20"
+                            style={{
+                              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)',
+                              animation: 'noorix-shimmer 3s ease-in-out infinite',
+                            }}
+                          />
+                          <div className="relative flex items-center justify-between">
+                            <div>
+                              <h4 className="text-white font-bold text-lg">Go Pro — Unlimited Everything</h4>
+                              <p className="text-white/80 text-sm mt-1">Remove daily limits, get priority speed and wellness reports</p>
+                            </div>
+                            <div className="flex items-center gap-2 text-white font-bold text-sm group-hover:translate-x-1 transition-transform">
+                              Rs7,999/mo
+                              <span className="text-lg">→</span>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
                     </div>
                   </motion.div>
                 ) : (
