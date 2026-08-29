@@ -1125,7 +1125,7 @@ export default function NoorixChat() {
                     )}
 
                     {/* Messages */}
-                    {(!showContext || messages.length > 0) && (
+                    {(!showContext || messages.length > 0 || (contextConfig && contextConfig.fields && contextConfig.fields.length === 0)) && (
                       <div className="flex-1 overflow-y-auto no-scrollbar px-5 py-4">
                         <div className="mx-auto max-w-xl space-y-4">
                           {/* Welcome message */}
