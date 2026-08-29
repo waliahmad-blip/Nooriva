@@ -56,7 +56,7 @@ export default function NoorixPlans({ isOpen, onClose }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full max-w-4xl max-h-[90vh] overflow-y-auto no-scrollbar relative"
+            className="w-full max-w-5xl max-h-[85vh] overflow-y-auto relative"
           >
             {/* Close button */}
             <button
@@ -89,7 +89,7 @@ export default function NoorixPlans({ isOpen, onClose }) {
             </div>
 
             {/* Plans Grid */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {PLAN_ORDER.map(function(planId, i) {
                 var plan = NOORIX_PLANS[planId];
                 var isCurrent = noorixPlan === planId;
