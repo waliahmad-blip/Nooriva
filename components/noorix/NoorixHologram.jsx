@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 
 /**
  * NoorixHologram — Cinematic AI intelligence hologram
- * 
+ *
  * - Wireframe icosahedron mesh
  * - Data stream particles
  * - Scanning grid lines
@@ -277,7 +277,8 @@ export default function NoorixHologram({ isVisible, onDismiss }) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6 }}
-          className="fixed inset-0 z-[80] flex items-center justify-center pointer-events-none"
+          className="fixed inset-0 z-[80] flex items-center justify-center cursor-pointer"
+          onClick={onDismiss}
           style={{ background: 'radial-gradient(ellipse at center, rgba(10,15,25,0.85) 0%, rgba(10,15,25,0.95) 100%)' }}
         >
           <div className="relative" style={{ width: orbSize, height: orbSize }}>

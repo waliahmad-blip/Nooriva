@@ -149,7 +149,7 @@ const FEATURES = [
     highlights: ['AM/PM ritual design', 'Ingredient pairing', 'Results timeline'],
   },
   {
-    id: 'voiceOutput',
+    id: 'freeChat',
     icon: MessageCircle,
     needsImage: false,
     color: '#a78bfa',
@@ -1305,7 +1305,7 @@ export default function NoorixChat() {
       {/* ═══ Full-Screen Overlay ═══ */}
       <AnimatePresence>
         {noorixOpen && !hasSeenHologram && (
-          <NoorixHologram isVisible={noorixOpen && !hasSeenHologram} onDismiss={function() { setShowHologram(false); localStorage.setItem('noorix-hologram-seen', 'true'); }} />
+          <NoorixHologram isVisible={noorixOpen && !hasSeenHologram} onDismiss={function() { localStorage.setItem('noorix-hologram-seen', 'true'); window.location.reload(); }} />
         )}
         {showTutorial && (
           <NoorixTutorial isOpen={showTutorial} onClose={function() { setShowTutorial(false); }} />
