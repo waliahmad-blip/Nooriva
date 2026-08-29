@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, Sparkles, Crown, Zap, Shield } from 'lucide-react';
+import { X, Check, Sparkles, Crown, Zap, Shield, Star, Gem, Diamond } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { NOORIX_PLANS, PLAN_ORDER } from '@/lib/noorix-plans';
 
-var PLAN_ICONS = { lite: Sparkles, glow: Zap, pro: Crown, max: Shield };
+var PLAN_ICONS = { lite: Sparkles, glow: Zap, pro: Crown, max: Shield, elite: Star, premium: Gem, ultimate: Diamond, supreme: Crown };
 
 function PlanIcon({ planId, size, color }) {
   var Icon = PLAN_ICONS[planId] || Sparkles;

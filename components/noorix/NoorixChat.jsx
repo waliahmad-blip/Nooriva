@@ -1364,7 +1364,7 @@ export default function NoorixChat() {
                     />
                     <span className="relative z-10 flex items-center gap-1.5">
                       {noorixPlan === 'lite' ? '⚡' : noorixPlan === 'glow' ? '✨' : noorixPlan === 'pro' ? '👑' : '💎'}
-                    {getEffectivePlan() === 'lite' ? 'Free' : getEffectivePlan() === 'glow' ? 'Glow' : getEffectivePlan() === 'pro' ? 'Pro' : 'Max'}
+                    {({ lite: 'Free', glow: 'Glow', pro: 'Pro', max: 'Max', elite: 'Elite', premium: 'Premium', ultimate: 'Ultimate', supreme: 'Supreme' })[getEffectivePlan()] || 'Free'}
                       {getEffectivePlan() === 'lite' && (() => {
                         var today = new Date().toDateString();
                         var used = (noorixDailyDate === today) ? noorixDailyUsed : 0;
