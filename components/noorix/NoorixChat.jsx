@@ -1785,7 +1785,7 @@ export default function NoorixChat() {
                                       </div>
                                     )}
                                   </div>
-                                </div>
+                                </motion.div>
                               );
                             }
                               return (
@@ -1847,7 +1847,7 @@ export default function NoorixChat() {
                                     )}
                                   </div>
                                 </div>
-                              </div>
+                              </motion.div>
                             );
                           })}
 
