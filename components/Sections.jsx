@@ -25,7 +25,7 @@ const fadeUp = {
 export function Hero() {
   const t = useT();
   const setActiveScene = useStore((s) => s.setActiveScene);
-  const AnimatedLogo = require('@/components/ui/AnimatedLogo').default;
+  // AnimatedLogo moved to TopBar
   const badges = [
     t("badge.sugar"),
     t("badge.collagen"),
@@ -35,15 +35,6 @@ export function Hero() {
 
   return (
     <section className="section-shell flex min-h-screen flex-col items-center justify-center text-center">
-      <motion.div
-        variants={fadeUp}
-        initial="hidden"
-        animate="show"
-        className="mb-6"
-      >
-        <AnimatedLogo size="large" />
-      </motion.div>
-
       <motion.p
         variants={fadeUp}
         initial="hidden"

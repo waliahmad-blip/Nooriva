@@ -7,7 +7,7 @@ import {
   Sun, Moon, Dumbbell, ScanLine,
   BookOpen, GlassWater, Stethoscope, Salad,
   Pill, Scissors, Beaker, CloudSun, Heart,
-  MessageCircle, Mic, MicOff, Share2, ShoppingCart,
+  MessageCircle, Mic, MicOff, Share2, ShoppingCart, Volume2, Zap,
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { useT } from '@/lib/i18n';
@@ -155,6 +155,87 @@ const FEATURES = [
     description: 'Have a free-form conversation with Noorix about anything — skin concerns, nutrition questions, product recommendations, wellness advice, or just chat about your glow journey. Ask anything, anytime.',
     highlights: ['Ask anything', 'Multi-turn memory', 'Personalized advice'],
   },
+  {
+    id: 'voiceOutput',
+    icon: Volume2,
+    needsImage: false,
+    color: '#0ea5e9',
+    tagline: 'Voice Assistant',
+    description: 'Noorix speaks responses aloud. Listen to health advice, nutrition tips, and wellness coaching hands-free while you cook, exercise, or relax.',
+    highlights: ['Text-to-speech', 'Hands-free listening', 'Multi-language'],
+  },
+  {
+    id: 'progressPhotos',
+    icon: Camera,
+    needsImage: true,
+    color: '#8b5cf6',
+    tagline: 'Progress Tracker',
+    description: 'Upload before and after photos to visually track your skin transformation. Noorix analyzes improvements and identifies what is working.',
+    highlights: ['Before/after comparison', 'Visual tracking', 'AI analysis'],
+  },
+  {
+    id: 'streaks',
+    icon: Sparkles,
+    needsImage: false,
+    color: '#f59e0b',
+    tagline: 'Gamification',
+    description: 'Track your glow streaks, earn badges, and unlock achievements. Consistency is the secret to radiant skin — let Noorix keep you motivated.',
+    highlights: ['Daily streaks', 'Achievement badges', 'Progress milestones'],
+  },
+  {
+    id: 'wellnessCalendar',
+    icon: BookOpen,
+    needsImage: false,
+    color: '#10b981',
+    tagline: 'Monthly View',
+    description: 'See your entire wellness journey in a calendar view. Track check-ins, mood patterns, skin observations, and ritual completions by date.',
+    highlights: ['Monthly overview', 'Pattern visualization', 'Daily logs'],
+  },
+  {
+    id: 'exportReport',
+    icon: BookOpen,
+    needsImage: false,
+    color: '#6366f1',
+    tagline: 'PDF Reports',
+    description: 'Generate a comprehensive wellness report from all your Noorix data. Download as PDF to share with your dermatologist or keep for records.',
+    highlights: ['PDF generation', 'Shareable reports', 'Complete history'],
+  },
+  {
+    id: 'chatSearch',
+    icon: ScanLine,
+    needsImage: false,
+    color: '#ec4899',
+    tagline: 'Smart Search',
+    description: 'Search through all your past Noorix conversations. Find that supplement recommendation, skin advice, or nutrition tip from weeks ago.',
+    highlights: ['Full-text search', 'Conversation history', 'Instant results'],
+  },
+  {
+    id: 'quickActions',
+    icon: Zap,
+    needsImage: false,
+    color: '#f97316',
+    tagline: 'Speed Tools',
+    description: 'One-tap shortcuts for common tasks: quick skin check, water log, mood check-in, supplement reminder, and daily ritual completion.',
+    highlights: ['One-tap actions', 'Common tasks', 'Speed optimized'],
+  },
+  {
+    id: 'moodJournal',
+    icon: Heart,
+    needsImage: false,
+    color: '#d946ef',
+    tagline: 'Emotional Wellness',
+    description: 'Daily mood logging with emoji-based check-ins. Noorix correlates your emotional patterns with skin health and suggests coping strategies.',
+    highlights: ['Emoji mood tracking', 'Pattern correlation', 'Wellness insights'],
+  },
+  {
+    id: 'darkMode',
+    icon: Moon,
+    needsImage: false,
+    color: '#1e293b',
+    tagline: 'Night Mode',
+    description: 'Switch to a beautiful dark theme for nighttime use. Easier on the eyes, better for sleep, and looks stunning with the Noorix orb.',
+    highlights: ['Dark theme', 'Sleep friendly', 'Eye comfort'],
+  },
 ];
 
 const FEATURE_MAP = Object.fromEntries(FEATURES.map((f) => [f.id, f]));
@@ -166,6 +247,63 @@ const FEATURE_MAP = Object.fromEntries(FEATURES.map((f) => [f.id, f]));
 const CONTEXT_CONFIGS = {
   freeChat: {
     intro: 'Ask me anything about health, beauty, skin, nutrition, or wellness. I am here to help you glow.',
+    fields: [],
+  },
+  voiceOutput: {
+    intro: 'I will speak my responses aloud. Tell me what you need.',
+    fields: [],
+  },
+  onboarding: {
+    intro: 'Welcome to Noorix! Let me show you around.',
+    fields: [],
+  },
+  progressPhotos: {
+    intro: 'Upload photos to track your skin progress over time.',
+    fields: [
+      { key: 'timeframe', label: 'When was the first photo taken?', type: 'tags', options: ['1 week ago', '2 weeks ago', '1 month ago', '3 months ago', '6 months ago'] },
+      { key: 'concern', label: 'What are you tracking?', type: 'tags', options: ['Acne clearing', 'Dark spots fading', 'Glow improvement', 'Wrinkle reduction', 'Overall health'] },
+    ],
+  },
+  streaks: {
+    intro: 'View your glow streaks and achievements.',
+    fields: [],
+  },
+  wellnessCalendar: {
+    intro: 'Your monthly wellness overview.',
+    fields: [],
+  },
+  exportReport: {
+    intro: 'Generate a PDF wellness report from your data.',
+    fields: [
+      { key: 'period', label: 'Report period?', type: 'tags', options: ['Last 7 days', 'Last 30 days', 'Last 3 months', 'All time'] },
+    ],
+  },
+  chatSearch: {
+    intro: 'Search through your past Noorix conversations.',
+    fields: [
+      { key: 'query', label: 'What are you looking for?', type: 'tags', options: ['Skin advice', 'Nutrition tips', 'Sleep analysis', 'Product recommendations', 'Supplement stack'] },
+    ],
+  },
+  quickActions: {
+    intro: 'Quick actions for common tasks.',
+    fields: [],
+  },
+  moodJournal: {
+    intro: 'Log your mood and track patterns over time.',
+    fields: [
+      { key: 'mood', label: 'How are you feeling?', type: 'tapCards', options: [
+        { value: 'amazing', label: 'Amazing', desc: 'On top of the world' },
+        { value: 'good', label: 'Good', desc: 'Positive and steady' },
+        { value: 'okay', label: 'Okay', desc: 'Neutral day' },
+        { value: 'low', label: 'Low', desc: 'Feeling down' },
+        { value: 'stressed', label: 'Stressed', desc: 'Overwhelmed' },
+      ]},
+      { key: 'energy', label: 'Energy level?', type: 'tags', options: ['High energy', 'Normal', 'Low energy', 'Exhausted'] },
+      { key: 'gratitude', label: 'One thing you are grateful for?', type: 'tags', options: ['Health', 'Family', 'Work', 'Friends', 'Nature', 'Food', 'Sleep', 'Freedom'] },
+    ],
+  },
+  darkMode: {
+    intro: 'Toggle dark mode for the Noorix interface.',
     fields: [],
   },
   skinPhoto: {
@@ -1472,52 +1610,57 @@ export default function NoorixChat() {
                                 <div className="max-w-[85%] flex items-start gap-2.5">
                                   <NoorixOrb size={28} className="shrink-0 mt-1" />
                                   <div className="space-y-2">
-                                    <div className="glass rounded-2xl rounded-tl-md p-4">
-                                      {renderMarkdown(msg.content)}
-                                    </div>
-                                    {msg.raw && msg.raw.actions && msg.raw.actions.length > 0 && (
-                                      <div className="flex flex-wrap gap-2">
-                                        {msg.raw.actions.map(function(action, ai) {
+                                    <div className="glass rounded-2xl rounded-tl-md p-4">{renderMarkdown(msg.content)}</div>
+                                    {msg.raw && msg.raw.triage && msg.raw.triage.length > 0 && (
+                                      <div className="glass rounded-xl p-3 space-y-1.5">
+                                        <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider">Triage Results</p>
+                                        {msg.raw.triage.map(function(t, ti) {
+                                          var icon = t.likelihood === 'high' ? '🔴' : t.likelihood === 'moderate' ? '🟡' : '🟢';
                                           return (
-                                            <button
-                                              key={ai}
-                                              onClick={function() { handleAction(action); }}
-                                              className="chip text-xs hover:bg-ink hover:text-cream transition-colors cursor-pointer"
-                                            >
-                                              {action.label}
-                                            </button>
+                                            <div key={ti} className="flex items-start gap-2 text-xs text-ink/70">
+                                              <span>{icon}</span>
+                                              <span><strong>{t.condition}</strong> ({t.likelihood}) — {t.description}</span>
+                                            </div>
                                           );
                                         })}
                                       </div>
                                     )}
-                                    {/* Action buttons: share + add to cart */}
-                                    <div className="flex items-center gap-2 pl-1">
-                                      <button
-                                        onClick={function() { shareResult(msg); }}
-                                        className="flex items-center gap-1 text-[10px] text-ink/40 hover:text-ink/70 transition-colors"
-                                        aria-label="Share result"
-                                      >
-                                        <Share2 size={12} />
-                                        Share
-                                      </button>
+                                    {msg.raw && msg.raw.macros && (
+                                      <div className="glass rounded-xl p-3">
+                                        <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-2">Nutrition</p>
+                                        <div className="grid grid-cols-4 gap-2 text-center">
+                                          {['calories','protein','carbs','fat'].map(function(key) {
+                                            return (
+                                              <div key={key}>
+                                                <p className="text-sm font-bold text-ink">{msg.raw.macros[key] || '—'}</p>
+                                                <p className="text-[9px] text-ink/40 capitalize">{key}</p>
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                        {msg.raw.overallSkinScore && (
+                                          <div className="mt-2 pt-2 border-t border-ink/5 text-center">
+                                            <p className="text-xs text-ink/50">Skin Score</p>
+                                            <p className="text-lg font-bold holo-text">{msg.raw.overallSkinScore}/10</p>
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                    <div className="flex flex-wrap items-center gap-1.5 pl-1">
+                                      <button onClick={function() { shareResult(msg); }} className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium bg-ink/5 text-ink/50 hover:bg-ink/10 hover:text-ink/70 transition-colors"><Share2 size={11} /> Share</button>
+                                      <button onClick={function() { window.open('mailto:?subject=' + encodeURIComponent('Noorix Analysis') + '&body=' + encodeURIComponent(msg.content || '')); }} className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium bg-ink/5 text-ink/50 hover:bg-ink/10 hover:text-ink/70 transition-colors">✉️ Email</button>
+                                      <button onClick={function() { var b = new Blob([msg.content || ''], {type:'text/plain'}); var u = URL.createObjectURL(b); var a = document.createElement('a'); a.href = u; a.download = 'noorix-analysis.txt'; a.click(); URL.revokeObjectURL(u); }} className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium bg-ink/5 text-ink/50 hover:bg-ink/10 hover:text-ink/70 transition-colors">📥 Download</button>
+                                      <button onClick={function() { if (navigator.clipboard) navigator.clipboard.writeText(msg.content || ''); }} className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium bg-ink/5 text-ink/50 hover:bg-ink/10 hover:text-ink/70 transition-colors">📋 Copy</button>
+                                      <button onClick={function() { var w = window.open('', '_blank'); w.document.write('<html><head><title>Noorix</title><style>body{font-family:Space Grotesk,sans-serif;padding:40px;max-width:700px;margin:auto;line-height:1.6;color:#1A1410;}strong{color:#1A1410;}</style></head><body><h1>Noorix Analysis</h1><p>' + (msg.content||'').replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>') + '</p></body></html>'); w.document.close(); w.print(); }} className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium bg-ink/5 text-ink/50 hover:bg-ink/10 hover:text-ink/70 transition-colors">🖨️ Print</button>
                                       {msg.raw && msg.raw.actions && msg.raw.actions.map(function(action, ai) {
                                         if (action.type === 'addProduct' && action.payload) {
-                                          return (
-                                            <button
-                                              key={ai}
-                                              onClick={function() { addToCart(action.payload); }}
-                                              className="flex items-center gap-1 text-[10px] font-semibold text-purple-600 hover:text-purple-800 transition-colors"
-                                            >
-                                              <ShoppingCart size={12} />
-                                              {action.label || 'Add to Bag'}
-                                            </button>
-                                          );
+                                          return (<button key={ai} onClick={function() { addToCart(action.payload); }} className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors"><ShoppingCart size={11} /> {action.label || 'Add to Bag'}</button>);
                                         }
                                         return null;
                                       })}
                                     </div>
                                     {msg.raw && msg.raw.disclaimer && (
-                                      <p className="text-[10px] text-ink/30 pl-1">{msg.raw.disclaimer}</p>
+                                      <p className="text-[10px] text-ink/30 pl-1 italic">{msg.raw.disclaimer}</p>
                                     )}
                                   </div>
                                 </div>

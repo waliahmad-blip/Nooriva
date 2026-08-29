@@ -23,8 +23,17 @@ export default function TopBar() {
   return (
     <header className="pointer-events-none fixed inset-x-0 top-0 z-40">
       <div className="section-shell mt-4 flex items-center justify-between">
-        <div className="glass pointer-events-auto rounded-full bg-white/60 px-5 py-2.5 backdrop-blur-xl">
-          <span className="text-base font-bold tracking-[0.2em] text-ink">NOORIVA</span>
+        <div className="glass pointer-events-auto rounded-full bg-white/60 px-4 py-2 backdrop-blur-xl flex items-center gap-2">
+          <img
+            src="/brand/nooriva-logo.svg"
+            alt="NOORIVA"
+            className="h-8 w-auto"
+            onError={function(e) {
+              e.target.style.display = 'none';
+              if (e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'inline';
+            }}
+          />
+          <span className="text-base font-bold tracking-[0.2em] text-ink hidden" style={{ display: 'none' }}>NOORIVA</span>
         </div>
 
         <div className="pointer-events-auto flex items-center gap-2">
