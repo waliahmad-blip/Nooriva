@@ -14,6 +14,8 @@ import { useT } from '@/lib/i18n';
 import { isFeatureAllowed, checkDailyLimit, getRequiredPlan } from '@/lib/noorix-plans';
 import NoorixOrb from './NoorixOrb';
 import NoorixPlans from './NoorixPlans';
+import NoorixHologram from './NoorixHologram';
+import NoorixTutorial from './NoorixTutorial';
 
 /* ══════════════════════════════════════════════════════════════
    FEATURE REGISTRY — 14 AI-Powered Health & Beauty Features
@@ -272,6 +274,24 @@ const FEATURES = [
     description: 'Comprehensive health risk assessment based on your lifestyle, family history, and current symptoms. Identifies potential risks before they become problems.',
     highlights: ['Risk scoring', 'Prevention tips', 'Early detection'],
   },
+  {
+    id: 'skinAge',
+    icon: Sparkles,
+    needsImage: true,
+    color: '#ec4899',
+    tagline: 'Age Detector',
+    description: 'Upload a selfie and Noorix predicts your skin age versus your actual age. Discover how your skin truly ages and get a personalized rejuvenation plan to turn back the clock.',
+    highlights: ['Skin age prediction', 'Rejuvenation plan', 'Before/after tracking'],
+  },
+  {
+    id: 'ingredientConflict',
+    icon: Beaker,
+    needsImage: true,
+    color: '#f97316',
+    tagline: 'Conflict Checker',
+    description: 'Paste or photograph your current skincare products. Noorix checks every ingredient combination for conflicts, redundancies, and dangerous interactions. Never mix the wrong products again.',
+    highlights: ['Conflict detection', 'Ingredient synergy', 'Safe combinations'],
+  },
 ];
 
 const FEATURE_MAP = Object.fromEntries(FEATURES.map((f) => [f.id, f]));
@@ -391,6 +411,27 @@ const CONTEXT_CONFIGS = {
       { key: 'lifestyle', label: 'Lifestyle factors?', type: 'tags', multi: true, options: ['Smoking', 'Alcohol', 'Sedentary', 'Stressed', 'Poor sleep', 'Poor diet', 'Active', 'Healthy diet'] },
     ],
   },
+  skinAge: {
+    intro: 'Upload a selfie and I will analyze your skin age.',
+    fields: [
+      { key: 'actualAge', label: 'Your actual age?', type: 'tags', options: ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'] },
+      { key: 'concerns', label: 'Main aging concerns?', type: 'tags', multi: true, options: ['Fine lines', 'Wrinkles', 'Sagging', 'Dark spots', 'Dullness', 'Large pores', 'Uneven texture'] },
+    ],
+  },
+  ingredientConflict: {
+    intro: 'Upload product labels and I will check for ingredient conflicts.',
+    fields: [
+      { key: 'products', label: 'How many products to check?', type: 'tags', options: ['2 products', '3 products', '4+ products', 'Full routine'] },
+      { key: 'skinType', label: 'Your skin type?', type: 'tapCards', options: [
+        { value: 'oily', label: 'Oily', desc: 'Shiny, large pores' },
+        { value: 'dry', label: 'Dry', desc: 'Tight, flaky' },
+        { value: 'sensitive', label: 'Sensitive', desc: 'Reacts easily' },
+        { value: 'combination', label: 'Combination', desc: 'Mixed' },
+        { value: 'normal', label: 'Normal', desc: 'Balanced' },
+      ]},
+    ],
+  },
+
   skinPhoto: {
     intro: 'Tap what you see — I will analyze the rest from your photo.',
     fields: [
@@ -1008,6 +1049,16 @@ export default function NoorixChat() {
   });
   var trial = trialState[0];
 
+  var hologramState = useState(false);
+  var showHologram = hologramState[0];
+  var setShowHologram = hologramState[1];
+
+  var tutorialState = useState(false);
+  var showTutorial = tutorialState[0];
+  var setShowTutorial = tutorialState[1];
+
+  var hasSeenHologram = typeof window !== 'undefined' && localStorage.getItem('noorix-hologram-seen');
+
   var messagesEndRef = useRef(null);
   var inputRef = useRef(null);
   var fileRef = useRef(null);
@@ -1242,6 +1293,12 @@ export default function NoorixChat() {
 
       {/* ═══ Full-Screen Overlay ═══ */}
       <AnimatePresence>
+        {noorixOpen && !hasSeenHologram && (
+          <NoorixHologram isVisible={noorixOpen && !hasSeenHologram} onDismiss={function() { setShowHologram(false); localStorage.setItem('noorix-hologram-seen', 'true'); }} />
+        )}
+        {showTutorial && (
+          <NoorixTutorial isOpen={showTutorial} onClose={function() { setShowTutorial(false); }} />
+        )}
         {noorixOpen && (
           <motion.div
             key="noorix-overlay"
@@ -1459,6 +1516,23 @@ export default function NoorixChat() {
                             </div>
                           )}
                         </motion.div>
+                      </motion.div>
+
+                      {/* Tutorial Button */}
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1.5 }}
+                        className="flex justify-center mb-6"
+                      >
+                        <button
+                          onClick={function() { setShowTutorial(true); }}
+                          className="flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium glass hover:-translate-y-0.5 transition-all"
+                        >
+                          <Sparkles size={16} className="text-purple-500" />
+                          Take the Noorix Tour
+                          <ChevronRight size={14} className="text-ink/40" />
+                        </button>
                       </motion.div>
 
                       {/* Feature Cards */}
