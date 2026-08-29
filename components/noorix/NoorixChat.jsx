@@ -1068,7 +1068,9 @@ export default function NoorixChat() {
   var showTutorial = tutorialState[0];
   var setShowTutorial = tutorialState[1];
 
-  var hasSeenHologram = typeof window !== 'undefined' && localStorage.getItem('noorix-hologram-seen');
+  var [hasSeenHologram, setHasSeenHologram] = useState(function() {
+    return typeof window !== 'undefined' && !!localStorage.getItem('noorix-hologram-seen');
+  });
 
   var messagesEndRef = useRef(null);
   var inputRef = useRef(null);
@@ -1305,7 +1307,7 @@ export default function NoorixChat() {
       {/* ═══ Full-Screen Overlay ═══ */}
       <AnimatePresence>
         {noorixOpen && !hasSeenHologram && (
-          <NoorixHologram isVisible={noorixOpen && !hasSeenHologram} onDismiss={function() { localStorage.setItem('noorix-hologram-seen', 'true'); window.location.reload(); }} />
+          <NoorixHologram isVisible={noorixOpen && !hasSeenHologram} onDismiss={function() { localStorage.setItem('noorix-hologram-seen', 'true'); setHasSeenHologram(true); }} />
         )}
         {showTutorial && (
           <NoorixTutorial isOpen={showTutorial} onClose={function() { setShowTutorial(false); }} />
