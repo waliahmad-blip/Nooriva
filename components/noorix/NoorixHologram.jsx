@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 
 /**
  * NoorixHologram — Cinematic AI intelligence boot sequence
- * 
+ *
  * - Wireframe icosahedron mesh (3D rotating geometry)
  * - Data stream particles (Matrix-style)
  * - Scanning grid + moving beam
@@ -255,7 +255,7 @@ export default function NoorixHologram({ isVisible, onDismiss }) {
     { label: 'Loading health modules...', progress: 35, log: 'Health modules loaded (14)', ok: true },
     { label: 'Calibrating vision engine...', progress: 55, log: 'Vision engine calibrated', ok: true },
     { label: 'Connecting to wellness database...', progress: 75, log: 'Database connected', ok: true },
-    { label: 'Loading AI models...', progress: 90, log: 'Models loaded (gemini-3.7-flash, gemma-4, medsiglip)', ok: true },
+    { label: 'Loading AI models...', progress: 90, log: 'Noorix intelligence engine online', ok: true },
     { label: 'Noorix online.', progress: 100, log: 'System ready', ok: true },
   ];
 
