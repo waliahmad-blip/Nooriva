@@ -11,7 +11,9 @@ import {
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { useT } from '@/lib/i18n';
+import { isFeatureAllowed, checkDailyLimit, getRequiredPlan } from '@/lib/noorix-plans';
 import NoorixOrb from './NoorixOrb';
+import NoorixPlans from './NoorixPlans';
 
 /* ══════════════════════════════════════════════════════════════
    FEATURE REGISTRY — 14 AI-Powered Health & Beauty Features
@@ -753,6 +755,19 @@ export default function NoorixChat() {
   var showContext = showContextState[0];
   var setShowContext = showContextState[1];
 
+  var plansOpenState = useState(false);
+  var plansOpen = plansOpenState[0];
+  var setPlansOpen = plansOpenState[1];
+
+  var blockedState = useState(null);
+  var blocked = blockedState[0];
+  var setBlocked = blockedState[1];
+
+  var noorixPlan = useStore(function(s) { return s.noorixPlan; });
+  var noorixDailyUsed = useStore(function(s) { return s.noorixDailyUsed; });
+  var noorixDailyDate = useStore(function(s) { return s.noorixDailyDate; });
+  var useNoorixCredit = useStore(function(s) { return s.useNoorixCredit; });
+
   var messagesEndRef = useRef(null);
   var inputRef = useRef(null);
   var fileRef = useRef(null);
@@ -782,8 +797,23 @@ export default function NoorixChat() {
   }, [noorixFeature]);
 
   var openChat = useCallback(function(featureId) {
+    // Check plan access
+    if (!isFeatureAllowed(noorixPlan, featureId)) {
+      var required = getRequiredPlan(featureId);
+      setBlocked({ type: 'feature', featureId: featureId, required: required });
+      return;
+    }
+    // Check daily limit
+    var today = new Date().toDateString();
+    var usedToday = (noorixDailyDate === today) ? noorixDailyUsed : 0;
+    var limit = checkDailyLimit(noorixPlan, usedToday);
+    if (!limit.allowed) {
+      setBlocked({ type: 'limit', remaining: 0, limit: limit.limit });
+      return;
+    }
+    setBlocked(null);
     setNoorixFeature(featureId);
-  }, [setNoorixFeature]);
+  }, [setNoorixFeature, noorixPlan, noorixDailyUsed, noorixDailyDate]);
 
   var handleImageSelect = useCallback(function(e) {
     var file = e.target.files && e.target.files[0];
@@ -813,6 +843,7 @@ export default function NoorixChat() {
     setContextValues({});
     setShowContext(false);
     setSending(true);
+    useNoorixCredit();
 
     var allMessages = messages.concat([userMsg]).map(function(m) {
       return { role: m.role, content: m.content, image: m.image || undefined };
@@ -955,9 +986,34 @@ export default function NoorixChat() {
                   </p>
                 </div>
               </div>
-              <button onClick={closeNoorix} className="rounded-full bg-ink/5 p-2.5 hover:bg-ink/10 transition-colors">
-                <X size={18} />
-              </button>
+              <div className="flex items-center gap-2">
+                {/* Usage counter */}
+                {noorixPlan !== 'lite' || true ? (
+                  <button
+                    onClick={function() { setPlansOpen(true); }}
+                    className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold transition-colors hover:bg-ink/10"
+                    style={{
+                      background: noorixPlan === 'lite' ? '#94a3b820' : noorixPlan === 'glow' ? '#ff8fb220' : noorixPlan === 'pro' ? '#a78bfa20' : '#f59e0b20',
+                      color: noorixPlan === 'lite' ? '#94a3b8' : noorixPlan === 'glow' ? '#ff8fb2' : noorixPlan === 'pro' ? '#a78bfa' : '#f59e0b',
+                    }}
+                  >
+                    {noorixPlan === 'lite' ? 'Free' : noorixPlan === 'glow' ? 'Glow' : noorixPlan === 'pro' ? 'Pro' : 'Max'}
+                    {noorixPlan === 'lite' && (() => {
+                      var today = new Date().toDateString();
+                      var used = (noorixDailyDate === today) ? noorixDailyUsed : 0;
+                      return ' · ' + used + '/5';
+                    })()}
+                    {noorixPlan === 'glow' && (() => {
+                      var today = new Date().toDateString();
+                      var used = (noorixDailyDate === today) ? noorixDailyUsed : 0;
+                      return ' · ' + used + '/25';
+                    })()}
+                  </button>
+                ) : null}
+                <button onClick={closeNoorix} className="rounded-full bg-ink/5 p-2.5 hover:bg-ink/10 transition-colors">
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
             {/* ── Content ── */}
@@ -1284,6 +1340,55 @@ export default function NoorixChat() {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Blocked overlay */}
+      <AnimatePresence>
+        {blocked && (
+          <motion.div
+            key="blocked-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[55] flex items-center justify-center p-4"
+            style={{ background: 'rgba(250, 247, 242, 0.95)' }}
+            onClick={function() { setBlocked(null); }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="glass rounded-[2rem] p-8 max-w-sm w-full text-center"
+              onClick={function(e) { e.stopPropagation(); }}
+            >
+              <div className="text-4xl mb-4">
+                {blocked.type === 'limit' ? '⏰' : '🔒'}
+              </div>
+              <h3 className="text-xl font-bold mb-2">
+                {blocked.type === 'limit' ? 'Daily Limit Reached' : 'Upgrade Required'}
+              </h3>
+              <p className="text-sm text-ink/60 mb-6">
+                {blocked.type === 'limit'
+                  ? 'You have used all your free analyses for today. Upgrade for more.'
+                  : 'This feature requires the ' + (blocked.required ? blocked.required.name : 'Glow') + ' plan.'}
+              </p>
+              <button
+                onClick={function() { setBlocked(null); setPlansOpen(true); }}
+                className="btn-primary w-full !py-3 mb-2"
+              >
+                View Plans
+              </button>
+              <button
+                onClick={function() { setBlocked(null); }}
+                className="btn-secondary w-full !py-3"
+              >
+                Maybe Later
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Plans modal */}
+      <NoorixPlans isOpen={plansOpen} onClose={function() { setPlansOpen(false); }} />
     </div>
   );
 }
