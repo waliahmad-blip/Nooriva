@@ -7,7 +7,7 @@ import {
   Sun, Moon, Dumbbell, ScanLine,
   BookOpen, GlassWater, Stethoscope, Salad,
   Pill, Scissors, Beaker, CloudSun, Heart,
-  MessageCircle,
+  MessageCircle, Mic, MicOff, Share2, ShoppingCart,
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { useT } from '@/lib/i18n';
@@ -767,6 +767,23 @@ export default function NoorixChat() {
   var noorixDailyUsed = useStore(function(s) { return s.noorixDailyUsed; });
   var noorixDailyDate = useStore(function(s) { return s.noorixDailyDate; });
   var useNoorixCredit = useStore(function(s) { return s.useNoorixCredit; });
+  var addToCart = useStore(function(s) { return s.addToCart; });
+  var glowScore = useStore(function(s) { return s.glowScore; });
+  var ritualStreak = useStore(function(s) { return s.ritualStreak; });
+
+  var voiceState = useState(false);
+  var isListening = voiceState[0];
+  var setIsListening = voiceState[1];
+
+  var trialState = useState(function() {
+    if (typeof window === 'undefined') return null;
+    var stored = localStorage.getItem('noorix-trial');
+    if (stored) return JSON.parse(stored);
+    var trial = { start: Date.now(), end: Date.now() + 7 * 24 * 60 * 60 * 1000, plan: 'pro' };
+    localStorage.setItem('noorix-trial', JSON.stringify(trial));
+    return trial;
+  });
+  var trial = trialState[0];
 
   var messagesEndRef = useRef(null);
   var inputRef = useRef(null);
@@ -797,8 +814,9 @@ export default function NoorixChat() {
   }, [noorixFeature]);
 
   var openChat = useCallback(function(featureId) {
+    var effectivePlan = getEffectivePlan();
     // Check plan access
-    if (!isFeatureAllowed(noorixPlan, featureId)) {
+    if (!isFeatureAllowed(effectivePlan, featureId)) {
       var required = getRequiredPlan(featureId);
       setBlocked({ type: 'feature', featureId: featureId, required: required });
       return;
@@ -806,7 +824,7 @@ export default function NoorixChat() {
     // Check daily limit
     var today = new Date().toDateString();
     var usedToday = (noorixDailyDate === today) ? noorixDailyUsed : 0;
-    var limit = checkDailyLimit(noorixPlan, usedToday);
+    var limit = checkDailyLimit(effectivePlan, usedToday);
     if (!limit.allowed) {
       setBlocked({ type: 'limit', remaining: 0, limit: limit.limit });
       return;
@@ -909,6 +927,52 @@ export default function NoorixChat() {
       e.preventDefault();
       sendMessage();
     }
+  }
+
+  function toggleVoice() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert('Voice input is not supported in this browser. Try Chrome.');
+      return;
+    }
+    if (isListening) {
+      var existing = window._noorixRecognition;
+      if (existing) existing.stop();
+      setIsListening(false);
+      return;
+    }
+    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    recognition.onresult = function(event) {
+      var transcript = '';
+      for (var i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setInput(transcript);
+    };
+    recognition.onend = function() { setIsListening(false); };
+    recognition.onerror = function() { setIsListening(false); };
+    window._noorixRecognition = recognition;
+    recognition.start();
+    setIsListening(true);
+  }
+
+  function shareResult(msg) {
+    var text = 'Noorix AI Analysis:\n\n' + (msg.content || '').slice(0, 500) + '\n\n— Powered by NOORIVA';
+    if (navigator.share) {
+      navigator.share({ title: 'Noorix Analysis', text: text }).catch(function() {});
+    } else {
+      var url = 'https://wa.me/?text=' + encodeURIComponent(text);
+      window.open(url, '_blank');
+    }
+  }
+
+  function getEffectivePlan() {
+    if (noorixPlan !== 'lite') return noorixPlan;
+    if (trial && trial.end > Date.now()) return trial.plan;
+    return 'lite';
   }
 
   function handleAction(action) {
@@ -1020,18 +1084,18 @@ export default function NoorixChat() {
                     />
                     <span className="relative z-10 flex items-center gap-1.5">
                       {noorixPlan === 'lite' ? '⚡' : noorixPlan === 'glow' ? '✨' : noorixPlan === 'pro' ? '👑' : '💎'}
-                      {noorixPlan === 'lite' ? 'Free' : noorixPlan === 'glow' ? 'Glow' : noorixPlan === 'pro' ? 'Pro' : 'Max'}
-                      {noorixPlan === 'lite' && (() => {
+                    {getEffectivePlan() === 'lite' ? 'Free' : getEffectivePlan() === 'glow' ? 'Glow' : getEffectivePlan() === 'pro' ? 'Pro' : 'Max'}
+                      {getEffectivePlan() === 'lite' && (() => {
                         var today = new Date().toDateString();
                         var used = (noorixDailyDate === today) ? noorixDailyUsed : 0;
                         return ' · ' + used + '/5';
                       })()}
-                      {noorixPlan === 'glow' && (() => {
+                      {getEffectivePlan() === 'glow' && (() => {
                         var today = new Date().toDateString();
                         var used = (noorixDailyDate === today) ? noorixDailyUsed : 0;
                         return ' · ' + used + '/25';
                       })()}
-                      {noorixPlan === 'lite' && ' · Upgrade'}
+                      {getEffectivePlan() === 'lite' && ' · Upgrade'}
                     </span>
                   </button>
                 ) : null}
@@ -1117,9 +1181,9 @@ export default function NoorixChat() {
                           className="mt-6 flex flex-wrap justify-center gap-6"
                         >
                           {[
-                            { icon: '📸', title: 'Snap', desc: 'Upload a photo of skin, meal, or product' },
-                            { icon: '🤖', title: 'Analyze', desc: 'AI processes and identifies patterns' },
-                            { icon: '✨', title: 'Glow', desc: 'Get personalized recommendations' },
+                            { icon: '🌸', title: 'Snap', desc: 'Upload a photo of skin, meal, or product' },
+                            { icon: '🔮', title: 'Analyze', desc: 'AI processes and identifies patterns' },
+                            { icon: '💫', title: 'Glow', desc: 'Get personalized recommendations' },
                           ].map(function(step, i) {
                             return (
                               <div key={step.title} className="flex items-center gap-3 text-left">
@@ -1132,6 +1196,40 @@ export default function NoorixChat() {
                               </div>
                             );
                           })}
+                        </motion.div>
+
+                        {/* Glow Score + Trial Badge */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 1.2 }}
+                          className="mt-6 flex flex-wrap justify-center gap-3"
+                        >
+                          <div className="glass rounded-2xl px-5 py-3 flex items-center gap-3">
+                            <div className="text-2xl">✨</div>
+                            <div>
+                              <p className="text-xs text-ink/40 font-medium">Your Glow Score</p>
+                              <p className="text-xl font-bold display-heading holo-text">{glowScore}</p>
+                            </div>
+                          </div>
+                          <div className="glass rounded-2xl px-5 py-3 flex items-center gap-3">
+                            <div className="text-2xl">🔥</div>
+                            <div>
+                              <p className="text-xs text-ink/40 font-medium">Ritual Streak</p>
+                              <p className="text-xl font-bold display-heading">{ritualStreak} days</p>
+                            </div>
+                          </div>
+                          {noorixPlan === 'lite' && trial && trial.end > Date.now() && (
+                            <div className="glass rounded-2xl px-5 py-3 flex items-center gap-3 ring-2 ring-purple-400/30">
+                              <div className="text-2xl">🎁</div>
+                              <div>
+                                <p className="text-xs text-purple-500 font-medium">Free Pro Trial</p>
+                                <p className="text-sm font-bold text-purple-600">
+                                  {Math.ceil((trial.end - Date.now()) / (1000 * 60 * 60 * 24))} days left
+                                </p>
+                              </div>
+                            </div>
+                          )}
                         </motion.div>
                       </motion.div>
 
@@ -1392,6 +1490,32 @@ export default function NoorixChat() {
                                         })}
                                       </div>
                                     )}
+                                    {/* Action buttons: share + add to cart */}
+                                    <div className="flex items-center gap-2 pl-1">
+                                      <button
+                                        onClick={function() { shareResult(msg); }}
+                                        className="flex items-center gap-1 text-[10px] text-ink/40 hover:text-ink/70 transition-colors"
+                                        aria-label="Share result"
+                                      >
+                                        <Share2 size={12} />
+                                        Share
+                                      </button>
+                                      {msg.raw && msg.raw.actions && msg.raw.actions.map(function(action, ai) {
+                                        if (action.type === 'addProduct' && action.payload) {
+                                          return (
+                                            <button
+                                              key={ai}
+                                              onClick={function() { addToCart(action.payload); }}
+                                              className="flex items-center gap-1 text-[10px] font-semibold text-purple-600 hover:text-purple-800 transition-colors"
+                                            >
+                                              <ShoppingCart size={12} />
+                                              {action.label || 'Add to Bag'}
+                                            </button>
+                                          );
+                                        }
+                                        return null;
+                                      })}
+                                    </div>
                                     {msg.raw && msg.raw.disclaimer && (
                                       <p className="text-[10px] text-ink/30 pl-1">{msg.raw.disclaimer}</p>
                                     )}
@@ -1444,6 +1568,15 @@ export default function NoorixChat() {
                               </button>
                             </div>
                           )}
+                          {/* Voice button */}
+                          <button
+                            onClick={toggleVoice}
+                            className={'shrink-0 rounded-full p-2.5 transition-all ' + (isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-ink/5 text-ink/50 hover:bg-ink/10')}
+                            aria-label={isListening ? 'Stop listening' : 'Voice input'}
+                          >
+                            {isListening ? <MicOff size={18} /> : <Mic size={18} />}
+                          </button>
+
                           <div className="flex-1 relative">
                             <input
                               ref={inputRef}
@@ -1451,9 +1584,9 @@ export default function NoorixChat() {
                               value={input}
                               onChange={function(e) { setInput(e.target.value); }}
                               onKeyDown={handleKeyDown}
-                              placeholder={t('noorix.inputPlaceholder')}
+                              placeholder={isListening ? 'Listening...' : t('noorix.inputPlaceholder')}
                               disabled={sending}
-                              className="field !rounded-full !py-2.5 !pr-4 text-sm"
+                              className={'field !rounded-full !py-2.5 !pr-4 text-sm ' + (isListening ? '!border-red-400 !bg-red-50' : '')}
                             />
                           </div>
                           <button
