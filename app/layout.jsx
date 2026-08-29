@@ -38,6 +38,7 @@ export const metadata = {
     description: "Pakistan's first halal beauty elixir. No pills. No powders. Just liquid glow.",
   },
   robots: { index: true, follow: true },
+  other: { 'mobile-web-app-capable': 'yes' },
   appleWebApp: { capable: true, statusBarStyle: "default", title: "NOORIVA" },
 };
 
