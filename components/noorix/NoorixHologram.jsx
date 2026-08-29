@@ -1,17 +1,244 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 /**
- * NoorixHologram — A living, breathing holographic AI assistant
+ * NoorixHologram — Cinematic AI intelligence hologram
  * 
- * - Scan lines effect
- * - Flickering transparency
- * - Floating particles
- * - Breathing pulse
- * - Appears on first open with greeting
+ * - Wireframe icosahedron mesh
+ * - Data stream particles
+ * - Scanning grid lines
+ * - Energy pulse rings
+ * - Glitch/flicker effects
+ * - Projection base platform
+ * - No cartoon elements — pure tech aesthetic
  */
+
+function WireframeMesh({ size }) {
+  var canvasRef = useRef(null);
+
+  useEffect(function() {
+    var canvas = canvasRef.current;
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    var cx = size / 2;
+    var cy = size / 2;
+    var radius = size * 0.32;
+    var angleX = 0;
+    var angleY = 0;
+    var angleZ = 0;
+    var raf;
+
+    // Icosahedron vertices
+    var t = (1 + Math.sqrt(5)) / 2;
+    var vertices = [
+      [-1, t, 0], [1, t, 0], [-1, -t, 0], [1, -t, 0],
+      [0, -1, t], [0, 1, t], [0, -1, -t], [0, -1, -t],
+      [t, 0, -1], [t, 0, 1], [-t, 0, -1], [-t, 0, 1]
+    ].map(function(v) {
+      var len = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+      return [v[0]/len, v[1]/len, v[2]/len];
+    });
+
+    var edges = [
+      [0,1],[0,5],[0,11],[0,7],[0,10],
+      [1,5],[1,9],[1,7],[1,8],
+      [2,3],[2,4],[2,11],[2,6],[2,10],
+      [3,4],[3,9],[3,6],[3,8],
+      [4,5],[4,11],[4,9],
+      [5,11],[5,9],
+      [6,7],[6,10],[6,8],
+      [7,10],[7,8],
+      [8,9],
+      [10,11]
+    ];
+
+    function project(x, y, z) {
+      // Rotate X
+      var y1 = y * Math.cos(angleX) - z * Math.sin(angleX);
+      var z1 = y * Math.sin(angleX) + z * Math.cos(angleX);
+      // Rotate Y
+      var x2 = x * Math.cos(angleY) + z1 * Math.sin(angleY);
+      var z2 = -x * Math.sin(angleY) + z1 * Math.cos(angleY);
+      // Rotate Z
+      var x3 = x2 * Math.cos(angleZ) - y1 * Math.sin(angleZ);
+      var y3 = x2 * Math.sin(angleZ) + y1 * Math.cos(angleZ);
+      var scale = 1 + z2 * 0.3;
+      return { x: cx + x3 * radius * scale, y: cy + y3 * radius * scale, z: z2 };
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, size, size);
+      angleX += 0.004;
+      angleY += 0.006;
+      angleZ += 0.002;
+
+      // Draw edges
+      for (var i = 0; i < edges.length; i++) {
+        var a = vertices[edges[i][0]];
+        var b = vertices[edges[i][1]];
+        var pa = project(a[0], a[1], a[2]);
+        var pb = project(b[0], b[1], b[2]);
+        var avgZ = (pa.z + pb.z) / 2;
+        var alpha = 0.15 + (avgZ + 1) * 0.25;
+
+        ctx.beginPath();
+        ctx.moveTo(pa.x, pa.y);
+        ctx.lineTo(pb.x, pb.y);
+        ctx.strokeStyle = 'rgba(103, 232, 249, ' + alpha + ')';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      }
+
+      // Draw vertices
+      for (var j = 0; j < vertices.length; j++) {
+        var p = project(vertices[j][0], vertices[j][1], vertices[j][2]);
+        var va = 0.3 + (p.z + 1) * 0.35;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(167, 139, 250, ' + va + ')';
+        ctx.fill();
+      }
+
+      raf = requestAnimationFrame(draw);
+    }
+
+    raf = requestAnimationFrame(draw);
+    return function() { cancelAnimationFrame(raf); };
+  }, [size]);
+
+  return <canvas ref={canvasRef} className="absolute inset-0" style={{ width: size, height: size }} />;
+}
+
+function DataStreams({ size }) {
+  var canvasRef = useRef(null);
+
+  useEffect(function() {
+    var canvas = canvasRef.current;
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    var streams = [];
+    for (var i = 0; i < 40; i++) {
+      streams.push({
+        x: Math.random() * size,
+        y: Math.random() * size,
+        speed: 0.3 + Math.random() * 1.2,
+        length: 8 + Math.random() * 20,
+        opacity: 0.1 + Math.random() * 0.3,
+        char: String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96)),
+      });
+    }
+
+    var raf;
+    function draw() {
+      ctx.clearRect(0, 0, size, size);
+      for (var i = 0; i < streams.length; i++) {
+        var s = streams[i];
+        s.y += s.speed;
+        if (s.y > size + s.length) { s.y = -s.length; s.x = Math.random() * size; }
+        if (Math.random() < 0.02) s.char = String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96));
+
+        ctx.font = '9px monospace';
+        ctx.fillStyle = 'rgba(103, 232, 249, ' + s.opacity + ')';
+        ctx.fillText(s.char, s.x, s.y);
+        ctx.fillStyle = 'rgba(103, 232, 249, ' + (s.opacity * 0.3) + ')';
+        ctx.fillText(s.char, s.x, s.y - s.length);
+      }
+      raf = requestAnimationFrame(draw);
+    }
+    raf = requestAnimationFrame(draw);
+    return function() { cancelAnimationFrame(raf); };
+  }, [size]);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 opacity-40" style={{ width: size, height: size }} />;
+}
+
+function ScanLines({ size }) {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ width: size, height: size }}>
+      {Array.from({ length: 30 }).map(function(_, i) {
+        return (
+          <div
+            key={i}
+            className="absolute w-full"
+            style={{
+              top: i * (size / 30),
+              height: 1,
+              background: 'linear-gradient(90deg, transparent 0%, rgba(103,232,249,0.06) 20%, rgba(103,232,249,0.06) 80%, transparent 100%)',
+            }}
+          />
+        );
+      })}
+      {/* Moving scan beam */}
+      <div
+        className="absolute w-full h-px"
+        style={{
+          background: 'linear-gradient(90deg, transparent, rgba(103,232,249,0.4), transparent)',
+          animation: 'hologram-scan-beam 3s linear infinite',
+          boxShadow: '0 0 8px rgba(103,232,249,0.3)',
+        }}
+      />
+    </div>
+  );
+}
+
+function EnergyRings({ size }) {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      {[0.6, 0.75, 0.9].map(function(scale, i) {
+        return (
+          <div
+            key={i}
+            className="absolute rounded-full border"
+            style={{
+              width: size * scale,
+              height: size * scale,
+              borderColor: 'rgba(103, 232, 249, ' + (0.08 + i * 0.04) + ')',
+              animation: 'hologram-ring-pulse ' + (3 + i) + 's ease-in-out infinite',
+              animationDelay: i * 0.5 + 's',
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function ProjectionBase({ size }) {
+  return (
+    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 pointer-events-none" style={{ width: size * 0.8 }}>
+      {/* Base platform */}
+      <div
+        className="w-full h-3 rounded-full mx-auto"
+        style={{
+          background: 'linear-gradient(90deg, transparent, rgba(103,232,249,0.15), rgba(167,139,250,0.15), transparent)',
+          boxShadow: '0 0 30px rgba(103,232,249,0.1)',
+        }}
+      />
+      {/* Projection beam */}
+      <div
+        className="absolute bottom-3 left-1/2 -translate-x-1/2 w-px"
+        style={{
+          height: size * 0.4,
+          background: 'linear-gradient(to top, rgba(103,232,249,0.2), transparent)',
+        }}
+      />
+    </div>
+  );
+}
 
 export default function NoorixHologram({ isVisible, onDismiss }) {
   var greetingState = useState('');
@@ -23,21 +250,23 @@ export default function NoorixHologram({ isVisible, onDismiss }) {
   var setStep = stepState[1];
 
   var greetings = [
-    'Initializing Noorix...',
+    'Initializing neural core...',
     'Loading health modules...',
-    'Connecting to wellness engine...',
-    'Ready to glow.',
+    'Calibrating wellness engine...',
+    'Noorix online.',
   ];
 
   useEffect(function() {
     if (!isVisible) { setStep(0); setGreeting(''); return; }
     var timers = [];
     greetings.forEach(function(g, i) {
-      timers.push(setTimeout(function() { setGreeting(g); setStep(i + 1); }, i * 800));
+      timers.push(setTimeout(function() { setGreeting(g); setStep(i + 1); }, i * 900));
     });
-    timers.push(setTimeout(function() { if (onDismiss) onDismiss(); }, greetings.length * 800 + 1500));
+    timers.push(setTimeout(function() { if (onDismiss) onDismiss(); }, greetings.length * 900 + 1200));
     return function() { timers.forEach(clearTimeout); };
   }, [isVisible]);
+
+  var orbSize = 220;
 
   return (
     <AnimatePresence>
@@ -46,119 +275,86 @@ export default function NoorixHologram({ isVisible, onDismiss }) {
           key="hologram"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.5 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.6 }}
           className="fixed inset-0 z-[80] flex items-center justify-center pointer-events-none"
-          style={{ background: 'radial-gradient(circle at center, rgba(167,139,250,0.1) 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(ellipse at center, rgba(10,15,25,0.85) 0%, rgba(10,15,25,0.95) 100%)' }}
         >
-          {/* Holographic base ring */}
-          <div className="relative">
-            {/* Outer glow */}
-            <motion.div
-              animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="absolute inset-0 rounded-full"
-              style={{ width: 280, height: 280, left: -60, top: -60, background: 'radial-gradient(circle, rgba(167,139,250,0.3), rgba(255,143,178,0.2), transparent)', filter: 'blur(30px)' }}
+          <div className="relative" style={{ width: orbSize, height: orbSize }}>
+            {/* Ambient glow */}
+            <div
+              className="absolute rounded-full"
+              style={{
+                width: orbSize * 2,
+                height: orbSize * 2,
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                background: 'radial-gradient(circle, rgba(103,232,249,0.08) 0%, rgba(167,139,250,0.04) 40%, transparent 70%)',
+                filter: 'blur(40px)',
+              }}
             />
 
-            {/* Scan lines */}
-            <div className="absolute inset-0 overflow-hidden rounded-full" style={{ width: 160, height: 160 }}>
-              {Array.from({ length: 20 }).map(function(_, i) {
-                return (
-                  <div
-                    key={i}
-                    className="absolute w-full h-px"
-                    style={{
-                      top: i * 8,
-                      background: 'linear-gradient(90deg, transparent, rgba(167,139,250,0.15), transparent)',
-                      animation: 'hologram-scan 2s ease-in-out infinite',
-                      animationDelay: i * 0.1 + 's',
-                    }}
-                  />
-                );
-              })}
-            </div>
+            {/* Data streams */}
+            <DataStreams size={orbSize} />
 
-            {/* Holographic orb */}
+            {/* Scan lines */}
+            <ScanLines size={orbSize} />
+
+            {/* Energy rings */}
+            <EnergyRings size={orbSize} />
+
+            {/* Wireframe mesh */}
             <motion.div
-              animate={{
-                y: [0, -8, 0],
-                rotateY: [0, 360],
-              }}
-              transition={{
-                y: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
-                rotateY: { duration: 8, repeat: Infinity, ease: 'linear' },
-              }}
-              className="relative"
-              style={{ width: 160, height: 160, perspective: 600 }}
+              animate={{ scale: [0.95, 1.02, 0.95] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
             >
-              <div
-                className="w-full h-full rounded-full"
-                style={{
-                  background: 'conic-gradient(from 0deg, rgba(255,143,178,0.6), rgba(167,139,250,0.6), rgba(103,232,249,0.6), rgba(255,215,161,0.6), rgba(255,143,178,0.6))',
-                  animation: 'hologram-flicker 4s ease-in-out infinite',
-                  boxShadow: '0 0 60px rgba(167,139,250,0.5), 0 0 120px rgba(255,143,178,0.3), inset 0 0 40px rgba(255,255,255,0.2)',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                }}
-              />
-              {/* Inner light */}
-              <div
-                className="absolute rounded-full"
-                style={{ top: '15%', left: '20%', width: '35%', height: '30%', background: 'radial-gradient(circle, rgba(255,255,255,0.6), transparent)', filter: 'blur(6px)' }}
-              />
+              <WireframeMesh size={orbSize} />
             </motion.div>
 
-            {/* Floating particles */}
-            {Array.from({ length: 12 }).map(function(_, i) {
-              var angle = (i / 12) * Math.PI * 2;
-              var radius = 100 + Math.random() * 40;
-              return (
-                <motion.div
-                  key={i}
-                  animate={{
-                    x: [Math.cos(angle) * radius, Math.cos(angle + 0.5) * radius, Math.cos(angle) * radius],
-                    y: [Math.sin(angle) * radius, Math.sin(angle + 0.5) * radius, Math.sin(angle) * radius],
-                    opacity: [0.3, 0.8, 0.3],
-                  }}
-                  transition={{ duration: 3 + Math.random() * 2, repeat: Infinity, delay: i * 0.2 }}
-                  className="absolute rounded-full"
-                  style={{
-                    width: 3 + Math.random() * 4,
-                    height: 3 + Math.random() * 4,
-                    left: 80,
-                    top: 80,
-                    background: ['#ff8fb2', '#a78bfa', '#67e8f9', '#ffd7a1'][i % 4],
-                    boxShadow: '0 0 8px ' + ['#ff8fb2', '#a78bfa', '#67e8f9', '#ffd7a1'][i % 4],
-                  }}
-                />
-              );
-            })}
+            {/* Center glow */}
+            <div
+              className="absolute rounded-full"
+              style={{
+                width: 20,
+                height: 20,
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                background: 'radial-gradient(circle, rgba(103,232,249,0.6), rgba(167,139,250,0.3), transparent)',
+                boxShadow: '0 0 40px rgba(103,232,249,0.3), 0 0 80px rgba(167,139,250,0.15)',
+                animation: 'hologram-center-pulse 2s ease-in-out infinite',
+              }}
+            />
 
-            {/* Greeting text */}
+            {/* Projection base */}
+            <ProjectionBase size={orbSize} />
+
+            {/* Status text */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="absolute -bottom-16 left-1/2 -translate-x-1/2 whitespace-nowrap text-center"
+              className="absolute -bottom-20 left-1/2 -translate-x-1/2 whitespace-nowrap text-center"
             >
               <motion.p
                 key={greeting}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-sm font-medium"
-                style={{ color: '#a78bfa', textShadow: '0 0 20px rgba(167,139,250,0.5)' }}
+                className="text-xs font-mono tracking-wider"
+                style={{ color: 'rgba(103,232,249,0.8)', textShadow: '0 0 12px rgba(103,232,249,0.4)' }}
               >
                 {greeting}
               </motion.p>
-              {/* Progress dots */}
               <div className="flex items-center justify-center gap-1.5 mt-3">
                 {greetings.map(function(_, i) {
                   return (
                     <div
                       key={i}
-                      className="h-1 rounded-full transition-all duration-300"
+                      className="h-0.5 rounded-full transition-all duration-500"
                       style={{
-                        width: step > i ? 16 : 4,
-                        background: step > i ? 'linear-gradient(90deg, #ff8fb2, #a78bfa)' : 'rgba(167,139,250,0.3)',
+                        width: step > i ? 20 : 4,
+                        background: step > i ? 'linear-gradient(90deg, #67e8f9, #a78bfa)' : 'rgba(103,232,249,0.2)',
+                        boxShadow: step > i ? '0 0 6px rgba(103,232,249,0.4)' : 'none',
                       }}
                     />
                   );
@@ -167,7 +363,7 @@ export default function NoorixHologram({ isVisible, onDismiss }) {
             </motion.div>
           </div>
 
-          <style jsx>{'\n            @keyframes hologram-scan {\n              0%, 100% { opacity: 0.3; }\n              50% { opacity: 0.8; }\n            }\n            @keyframes hologram-flicker {\n              0%, 100% { opacity: 0.85; }\n              25% { opacity: 0.95; }\n              50% { opacity: 0.8; }\n              75% { opacity: 0.9; }\n            }\n          '}</style>
+          <style jsx>{'\n            @keyframes hologram-scan-beam {\n              0% { top: 0%; }\n              100% { top: 100%; }\n            }\n            @keyframes hologram-ring-pulse {\n              0%, 100% { transform: scale(1); opacity: 0.3; }\n              50% { transform: scale(1.05); opacity: 0.6; }\n            }\n            @keyframes hologram-center-pulse {\n              0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }\n              50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }\n            }\n          '}</style>
         </motion.div>
       )}
     </AnimatePresence>
