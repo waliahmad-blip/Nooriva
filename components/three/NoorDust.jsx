@@ -9,7 +9,8 @@ const BOUNDS = { x: 7, y: 6, z: 2.5 };
 
 export default function NoorDust() {
   const isMobile = useIsMobile();
-  const count = isMobile ? 120 : 300;
+  const countRef = useRef(isMobile ? 120 : 300);
+  const count = countRef.current;
   const pointsRef = useRef();
   const mouse = useRef(new THREE.Vector3(999, 999, 0));
 
