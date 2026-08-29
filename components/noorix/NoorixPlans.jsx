@@ -18,6 +18,12 @@ export default function NoorixPlans({ isOpen, onClose }) {
   var setNoorixPlan = useStore(function(s) { return s.setNoorixPlan; });
   var [selected, setSelected] = useState(null);
   var [confirming, setConfirming] = useState(false);
+  var [planPage, setPlanPage] = useState(0);
+  var PLANS_PER_PAGE = 4;
+  var totalPages = Math.ceil(PLAN_ORDER.length / PLANS_PER_PAGE);
+  var visiblePlans = PLAN_ORDER.slice(planPage * PLANS_PER_PAGE, (planPage + 1) * PLANS_PER_PAGE);
+  function nextPlanPage() { if (planPage < totalPages - 1) setPlanPage(planPage + 1); }
+  function prevPlanPage() { if (planPage > 0) setPlanPage(planPage - 1); }
 
   function handleSelect(planId) {
     if (planId === noorixPlan) return;
@@ -89,8 +95,54 @@ export default function NoorixPlans({ isOpen, onClose }) {
             </div>
 
             {/* Plans Grid */}
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {PLAN_ORDER.map(function(planId, i) {
+            <div className="relative">
+              {/* Left Arrow */}
+              {planPage > 0 && (
+                <button
+                  onClick={prevPlanPage}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 rounded-full bg-white/80 shadow-lg flex items-center justify-center hover:bg-white hover:scale-110 transition-all"
+                  aria-label="Previous plans"
+                >
+                  <span className="text-2xl text-ink">‹</span>
+                </button>
+              )}
+
+              {/* Right Arrow */}
+              {planPage < totalPages - 1 && (
+                <button
+                  onClick={nextPlanPage}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-12 h-12 rounded-full bg-white/80 shadow-lg flex items-center justify-center hover:bg-white hover:scale-110 transition-all"
+                  aria-label="Next plans"
+                >
+                  <span className="text-2xl text-ink">›</span>
+                </button>
+              )}
+
+              {/* Page Dots */}
+              <div className="flex justify-center gap-2 mb-4">
+                {Array.from({ length: totalPages }).map(function(_, i) {
+                  return (
+                    <button
+                      key={i}
+                      onClick={function() { setPlanPage(i); }}
+                      className="h-2 rounded-full transition-all duration-300"
+                      style={{
+                        width: planPage === i ? 24 : 8,
+                        background: planPage === i ? 'linear-gradient(90deg, #ff8fb2, #a78bfa)' : 'rgba(26,20,16,0.15)',
+                      }}
+                    />
+                  );
+                })}
+              </div>
+
+              <motion.div
+                key={planPage}
+                initial={{ opacity: 0, x: planPage > 0 ? 60 : -60 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+                className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
+              >
+              {visiblePlans.map(function(planId, i) {
                 var plan = NOORIX_PLANS[planId];
                 var isCurrent = noorixPlan === planId;
                 var isPopular = plan.popular;
@@ -168,6 +220,7 @@ export default function NoorixPlans({ isOpen, onClose }) {
                   </motion.div>
                 );
               })}
+              </motion.div>
             </div>
 
             {/* Footer */}
