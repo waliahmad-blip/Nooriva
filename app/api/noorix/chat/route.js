@@ -3,7 +3,7 @@ import { chatStructured } from '@/lib/noorix-ai';
 
 /* ═══════════════════════════════════════════════════════════
  * Noorix Structured Features API — Production Grade
- * 
+ *
  * Handles all 14 structured features with:
  * - Input validation and sanitization
  * - Rate limiting (per IP)
@@ -47,7 +47,11 @@ const PROMPTS = {
   hair: BASE_RULES + '\nAnalyze hair and scalp health from photos and descriptions.\nResponse: {"message":"","hairCondition":"healthy|dry|damaged|thinning|dandruff","scalpHealth":"","issues":[{"issue":"","severity":"mild|moderate|severe","cause":""}],"recommendations":[""],"noorivaTip":"","actions":[{"label":"","type":"addProduct|learnMore","payload":""}]}',
   ingredient: BASE_RULES + '\nDecode ingredient lists for safety and effectiveness.\nResponse: {"message":"","ingredients":[{"name":"","role":"","safety":"safe|caution|avoid","notes":""}],"overallSafety":"excellent|good|mixed|concerning","halalStatus":"halal|likely-halal|uncertain|not-halal","verdict":"","actions":[{"label":"","type":"learnMore","payload":""}]}',
   sun: BASE_RULES + '\nProvide UV protection and sun safety advice.\nResponse: {"message":"","uvRisk":"low|moderate|high|very_high|extreme","spfRecommendation":"","sunscreenTips":[""],"noorivaTip":"","actions":[{"label":"","type":"addProduct|learnMore","payload":""}]}',
-  routine: BASE_RULES + '\nBuild personalized AM and PM skincare routines.\nResponse: {"message":"","morningRoutine":[{"step":1,"product":"","how":"","why":""}],"eveningRoutine":[{"step":1,"product":"","how":"","why":""}],"noorivaIntegration":"","timeline":"","actions":[{"label":"","type":"addProduct|learnMore","payload":""}]}',
+  routine: BASE_RULES + '\nBuild AM and PM skincare routines. Response: {"message":"","morningRoutine":[{"step":1,"product":"","how":"","why":""}],"eveningRoutine":[{"step":1,"product":"","how":"","why":""}],"noorivaIntegration":"","timeline":"","actions":[{"label":"","type":"addProduct|learnMore","payload":""}]}',
+  medicalImage: BASE_RULES + '\nAnalyze medical images with clinical precision. Response: {"message":"","findings":[{"observation":"","confidence":"high|moderate|low","significance":""}],"possibleConditions":[{"condition":"","likelihood":"high|moderate|low","description":""}],"severity":"mild|moderate|severe|critical","redFlag":false,"redFlagDetail":null,"recommendations":[""],"whenToSeeDoctor":{"urgency":"immediate|within_48h|within_week|routine","reason":""},"noorivaTip":"","disclaimer":"AI analysis, not medical diagnosis."}',
+  skinClassification: BASE_RULES + '\nClassify skin conditions from photos. Response: {"message":"","classification":{"type":"","subtype":"","severity":"mild|moderate|severe"},"skinScore":7,"skinScoreLabel":"","textureAnalysis":{"pores":"","hydration":"","elasticity":""},"recommendations":[""],"noorivaTip":"","actions":[{"label":"","type":"addProduct|learnMore","payload":""}]}',
+  treatmentPlan: BASE_RULES + '\nCreate personalized treatment plans. Response: {"message":"","diagnosis":"","treatmentPhases":[{"phase":"","duration":"","steps":[""]}],"products":[{"name":"","why":"","when":""}],"lifestyle":[""],"timeline":"when to expect results","noorivaIntegration":"","actions":[{"label":"","type":"addProduct|learnMore","payload":""}]}',
+  healthRisk: BASE_RULES + '\nAssess health risks from lifestyle data. Response: {"message":"","riskScore":5,"riskLevel":"low|moderate|high|critical","risks":[{"risk":"","level":"low|moderate|high","description":"","prevention":[""]}],"recommendations":[""],"noorivaTip":"","actions":[{"label":"","type":"addProduct|learnMore","payload":""}]}',
 };
 
 /* ── Rate limiting ── */
@@ -162,7 +166,7 @@ export async function POST(request) {
     }
 
     // Call Noorix AI
-    const result = await chatStructured(allMessages, PROMPTS[type]);
+    const result = await chatStructured(allMessages, PROMPTS[type], type);
 
     // Ensure disclaimer
     if (!result.disclaimer) {

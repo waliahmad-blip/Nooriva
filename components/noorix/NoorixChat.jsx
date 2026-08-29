@@ -7,7 +7,7 @@ import {
   Sun, Moon, Dumbbell, ScanLine,
   BookOpen, GlassWater, Stethoscope, Salad,
   Pill, Scissors, Beaker, CloudSun, Heart,
-  MessageCircle, Mic, MicOff, Share2, ShoppingCart, Volume2, Zap,
+  MessageCircle, Mic, MicOff, Share2, ShoppingCart, Volume2, Zap, Shield,
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { useT } from '@/lib/i18n';
@@ -236,6 +236,42 @@ const FEATURES = [
     description: 'Switch to a beautiful dark theme for nighttime use. Easier on the eyes, better for sleep, and looks stunning with the Noorix orb.',
     highlights: ['Dark theme', 'Sleep friendly', 'Eye comfort'],
   },
+  {
+    id: 'medicalImage',
+    icon: Stethoscope,
+    needsImage: true,
+    color: '#ef4444',
+    tagline: 'Medical AI',
+    description: 'Advanced medical image analysis powered by MedSigLip. Upload skin lesions, rashes, wounds, or any medical image for AI-powered identification and triage guidance.',
+    highlights: ['Medical-grade analysis', 'Condition identification', 'Severity assessment'],
+  },
+  {
+    id: 'skinClassification',
+    icon: ScanLine,
+    needsImage: true,
+    color: '#f97316',
+    tagline: 'Skin Classifier',
+    description: 'AI classifies skin conditions from photos using medical imaging models. Identifies acne types, pigmentation patterns, and skin texture analysis.',
+    highlights: ['Acne classification', 'Pigmentation analysis', 'Texture scoring'],
+  },
+  {
+    id: 'treatmentPlan',
+    icon: Heart,
+    needsImage: false,
+    color: '#10b981',
+    tagline: 'Treatment AI',
+    description: 'Get a personalized treatment plan based on your skin analysis. Includes product recommendations, lifestyle changes, and a timeline for expected results.',
+    highlights: ['Personalized plan', 'Product timeline', 'Progress milestones'],
+  },
+  {
+    id: 'healthRisk',
+    icon: Shield,
+    needsImage: false,
+    color: '#dc2626',
+    tagline: 'Risk Assessment',
+    description: 'Comprehensive health risk assessment based on your lifestyle, family history, and current symptoms. Identifies potential risks before they become problems.',
+    highlights: ['Risk scoring', 'Prevention tips', 'Early detection'],
+  },
 ];
 
 const FEATURE_MAP = Object.fromEntries(FEATURES.map((f) => [f.id, f]));
@@ -305,6 +341,55 @@ const CONTEXT_CONFIGS = {
   darkMode: {
     intro: 'Toggle dark mode for the Noorix interface.',
     fields: [],
+  },
+  medicalImage: {
+    intro: 'Upload a medical image for advanced AI analysis.',
+    fields: [
+      { key: 'bodyPart', label: 'Body part shown?', type: 'tapCards', options: [
+        { value: 'face', label: 'Face', desc: 'Forehead, cheeks, chin' },
+        { value: 'arm', label: 'Arm', desc: 'Upper or lower arm' },
+        { value: 'leg', label: 'Leg', desc: 'Thigh, shin, foot' },
+        { value: 'torso', label: 'Torso', desc: 'Chest, back, stomach' },
+        { value: 'hand', label: 'Hand', desc: 'Palm, fingers, nails' },
+        { value: 'scalp', label: 'Scalp', desc: 'Hair line, crown' },
+        { value: 'other', label: 'Other', desc: 'Other body part' },
+      ]},
+      { key: 'duration', label: 'How long has this been present?', type: 'tags', options: ['Just appeared', 'Few days', '1 week', '2-4 weeks', 'Months', 'Years'] },
+      { key: 'pain', label: 'Is it painful?', type: 'tags', options: ['No pain', 'Mild', 'Moderate', 'Severe', 'Itchy', 'Burning'] },
+    ],
+  },
+  skinClassification: {
+    intro: 'Upload a skin photo for AI classification.',
+    fields: [
+      { key: 'area', label: 'Skin area?', type: 'tags', options: ['Face', 'Forehead', 'Cheeks', 'Chin', 'Neck', 'Chest', 'Back', 'Arms', 'Legs'] },
+      { key: 'skinType', label: 'Your skin type?', type: 'tapCards', options: [
+        { value: 'oily', label: 'Oily', desc: 'Shiny, large pores' },
+        { value: 'dry', label: 'Dry', desc: 'Tight, flaky' },
+        { value: 'sensitive', label: 'Sensitive', desc: 'Reacts easily' },
+        { value: 'combination', label: 'Combination', desc: 'Mixed' },
+        { value: 'normal', label: 'Normal', desc: 'Balanced' },
+      ]},
+    ],
+  },
+  treatmentPlan: {
+    intro: 'I will create a personalized treatment plan for you.',
+    fields: [
+      { key: 'condition', label: 'What condition?', type: 'tags', options: ['Acne', 'Dark spots', 'Wrinkles', 'Dryness', 'Oiliness', 'Rosacea', 'Eczema', 'Hyperpigmentation', 'Scarring'] },
+      { key: 'severity', label: 'How severe?', type: 'tapCards', options: [
+        { value: 'mild', label: 'Mild', desc: 'Barely noticeable' },
+        { value: 'moderate', label: 'Moderate', desc: 'Clearly visible' },
+        { value: 'severe', label: 'Severe', desc: 'Significant impact' },
+      ]},
+      { key: 'tried', label: 'What have you tried?', type: 'tags', multi: true, options: ['Nothing', 'OTC products', 'Prescription', 'Natural remedies', 'Professional treatment', 'NOORIVA'] },
+    ],
+  },
+  healthRisk: {
+    intro: 'Let me assess your health risks based on your lifestyle.',
+    fields: [
+      { key: 'age', label: 'Your age range?', type: 'tags', options: ['18-24', '25-34', '35-44', '45-54', '55+'] },
+      { key: 'familyHistory', label: 'Family history of?', type: 'tags', multi: true, options: ['Diabetes', 'Heart disease', 'Cancer', 'Skin conditions', 'Autoimmune', 'None', 'Unknown'] },
+      { key: 'lifestyle', label: 'Lifestyle factors?', type: 'tags', multi: true, options: ['Smoking', 'Alcohol', 'Sedentary', 'Stressed', 'Poor sleep', 'Poor diet', 'Active', 'Healthy diet'] },
+    ],
   },
   skinPhoto: {
     intro: 'Tap what you see — I will analyze the rest from your photo.',
@@ -1265,7 +1350,12 @@ export default function NoorixChat() {
                         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                         className="flex flex-col items-center mb-10"
                       >
-                        <NoorixOrb size={100} />
+                        <motion.div
+                          animate={{ scale: [1, 1.08, 1] }}
+                          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                        >
+                          <NoorixOrb size={160} />
+                        </motion.div>
                         <motion.h3
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -1451,7 +1541,7 @@ export default function NoorixChat() {
                           />
                           <div className="relative flex items-center justify-between">
                             <div>
-                              <h4 className="text-white font-bold text-lg">Unlock All 15 Features</h4>
+                              <h4 className="text-white font-bold text-lg">Unlock All {FEATURES.length} Features</h4>
                               <p className="text-white/80 text-sm mt-1">Upgrade to Noorix Glow for unlimited AI-powered wellness</p>
                             </div>
                             <div className="flex items-center gap-2 text-white font-bold text-sm group-hover:translate-x-1 transition-transform">

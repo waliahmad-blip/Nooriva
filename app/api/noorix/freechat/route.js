@@ -3,7 +3,7 @@ import { chat } from '@/lib/noorix-ai';
 
 /* ═══════════════════════════════════════════════════════════
  * Noorix Free Chat API — Production Grade
- * 
+ *
  * Open-ended conversation with Noorix.
  * Features: Rate limiting, input validation, error handling.
  * Provider identity is NEVER exposed.
@@ -135,7 +135,7 @@ export async function POST(request) {
     }
 
     // Call Noorix AI
-    const text = await chat(sanitizedMessages, SYSTEM_PROMPT);
+    const text = await chat(sanitizedMessages, SYSTEM_PROMPT, 'freeChat');
 
     const latency = Date.now() - startTime;
     console.log('[Noorix] Free chat | ' + latency + 'ms | ' + text.length + ' chars');

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 /**
  * AnimatedLogo — Beautiful animated NOORIVA logo with light rays
- * 
+ *
  * - SVG light rays rotating around logo
  * - Breathing glow effect
  * - Pulsing outer ring
@@ -42,7 +42,7 @@ export default function AnimatedLogo({ size = 'large', className = '' }) {
 
       {/* Logo SVG with built-in light rays */}
       <img
-        src="/brand/nooriva-logo.svg"
+        src="/brand/nooriva-logo.jpeg"
         alt="NOORIVA"
         className={'relative z-10 w-auto ' + imgSize}
         onError={function(e) {

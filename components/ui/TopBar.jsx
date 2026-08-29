@@ -23,17 +23,22 @@ export default function TopBar() {
   return (
     <header className="pointer-events-none fixed inset-x-0 top-0 z-40">
       <div className="section-shell mt-4 flex items-center justify-between">
-        <div className="glass pointer-events-auto rounded-full bg-white/60 px-4 py-2 backdrop-blur-xl flex items-center gap-2">
-          <img
-            src="/brand/nooriva-logo.svg"
-            alt="NOORIVA"
-            className="h-8 w-auto"
-            onError={function(e) {
-              e.target.style.display = 'none';
-              if (e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'inline';
-            }}
-          />
-          <span className="text-base font-bold tracking-[0.2em] text-ink hidden" style={{ display: 'none' }}>NOORIVA</span>
+        <div className="glass pointer-events-auto rounded-full bg-white/60 px-5 py-3 backdrop-blur-xl flex items-center gap-3" style={{ animation: 'topbar-glow 4s ease-in-out infinite' }}>
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full opacity-40 blur-lg" style={{ background: 'radial-gradient(circle, rgba(255,143,178,0.5), rgba(167,139,250,0.3), transparent)', animation: 'logo-breathe 3s ease-in-out infinite' }} />
+            <img
+              src="/brand/nooriva-logo.jpeg"
+              alt="NOORIVA"
+              className="relative z-10 h-14 w-14 rounded-full object-cover"
+              style={{ boxShadow: '0 0 20px rgba(255,143,178,0.4), 0 0 40px rgba(167,139,250,0.2)' }}
+              onError={function(e) {
+                e.target.style.display = 'none';
+                if (e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'flex';
+              }}
+            />
+            <span className="relative z-10 h-14 w-14 items-center justify-center hidden display-heading holo-text text-2xl" style={{ display: 'none' }}>N</span>
+          </div>
+          <span className="text-lg font-bold tracking-[0.25em] text-ink display-heading">NOORIVA</span>
         </div>
 
         <div className="pointer-events-auto flex items-center gap-2">
