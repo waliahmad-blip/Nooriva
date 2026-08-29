@@ -2,11 +2,12 @@
 
 import { Fragment, useEffect } from "react";
 import dynamic from "next/dynamic";
+import NoorixEntrance from "@/components/noorix/NoorixEntrance";
 import { useStore } from "@/lib/store";
 import { useT } from "@/lib/i18n";
 import TopBar from "@/components/ui/TopBar";
 import MobileNav from "@/components/ui/MobileNav";
-import Noorix from "@/components/ui/Noorix";
+import NoorixChat from "@/components/noorix/NoorixChat";
 import BagDrawer from "@/components/commerce/BagDrawer";
 import CheckoutOverlay from "@/components/commerce/CheckoutOverlay";
 import OrderWhatsApp from "@/components/OrderWhatsApp";
@@ -50,6 +51,7 @@ const SCENE_CHILDREN = [
   <Playground key="play" />,
   <Fragment key="voices">
     <Testimonials />
+    <NoorixEntrance />
     <FAQ />
     <Footer />
   </Fragment>,
@@ -77,7 +79,7 @@ export default function NoorivaApp() {
       <MobileNav />
       <BagDrawer />
       <CheckoutOverlay />
-      <Noorix />
+      <NoorixChat />
       <GlobalRipple />
     </div>
   );

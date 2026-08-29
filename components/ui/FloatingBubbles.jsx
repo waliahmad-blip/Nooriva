@@ -4,8 +4,8 @@ import { useEffect, useRef } from 'react';
 
 /**
  * Floating bubbles — 2D canvas, zero WebGL. Used as the always-works layer.
- * - Container-measured via ResizeObserver (no vh bugs, survives rotation)
- * - DPR-aware, capped at 2x (crisp + battery-friendly)
+ * - Container-measured via ResizeObserver (with window resize fallback, no vh bugs, survives rotation)
+ * - DPR-aware, capped at 2x (crisp + battery-friendly), recomputed on every build
  * - Pointer/touch reactive: bubbles shy away from your finger/mouse
  * - Reduced-motion: renders one static frame (visible, just still)
  * - Pauses when tab hidden
@@ -23,10 +23,15 @@ export default function FloatingBubbles({
 
   useEffect(() => {
     const canvas = ref.current;
+    if (!canvas) return;
     const parent = canvas.parentElement;
     const ctx = canvas.getContext('2d');
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    let raf = 0, bubbles = [], w = 0, h = 0;
+    if (!ctx) return;
+
+    let raf = 0;
+    let bubbles = [];
+    let w = 0;
+    let h = 0;
     const pointer = { x: -9999, y: -9999 };
 
     const rand = (a, b) => a + Math.random() * (b - a);
@@ -35,8 +40,14 @@ export default function FloatingBubbles({
       const rect = (parent ?? canvas).getBoundingClientRect();
       w = Math.max(1, rect.width);
       h = Math.max(1, rect.height);
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
+
+      // Recompute DPR every time so rotation / zoom / moving windows stay crisp
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      // Keep CSS size locked to the container (guards against layout shift / iOS clipping)
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       const target = Math.min(maxCount, Math.max(minCount, Math.floor(w * h * density)));
@@ -96,7 +107,10 @@ export default function FloatingBubbles({
       }
     };
 
-    const loop = () => { paint(); raf = requestAnimationFrame(loop); };
+    const loop = () => {
+      paint();
+      raf = requestAnimationFrame(loop);
+    };
 
     const onPointer = (e) => {
       const rect = canvas.getBoundingClientRect();
@@ -108,8 +122,16 @@ export default function FloatingBubbles({
     const onPointerOut = () => { pointer.x = -9999; pointer.y = -9999; };
 
     build();
-    const ro = new ResizeObserver(build);
-    if (parent) ro.observe(parent); else ro.observe(canvas);
+
+    // ResizeObserver with graceful fallback for older mobile browsers
+    let ro = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(build);
+      ro.observe(parent ?? canvas);
+    } else {
+      window.addEventListener('resize', build);
+      window.addEventListener('orientationchange', build);
+    }
 
     window.addEventListener('mousemove', onPointer, { passive: true });
     window.addEventListener('touchmove', onPointer, { passive: true });
@@ -124,11 +146,15 @@ export default function FloatingBubbles({
       else if (!document.hidden) paint(); // static frame when reduced-motion
     };
     document.addEventListener('visibilitychange', onVis);
-    onVis();
+    onVis(); // kick off immediately
 
     return () => {
       cancelAnimationFrame(raf);
-      ro.disconnect();
+      if (ro) ro.disconnect();
+      else {
+        window.removeEventListener('resize', build);
+        window.removeEventListener('orientationchange', build);
+      }
       window.removeEventListener('mousemove', onPointer);
       window.removeEventListener('touchmove', onPointer);
       window.removeEventListener('touchend', onPointerOut);

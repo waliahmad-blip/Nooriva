@@ -74,9 +74,10 @@ function CameraDrift({ isMobile }) {
 
 /**
  * Experience engine:
- * - 3D scene when WebGL is healthy
- * - Auto-swaps to 2D bubbles if WebGL is missing, context is lost,
- *   user prefers reduced motion, or data-saver is on
+ * - 2D bubbles are ALWAYS rendered as a reliable background layer (works on every device, zero WebGL).
+ * - 3D scene is additionally rendered on top when WebGL is healthy.
+ * - If WebGL is missing, context is lost, user prefers reduced motion, or data-saver is on,
+ *   we skip the 3D scene and show ONLY the 2D bubbles (graceful fallback).
  * - Tilt parallax (mobile) / mouse parallax (desktop)
  */
 export default function ScrollScene() {
@@ -92,9 +93,10 @@ export default function ScrollScene() {
 
   const onContextLost = (e) => {
     e.preventDefault();
-    setMode('2d'); // WebGL died (low memory / iOS watchdog) → graceful swap
+    setMode('2d'); // WebGL died (low memory / iOS watchdog) → graceful swap to 2D only
   };
 
+  // 2D-only fallback (no WebGL / reduced motion / save-data)
   if (mode === '2d') {
     return (
       <div className="pointer-events-none fixed inset-0 z-0">
@@ -103,8 +105,12 @@ export default function ScrollScene() {
     );
   }
 
+  // 3D scene + always-on 2D bubble background underneath
   return (
     <div className="pointer-events-none fixed inset-0 z-0">
+      {/* Reliable 2D bubbles: animate everywhere, including mobile, with zero WebGL */}
+      <FloatingBubbles />
+
       <Canvas
         camera={{ position: [0, 0, 7], fov: 40 }}
         dpr={isMobile ? [1, 1.5] : [1, 2]}

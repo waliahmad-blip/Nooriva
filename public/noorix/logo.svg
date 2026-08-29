@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <defs>
+    <linearGradient id="noorix-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff8fb2"/>
+      <stop offset="25%" stop-color="#ffd7a1"/>
+      <stop offset="50%" stop-color="#a78bfa"/>
+      <stop offset="75%" stop-color="#67e8f9"/>
+      <stop offset="100%" stop-color="#ff8fb2"/>
+    </linearGradient>
+    <linearGradient id="orb-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff8fb2"/>
+      <stop offset="50%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#67e8f9"/>
+    </linearGradient>
+  </defs>
+  <!-- Orb icon -->
+  <circle cx="22" cy="30" r="16" fill="url(#orb-grad)" opacity="0.9"/>
+  <circle cx="17" cy="25" r="4" fill="white" opacity="0.6"/>
+  <circle cx="22" cy="30" r="16" fill="none" stroke="url(#orb-grad)" stroke-width="1.5" opacity="0.4"/>
+  <!-- Text -->
+  <text x="48" y="38" font-family="Instrument Serif, Georgia, serif" font-size="32" font-weight="400" fill="url(#noorix-grad)" letter-spacing="-0.5">Noorix</text>
+</svg>
