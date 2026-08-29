@@ -13,6 +13,11 @@ import CheckoutOverlay from "@/components/commerce/CheckoutOverlay";
 import OrderWhatsApp from "@/components/OrderWhatsApp";
 import Playground from "@/components/Playground";
 import GlobalRipple from "@/components/ui/GlobalRipple";
+import CursorTrail from "@/components/ui/CursorTrail";
+import BackToTop from "@/components/ui/BackToTop";
+import SocialProof from "@/components/ui/SocialProof";
+import StickyCart from "@/components/ui/StickyCart";
+import ReferralBanner from "@/components/ui/ReferralBanner";
 import SceneStage, { AuroraField } from "@/components/SceneStage";
 import { getScene } from "@/lib/scenes";
 import {
@@ -25,6 +30,7 @@ import {
   Makers,
   Testimonials,
   FAQ,
+  ReferralSection,
 } from "@/components/Sections";
 
 const ScrollScene = dynamic(() => import("./three/ScrollScene"), {
@@ -51,6 +57,7 @@ const SCENE_CHILDREN = [
   <Playground key="play" />,
   <Fragment key="voices">
     <Testimonials />
+    <ReferralSection />
     <NoorixEntrance />
     <FAQ />
     <Footer />
@@ -80,6 +87,10 @@ export default function NoorivaApp() {
       <BagDrawer />
       <CheckoutOverlay />
       <NoorixChat />
+      <CursorTrail />
+      <BackToTop />
+      <SocialProof />
+      <StickyCart />
       <GlobalRipple />
     </div>
   );

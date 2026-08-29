@@ -367,7 +367,39 @@ export function Testimonials() {
   );
 }
 
-export function FAQ() {
+export function ReferralSection() {
+  return (
+    <section className="section-shell py-12">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6 }}
+        onClick={function() {
+          var text = encodeURIComponent('Hi NOORIVA! I want to refer a friend for the Rs500 referral program.');
+          window.open('https://wa.me/923210550303?text=' + text, '_blank');
+        }}
+        className="relative overflow-hidden rounded-[2rem] p-6 md:p-8 cursor-pointer group"
+        style={{ background: 'linear-gradient(135deg, #ff8fb2, #a78bfa, #67e8f9)' }}
+      >
+        <div className="absolute inset-0 opacity-20" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)', animation: 'noorix-shimmer 3s ease-in-out infinite' }} />
+        <div className="relative flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="text-4xl">🎁</div>
+            <div>
+              <h3 className="text-white font-bold text-xl">Give Rs500, Get Rs500</h3>
+              <p className="text-white/80 text-sm mt-1">Refer a friend and you both get Rs500 off</p>
+            </div>
+          </div>
+          <span className="text-white font-bold text-sm group-hover:translate-x-1 transition-transform flex items-center gap-1">
+            Refer Now →
+          </span>
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
   const t = useT();
   const localize = useLocalized();
   const [open, setOpen] = useState(faqs[0]?.id || null);
@@ -407,10 +439,10 @@ export function FAQ() {
 function SectionHeading({ title, sub }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.6 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       className="max-w-2xl"
     >
       <h2 className="display-heading text-4xl md:text-5xl">{title}</h2>
