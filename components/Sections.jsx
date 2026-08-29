@@ -400,6 +400,7 @@ export function ReferralSection() {
   );
 }
 
+export function FAQ() {
   const t = useT();
   const localize = useLocalized();
   const [open, setOpen] = useState(faqs[0]?.id || null);
