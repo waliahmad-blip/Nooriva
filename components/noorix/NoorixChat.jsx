@@ -838,8 +838,15 @@ export default function NoorixChat() {
       body: requestBody,
     })
     .then(function(response) {
-      return response.json().then(function(json) {
-        if (!response.ok) throw new Error(json.error || 'Request failed');
+      return response.text().then(function(text) {
+        if (!text || text.trim() === '') {
+          throw new Error('Server returned empty response. Check that API keys are set in .env.local');
+        }
+        var json;
+        try { json = JSON.parse(text); } catch(e) {
+          throw new Error('Server returned invalid response. Check API keys in .env.local');
+        }
+        if (!response.ok) throw new Error(json.error || 'Request failed (' + response.status + ')');
         return json;
       });
     })
@@ -899,16 +906,17 @@ export default function NoorixChat() {
           onClick={toggleNoorix}
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
-          className="relative flex h-14 w-14 items-center justify-center rounded-full bg-ink text-cream shadow-xl overflow-hidden"
+          className="relative flex h-14 w-14 items-center justify-center rounded-full shadow-xl overflow-hidden"
           aria-label="Open Noorix"
+          style={{ background: 'linear-gradient(135deg, #ff8fb2, #a78bfa, #67e8f9)' }}
         >
           <div
-            className="absolute inset-0 opacity-30"
-            style={{ background: 'conic-gradient(from 0deg, #ff8fb2, #a78bfa, #67e8f9, #ff8fb2)', animation: 'noorix-btn-spin 4s linear infinite' }}
+            className="absolute inset-0 opacity-20"
+            style={{ background: 'conic-gradient(from 0deg, #ff8fb2, #ffd7a1, #a78bfa, #67e8f9, #ff8fb2)', animation: 'noorix-btn-spin 4s linear infinite' }}
           />
           {noorixOpen
-            ? <X size={20} className="relative z-10" />
-            : <Sparkles size={20} className="relative z-10" />
+            ? <X size={22} className="relative z-10 text-white" strokeWidth={2.5} />
+            : <span className="relative z-10 text-white font-bold text-sm tracking-wider" style={{ fontFamily: 'var(--font-display)' }}>N</span>
           }
         </motion.button>
         <style jsx>{'\n          @keyframes noorix-btn-spin { to { transform: rotate(360deg); } }\n        '}</style>
@@ -1214,7 +1222,7 @@ export default function NoorixChat() {
                     )}
 
                     {/* Input bar */}
-                    {(!showContext || messages.length > 0) && (
+                    {(!showContext || messages.length > 0 || (contextConfig && contextConfig.fields && contextConfig.fields.length === 0)) && (
                       <div className="border-t border-ink/5 bg-cream/80 backdrop-blur-xl px-4 py-3">
                         <div className="mx-auto max-w-xl flex items-end gap-2">
                           {feature && feature.needsImage && (
