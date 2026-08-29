@@ -7,7 +7,7 @@ import {
   Sun, Moon, Dumbbell, ScanLine,
   BookOpen, GlassWater, Stethoscope, Salad,
   Pill, Scissors, Beaker, CloudSun, Heart,
-  MessageCircle, Mic, MicOff, Share2, ShoppingCart, Volume2, Zap, Shield, ChevronRight, ChevronRight,
+  MessageCircle, Mic, MicOff, Share2, ShoppingCart, Volume2, Zap, Shield, ChevronRight,
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { useT } from '@/lib/i18n';
