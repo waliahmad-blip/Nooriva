@@ -4,15 +4,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 
 /**
- * NoorixHologram — Cinematic AI intelligence hologram
- *
- * - Wireframe icosahedron mesh
- * - Data stream particles
- * - Scanning grid lines
+ * NoorixHologram — Cinematic AI intelligence boot sequence
+ * 
+ * - Wireframe icosahedron mesh (3D rotating geometry)
+ * - Data stream particles (Matrix-style)
+ * - Scanning grid + moving beam
  * - Energy pulse rings
+ * - Progress bar with percentage
+ * - System status messages
  * - Glitch/flicker effects
  * - Projection base platform
- * - No cartoon elements — pure tech aesthetic
+ * - 8-second boot sequence
  */
 
 function WireframeMesh({ size }) {
@@ -31,12 +33,9 @@ function WireframeMesh({ size }) {
     var cx = size / 2;
     var cy = size / 2;
     var radius = size * 0.32;
-    var angleX = 0;
-    var angleY = 0;
-    var angleZ = 0;
+    var angleX = 0, angleY = 0, angleZ = 0;
     var raf;
 
-    // Icosahedron vertices
     var t = (1 + Math.sqrt(5)) / 2;
     var vertices = [
       [-1, t, 0], [1, t, 0], [-1, -t, 0], [1, -t, 0],
@@ -48,26 +47,16 @@ function WireframeMesh({ size }) {
     });
 
     var edges = [
-      [0,1],[0,5],[0,11],[0,7],[0,10],
-      [1,5],[1,9],[1,7],[1,8],
-      [2,3],[2,4],[2,11],[2,6],[2,10],
-      [3,4],[3,9],[3,6],[3,8],
-      [4,5],[4,11],[4,9],
-      [5,11],[5,9],
-      [6,7],[6,10],[6,8],
-      [7,10],[7,8],
-      [8,9],
-      [10,11]
+      [0,1],[0,5],[0,11],[0,7],[0,10],[1,5],[1,9],[1,7],[1,8],
+      [2,3],[2,4],[2,11],[2,6],[2,10],[3,4],[3,9],[3,6],[3,8],
+      [4,5],[4,11],[4,9],[5,11],[5,9],[6,7],[6,10],[6,8],[7,10],[7,8],[8,9],[10,11]
     ];
 
     function project(x, y, z) {
-      // Rotate X
       var y1 = y * Math.cos(angleX) - z * Math.sin(angleX);
       var z1 = y * Math.sin(angleX) + z * Math.cos(angleX);
-      // Rotate Y
       var x2 = x * Math.cos(angleY) + z1 * Math.sin(angleY);
       var z2 = -x * Math.sin(angleY) + z1 * Math.cos(angleY);
-      // Rotate Z
       var x3 = x2 * Math.cos(angleZ) - y1 * Math.sin(angleZ);
       var y3 = x2 * Math.sin(angleZ) + y1 * Math.cos(angleZ);
       var scale = 1 + z2 * 0.3;
@@ -80,7 +69,6 @@ function WireframeMesh({ size }) {
       angleY += 0.006;
       angleZ += 0.002;
 
-      // Draw edges
       for (var i = 0; i < edges.length; i++) {
         var a = vertices[edges[i][0]];
         var b = vertices[edges[i][1]];
@@ -88,7 +76,6 @@ function WireframeMesh({ size }) {
         var pb = project(b[0], b[1], b[2]);
         var avgZ = (pa.z + pb.z) / 2;
         var alpha = 0.15 + (avgZ + 1) * 0.25;
-
         ctx.beginPath();
         ctx.moveTo(pa.x, pa.y);
         ctx.lineTo(pb.x, pb.y);
@@ -97,7 +84,6 @@ function WireframeMesh({ size }) {
         ctx.stroke();
       }
 
-      // Draw vertices
       for (var j = 0; j < vertices.length; j++) {
         var p = project(vertices[j][0], vertices[j][1], vertices[j][2]);
         var va = 0.3 + (p.z + 1) * 0.35;
@@ -131,13 +117,13 @@ function DataStreams({ size }) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     var streams = [];
-    for (var i = 0; i < 40; i++) {
+    for (var i = 0; i < 50; i++) {
       streams.push({
         x: Math.random() * size,
         y: Math.random() * size,
-        speed: 0.3 + Math.random() * 1.2,
-        length: 8 + Math.random() * 20,
-        opacity: 0.1 + Math.random() * 0.3,
+        speed: 0.3 + Math.random() * 1.5,
+        length: 8 + Math.random() * 25,
+        opacity: 0.08 + Math.random() * 0.25,
         char: String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96)),
       });
     }
@@ -149,12 +135,11 @@ function DataStreams({ size }) {
         var s = streams[i];
         s.y += s.speed;
         if (s.y > size + s.length) { s.y = -s.length; s.x = Math.random() * size; }
-        if (Math.random() < 0.02) s.char = String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96));
-
+        if (Math.random() < 0.03) s.char = String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96));
         ctx.font = '9px monospace';
         ctx.fillStyle = 'rgba(103, 232, 249, ' + s.opacity + ')';
         ctx.fillText(s.char, s.x, s.y);
-        ctx.fillStyle = 'rgba(103, 232, 249, ' + (s.opacity * 0.3) + ')';
+        ctx.fillStyle = 'rgba(103, 232, 249, ' + (s.opacity * 0.2) + ')';
         ctx.fillText(s.char, s.x, s.y - s.length);
       }
       raf = requestAnimationFrame(draw);
@@ -171,26 +156,17 @@ function ScanLines({ size }) {
     <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ width: size, height: size }}>
       {Array.from({ length: 30 }).map(function(_, i) {
         return (
-          <div
-            key={i}
-            className="absolute w-full"
-            style={{
-              top: i * (size / 30),
-              height: 1,
-              background: 'linear-gradient(90deg, transparent 0%, rgba(103,232,249,0.06) 20%, rgba(103,232,249,0.06) 80%, transparent 100%)',
-            }}
-          />
+          <div key={i} className="absolute w-full" style={{
+            top: i * (size / 30), height: 1,
+            background: 'linear-gradient(90deg, transparent 0%, rgba(103,232,249,0.06) 20%, rgba(103,232,249,0.06) 80%, transparent 100%)',
+          }} />
         );
       })}
-      {/* Moving scan beam */}
-      <div
-        className="absolute w-full h-px"
-        style={{
-          background: 'linear-gradient(90deg, transparent, rgba(103,232,249,0.4), transparent)',
-          animation: 'hologram-scan-beam 3s linear infinite',
-          boxShadow: '0 0 8px rgba(103,232,249,0.3)',
-        }}
-      />
+      <div className="absolute w-full h-px" style={{
+        background: 'linear-gradient(90deg, transparent, rgba(103,232,249,0.4), transparent)',
+        animation: 'hologram-scan-beam 3s linear infinite',
+        boxShadow: '0 0 8px rgba(103,232,249,0.3)',
+      }} />
     </div>
   );
 }
@@ -200,17 +176,12 @@ function EnergyRings({ size }) {
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
       {[0.6, 0.75, 0.9].map(function(scale, i) {
         return (
-          <div
-            key={i}
-            className="absolute rounded-full border"
-            style={{
-              width: size * scale,
-              height: size * scale,
-              borderColor: 'rgba(103, 232, 249, ' + (0.08 + i * 0.04) + ')',
-              animation: 'hologram-ring-pulse ' + (3 + i) + 's ease-in-out infinite',
-              animationDelay: i * 0.5 + 's',
-            }}
-          />
+          <div key={i} className="absolute rounded-full border" style={{
+            width: size * scale, height: size * scale,
+            borderColor: 'rgba(103, 232, 249, ' + (0.08 + i * 0.04) + ')',
+            animation: 'hologram-ring-pulse ' + (3 + i) + 's ease-in-out infinite',
+            animationDelay: i * 0.5 + 's',
+          }} />
         );
       })}
     </div>
@@ -220,53 +191,101 @@ function EnergyRings({ size }) {
 function ProjectionBase({ size }) {
   return (
     <div className="absolute bottom-0 left-1/2 -translate-x-1/2 pointer-events-none" style={{ width: size * 0.8 }}>
-      {/* Base platform */}
-      <div
-        className="w-full h-3 rounded-full mx-auto"
-        style={{
-          background: 'linear-gradient(90deg, transparent, rgba(103,232,249,0.15), rgba(167,139,250,0.15), transparent)',
-          boxShadow: '0 0 30px rgba(103,232,249,0.1)',
-        }}
-      />
-      {/* Projection beam */}
-      <div
-        className="absolute bottom-3 left-1/2 -translate-x-1/2 w-px"
-        style={{
-          height: size * 0.4,
-          background: 'linear-gradient(to top, rgba(103,232,249,0.2), transparent)',
-        }}
-      />
+      <div className="w-full h-3 rounded-full mx-auto" style={{
+        background: 'linear-gradient(90deg, transparent, rgba(103,232,249,0.15), rgba(167,139,250,0.15), transparent)',
+        boxShadow: '0 0 30px rgba(103,232,249,0.1)',
+      }} />
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-px" style={{
+        height: size * 0.4,
+        background: 'linear-gradient(to top, rgba(103,232,249,0.2), transparent)',
+      }} />
+    </div>
+  );
+}
+
+function ProgressBar({ progress, color }) {
+  return (
+    <div className="w-full max-w-xs mx-auto">
+      <div className="flex justify-between text-[10px] font-mono mb-1.5" style={{ color: color + 'aa' }}>
+        <span>LOADING</span>
+        <span>{Math.round(progress)}%</span>
+      </div>
+      <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+        <motion.div
+          className="h-full rounded-full"
+          style={{ background: 'linear-gradient(90deg, ' + color + ', ' + color + '80)', boxShadow: '0 0 8px ' + color + '60' }}
+          initial={{ width: '0%' }}
+          animate={{ width: progress + '%' }}
+          transition={{ duration: 0.3 }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function SystemLog({ logs, color }) {
+  return (
+    <div className="w-full max-w-sm mx-auto text-left">
+      {logs.map(function(log, i) {
+        return (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className="flex items-center gap-2 text-[10px] font-mono py-0.5"
+          >
+            <span style={{ color: log.ok ? '#4ade80' : '#f87171' }}>{log.ok ? '✓' : '✗'}</span>
+            <span style={{ color: 'rgba(255,255,255,0.4)' }}>{log.time}</span>
+            <span style={{ color: 'rgba(255,255,255,0.6)' }}>{log.msg}</span>
+          </motion.div>
+        );
+      })}
     </div>
   );
 }
 
 export default function NoorixHologram({ isVisible, onDismiss }) {
-  var greetingState = useState('');
-  var greeting = greetingState[0];
-  var setGreeting = greetingState[1];
+  var [progress, setProgress] = useState(0);
+  var [phase, setPhase] = useState(0);
+  var [logs, setLogs] = useState([]);
 
-  var stepState = useState(0);
-  var step = stepState[0];
-  var setStep = stepState[1];
-
-  var greetings = [
-    'Initializing neural core...',
-    'Loading health modules...',
-    'Calibrating wellness engine...',
-    'Noorix online.',
+  var phases = [
+    { label: 'Initializing neural core...', progress: 15, log: 'Neural core online', ok: true },
+    { label: 'Loading health modules...', progress: 35, log: 'Health modules loaded (14)', ok: true },
+    { label: 'Calibrating vision engine...', progress: 55, log: 'Vision engine calibrated', ok: true },
+    { label: 'Connecting to wellness database...', progress: 75, log: 'Database connected', ok: true },
+    { label: 'Loading AI models...', progress: 90, log: 'Models loaded (gemini-3.7-flash, gemma-4, medsiglip)', ok: true },
+    { label: 'Noorix online.', progress: 100, log: 'System ready', ok: true },
   ];
 
   useEffect(function() {
-    if (!isVisible) { setStep(0); setGreeting(''); return; }
+    if (!isVisible) {
+      setProgress(0);
+      setPhase(0);
+      setLogs([]);
+      return;
+    }
+
     var timers = [];
-    greetings.forEach(function(g, i) {
-      timers.push(setTimeout(function() { setGreeting(g); setStep(i + 1); }, i * 900));
+    phases.forEach(function(p, i) {
+      timers.push(setTimeout(function() {
+        setPhase(i);
+        setProgress(p.progress);
+        setLogs(function(prev) { return prev.concat([{ time: new Date().toLocaleTimeString(), msg: p.log, ok: p.ok }]); });
+      }, i * 1200));
     });
-    timers.push(setTimeout(function() { if (onDismiss) onDismiss(); }, greetings.length * 900 + 1200));
+
+    // Auto-dismiss after full boot
+    timers.push(setTimeout(function() {
+      if (onDismiss) onDismiss();
+    }, phases.length * 1200 + 1500));
+
     return function() { timers.forEach(clearTimeout); };
   }, [isVisible]);
 
   var orbSize = 220;
+  var currentPhase = phases[phase] || phases[0];
 
   return (
     <AnimatePresence>
@@ -279,22 +298,16 @@ export default function NoorixHologram({ isVisible, onDismiss }) {
           transition={{ duration: 0.6 }}
           className="fixed inset-0 z-[80] flex items-center justify-center cursor-pointer"
           onClick={onDismiss}
-          style={{ background: 'radial-gradient(ellipse at center, rgba(10,15,25,0.85) 0%, rgba(10,15,25,0.95) 100%)' }}
+          style={{ background: 'radial-gradient(ellipse at center, rgba(10,15,25,0.85) 0%, rgba(10,15,25,0.97) 100%)' }}
         >
           <div className="relative" style={{ width: orbSize, height: orbSize }}>
             {/* Ambient glow */}
-            <div
-              className="absolute rounded-full"
-              style={{
-                width: orbSize * 2,
-                height: orbSize * 2,
-                left: '50%',
-                top: '50%',
-                transform: 'translate(-50%, -50%)',
-                background: 'radial-gradient(circle, rgba(103,232,249,0.08) 0%, rgba(167,139,250,0.04) 40%, transparent 70%)',
-                filter: 'blur(40px)',
-              }}
-            />
+            <div className="absolute rounded-full" style={{
+              width: orbSize * 2.5, height: orbSize * 2.5,
+              left: '50%', top: '50%', transform: 'translate(-50%, -50%)',
+              background: 'radial-gradient(circle, rgba(103,232,249,0.06) 0%, rgba(167,139,250,0.03) 40%, transparent 70%)',
+              filter: 'blur(50px)',
+            }} />
 
             {/* Data streams */}
             <DataStreams size={orbSize} />
@@ -306,62 +319,52 @@ export default function NoorixHologram({ isVisible, onDismiss }) {
             <EnergyRings size={orbSize} />
 
             {/* Wireframe mesh */}
-            <motion.div
-              animate={{ scale: [0.95, 1.02, 0.95] }}
-              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-            >
+            <motion.div animate={{ scale: [0.95, 1.02, 0.95] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}>
               <WireframeMesh size={orbSize} />
             </motion.div>
 
             {/* Center glow */}
-            <div
-              className="absolute rounded-full"
-              style={{
-                width: 20,
-                height: 20,
-                left: '50%',
-                top: '50%',
-                transform: 'translate(-50%, -50%)',
-                background: 'radial-gradient(circle, rgba(103,232,249,0.6), rgba(167,139,250,0.3), transparent)',
-                boxShadow: '0 0 40px rgba(103,232,249,0.3), 0 0 80px rgba(167,139,250,0.15)',
-                animation: 'hologram-center-pulse 2s ease-in-out infinite',
-              }}
-            />
+            <div className="absolute rounded-full" style={{
+              width: 20, height: 20, left: '50%', top: '50%', transform: 'translate(-50%, -50%)',
+              background: 'radial-gradient(circle, rgba(103,232,249,0.6), rgba(167,139,250,0.3), transparent)',
+              boxShadow: '0 0 40px rgba(103,232,249,0.3), 0 0 80px rgba(167,139,250,0.15)',
+              animation: 'hologram-center-pulse 2s ease-in-out infinite',
+            }} />
 
             {/* Projection base */}
             <ProjectionBase size={orbSize} />
+          </div>
 
-            {/* Status text */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
+          {/* Status text + progress */}
+          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 w-full max-w-md px-6 text-center">
+            {/* Current status */}
+            <motion.p
+              key={currentPhase.label}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="absolute -bottom-20 left-1/2 -translate-x-1/2 whitespace-nowrap text-center"
+              className="text-sm font-mono tracking-wider mb-4"
+              style={{ color: 'rgba(103,232,249,0.9)', textShadow: '0 0 12px rgba(103,232,249,0.4)' }}
             >
-              <motion.p
-                key={greeting}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-xs font-mono tracking-wider"
-                style={{ color: 'rgba(103,232,249,0.8)', textShadow: '0 0 12px rgba(103,232,249,0.4)' }}
-              >
-                {greeting}
-              </motion.p>
-              <div className="flex items-center justify-center gap-1.5 mt-3">
-                {greetings.map(function(_, i) {
-                  return (
-                    <div
-                      key={i}
-                      className="h-0.5 rounded-full transition-all duration-500"
-                      style={{
-                        width: step > i ? 20 : 4,
-                        background: step > i ? 'linear-gradient(90deg, #67e8f9, #a78bfa)' : 'rgba(103,232,249,0.2)',
-                        boxShadow: step > i ? '0 0 6px rgba(103,232,249,0.4)' : 'none',
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            </motion.div>
+              {currentPhase.label}
+            </motion.p>
+
+            {/* Progress bar */}
+            <ProgressBar progress={progress} color="#67e8f9" />
+
+            {/* System log */}
+            <div className="mt-4">
+              <SystemLog logs={logs} color="#67e8f9" />
+            </div>
+
+            {/* Tap to skip */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 2 }}
+              className="mt-4 text-[10px] text-white/20 font-mono"
+            >
+              tap anywhere to skip
+            </motion.p>
           </div>
 
           <style jsx>{'\n            @keyframes hologram-scan-beam {\n              0% { top: 0%; }\n              100% { top: 100%; }\n            }\n            @keyframes hologram-ring-pulse {\n              0%, 100% { transform: scale(1); opacity: 0.3; }\n              50% { transform: scale(1.05); opacity: 0.6; }\n            }\n            @keyframes hologram-center-pulse {\n              0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }\n              50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }\n            }\n          '}</style>
