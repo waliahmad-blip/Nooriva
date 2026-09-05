@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 
 import { useStore } from '@/lib/store';
+import { speak } from '@/lib/noorixVoice';
 import { useT } from '@/lib/i18n';
 import { isFeatureAllowed, checkDailyLimit, getRequiredPlan } from '@/lib/noorix-plans';
 import NoorixOrb from './NoorixOrb';
@@ -1604,6 +1605,21 @@ export default function NoorixChat() {
   var contextConfig = noorixFeature ? (CONTEXT_CONFIGS[noorixFeature] || { intro: feature?.description || "Describe what you need help with.", fields: [{ key: "query", label: "What do you need?", type: "tags", options: feature?.highlights || ["General advice"] }] }) : null;
   var suggestedPrompts = noorixFeature ? (SUGGESTED_PROMPTS[noorixFeature] || ((feature?.highlights || []).map(function(h){return "Help me with " + h.toLowerCase();}))) : [];
 
+  var clearChat = function() {
+    try {
+      var all = useStore.getState().noorixMessages || {};
+      var next = {};
+      for (var k in all) next[k] = all[k];
+      next[noorixFeature] = [];
+      useStore.setState({ noorixMessages: next });
+    } catch (e) { console.warn(e); }
+  };
+
+  useEffect(function() {
+    if (!noorixFeature) return;
+    try { localStorage.setItem('noorix-history-' + noorixFeature, JSON.stringify(messages)); } catch (e) {}
+  }, [noorixFeature, messages]);
+
   useEffect(function() {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -1874,7 +1890,7 @@ export default function NoorixChat() {
                 {noorixFeature ? (
                   <button onClick={backNoorix} className="rounded-full bg-noorix-surface p-2 hover:bg-noorix-surface-raised transition-colors">
                     <ArrowLeft size={18} className="text-white" />
-                  </button>
+                  </button><button type="button" onClick={() => speak(msg.content)} className="noorix-action-chip"><Volume2 size={11} /> Listen</button>
                 ) : (
                   <div className="flex items-center gap-2">
                     <Sparkles size={18} className="text-white/60" />
@@ -2217,6 +2233,12 @@ export default function NoorixChat() {
   <ArrowLeft size={16} />
   Back to Features
 </button>
+<button
+  onClick={clearChat}
+  className="absolute top-4 right-4 z-20 flex items-center gap-2 rounded-full bg-rose-500/20 px-4 py-2 text-sm font-bold text-rose-300 shadow-lg backdrop-blur-md transition-all hover:bg-rose-500/30"
+>
+  <X size={14} /> Clear Chat
+</button>
 <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(167,139,250,0.03) 0%, transparent 30%, rgba(255,143,178,0.02) 100%)' }} />
 
                     {showContext && messages.length === 0 && contextConfig && contextConfig.fields && contextConfig.fields.length > 0 && (
@@ -2550,7 +2572,7 @@ export default function NoorixChat() {
                     <input
                       ref={fileRef}
                       type="file"
-                      accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                      accept={feature && ['multiAngleVideo','yogaPostureCorrector'].includes(feature.id) ? 'video/*,image/jpeg,image/png' : feature && ['voiceOutput','voiceConversation','multilingualVoice','liveVoiceTranslator'].includes(feature.id) ? 'audio/*' : 'image/jpeg,image/jpg,image/png,image/webp,image/gif'}
                       onChange={handleImageSelect}
                       className="hidden"
                     />

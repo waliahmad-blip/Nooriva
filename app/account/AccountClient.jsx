@@ -1,4 +1,5 @@
 "use client";
+import { speak } from "@/lib/noorixVoice";
 
 import Link from "next/link";
 import React, {
@@ -11,7 +12,7 @@ import {
   Camera, Mic, Check, Trophy, Copy, X, Sun, Moon, Heart,
   Activity, Brain, Wind, Dumbbell, Bed, Shield, Star,
   FileText, ChefHat, Calendar, Smile, RefreshCw, Baby,
-  ArrowRight, CloudSun,
+  ArrowRight, CloudSun, Volume2,
 } from "lucide-react";
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
@@ -175,7 +176,33 @@ export default function AccountClient({ session }) {
     },
   ]);
   const [isTyping, setIsTyping] = useState(false);
+
+  useEffect(() => {
+    try { localStorage.setItem('noorix-dashboard-chat', JSON.stringify(chatMessages)); } catch (e) {}
+  }, [chatMessages]);
+  const [isListening, setIsListening] = useState(false);
   const chatScrollRef = useRef(null);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("noorix-dashboard-chat");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) setChatMessages(parsed);
+      }
+    } catch (e) {}
+  }, []);
+
+  const clearChat = useCallback(() => {
+    setChatMessages([
+      {
+        id: "initial-msg",
+        role: "ai",
+        content: `Welcome back, ${name.split(" ")[0]}. I am Noorix. Your ${userPlan.toUpperCase()} features are synced. How can I optimize your glow routine today?`,
+        timestamp: new Date(),
+      },
+    ]);
+  }, [name, userPlan]);
   const [searchQuery, setSearchQuery] = useState("");
 
   const [checklist, setChecklist] = useState([
@@ -217,6 +244,33 @@ export default function AccountClient({ session }) {
   const toggleChecklist = useCallback((id) => {
     setChecklist((prev) => prev.map((item) => (item.id === id ? { ...item, done: !item.done } : item)));
   }, []);
+
+  const toggleVoice = useCallback(() => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) return;
+    if (isListening) {
+      const existing = window._noorixRecognition;
+      if (existing) existing.stop();
+      setIsListening(false);
+      return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    recognition.onresult = (event) => {
+      let transcript = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setChatInput(transcript);
+    };
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => setIsListening(false);
+    window._noorixRecognition = recognition;
+    recognition.start();
+    setIsListening(true);
+  }, [isListening]);
 
   const handleSendChat = useCallback(async (event, customMessage) => {
     if (event) event.preventDefault();
@@ -446,6 +500,11 @@ export default function AccountClient({ session }) {
                     {message.role === "ai" && <NoorixOrb size={24} />}
                     <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm shadow-sm ${message.role === "user" ? (isDark ? "bg-gradient-to-br from-[#ff8fb2] to-[#a78bfa] text-white rounded-br-none" : "bg-gradient-to-br from-[#E7D3A8] to-[#C79A44] text-white rounded-br-none") : (isDark ? "bg-white/10 border border-white/5 text-white rounded-bl-none" : "bg-white border border-gray-200 text-gray-900 rounded-bl-none")}`}>
                       <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
+{message.role === "ai" && (
+  <button type="button" onClick={() => speak(message.content)} className="mt-2 flex items-center gap-1 text-[10px] font-bold text-white/60 transition hover:text-pink-400">
+    <Volume2 size={12} /> Listen
+  </button>
+)}
                     </div>
                     {message.role === "user" && (
                       <div className={`h-7 w-7 shrink-0 rounded-full flex items-center justify-center border ${isDark ? "bg-white/10 border-white/10" : "bg-gray-100 border-gray-300"}`}>
@@ -470,7 +529,7 @@ export default function AccountClient({ session }) {
               <form onSubmit={handleSendChat} className={`border-t p-3 ${isDark ? "border-white/10 bg-black/40" : "border-gray-200 bg-white"}`}>
                 <div className="relative flex items-center">
                   <input type="text" value={chatInput} onChange={(event) => setChatInput(event.target.value)} placeholder="Ask Noorix about your routines..." aria-label="Message Noorix" className={`w-full rounded-xl border py-2.5 pl-4 pr-24 text-sm outline-none transition-colors ${isDark ? "border-white/10 bg-white/5 text-white placeholder-white/30 focus:border-white/30" : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-gray-400"}`} />
-                  <button type="button" aria-label="Voice input" className={`absolute right-11 flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${isDark ? "text-white/60 hover:bg-white/10" : "text-gray-500 hover:bg-gray-100"}`}><Mic size={14} /></button>
+                  <button type="button" aria-label={isListening ? "Stop listening" : "Voice input"} onClick={toggleVoice} className={`absolute right-11 flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${isDark ? "text-white/60 hover:bg-white/10" : "text-gray-500 hover:bg-gray-100"}`}><Mic size={14} /></button>
                   <button type="submit" disabled={!chatInput.trim() || isTyping} aria-label="Send message" className={`absolute right-1.5 flex h-8 w-8 items-center justify-center rounded-lg text-white transition-transform active:scale-95 disabled:opacity-40 ${isDark ? "bg-gradient-to-br from-[#ff8fb2] to-[#a78bfa]" : "bg-gradient-to-br from-[#E7D3A8] to-[#C79A44]"}`}>
                     {isTyping ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                   </button>

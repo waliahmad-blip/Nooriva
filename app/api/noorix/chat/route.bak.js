@@ -258,7 +258,7 @@ export async function POST(request) {
 
     // Sanitize and prepare messages
     const allMessages = messages.map(function(m) {
-      return { role: m.role, content: sanitizeString(m.content || ''), image: m.image || null };
+      return { role: m.role, content: sanitizeString(m.content || '') };
     });
 
     const sanitizedData = sanitizeData(data);
