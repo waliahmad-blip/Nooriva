@@ -505,6 +505,11 @@ export default function AccountClient({ session }) {
     <Volume2 size={12} /> Listen
   </button>
 )}
+{message.role === "ai" && (
+  <button type="button" onClick={() => speak(message.content)} className="mt-2 flex items-center gap-1 text-[10px] font-bold text-white/60 transition hover:text-pink-400">
+    <Volume2 size={12} /> Listen
+  </button>
+)}
                     </div>
                     {message.role === "user" && (
                       <div className={`h-7 w-7 shrink-0 rounded-full flex items-center justify-center border ${isDark ? "bg-white/10 border-white/10" : "bg-gray-100 border-gray-300"}`}>

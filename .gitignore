@@ -46,3 +46,29 @@ scripts/
 temp/
 mobile-checks/
 mobile-checks2/
+
+# Netlify local folder
+.netlify/
+
+# Local audit / patch scripts (do not deploy)
+fix-*.js
+patch-*.js
+*-fix.js
+repair-*.js
+clean-*.js
+lighten-*.js
+final*.js
+linefix.js
+production-fix.js
+seo-cleanup.js
+ultimatefix.js
+rebuildactions2.js
+add-high-priority.js
+create-logo-css.js
+finaldeepfix.js
+finalfix.js
+
+# Headless screenshots
+mobile-final/
+mobile-diagnose/
+mobile-checks/

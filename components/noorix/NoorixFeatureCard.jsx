@@ -63,6 +63,11 @@ export default function NoorixFeatureCard({ feature, index, title, onClick }) {
         <span className="nfc-content" style={{ transform: 'translateZ(28px)' }}>
           <span className="nfc-topline">
             <span className="nfc-index">{String(index + 1).padStart(2, '0')}</span>
+            {feature.priority === 'high' && (
+              <span className="nfc-featured" style={{ color: '#ef4444', background: 'rgba(239,68,68,0.12)' }}>
+                🔥 High Priority
+              </span>
+            )}
             {feature.featured && (
               <span className="nfc-featured">
                 <Star size={10} fill="currentColor" />

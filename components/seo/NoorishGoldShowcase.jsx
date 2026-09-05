@@ -9,14 +9,7 @@ import {
   NOORISH_GOLD,
   HERO,
   PILLARS,
-  INGREDIENT_MATRIX,
-  INGREDIENT_MATRIX_NOTE,
   FLAVOR_ARCHITECTURE,
-  FUNCTIONAL_LAYERING_PER_POUCH,
-  MANUFACTURING_PROTOCOL,
-  STABILITY_AND_SHELF_LIFE,
-  COMMERCIAL_NOTES,
-  FINAL_VERDICT,
   SKUS,
   FAQS,
 } from "@/lib/noorishGold";
@@ -154,10 +147,10 @@ export default function NoorishGoldShowcase() {
             <motion.div variants={revealUp} className="mt-8 flex flex-wrap justify-center gap-3">
               <a href={orderUrl} className="btn-primary">Order NOORISH GOLD</a>
               <Link href="/#flavours" className="btn-secondary">View 12 Rituals</Link>
-              <a href="#ingredient-matrix" className="btn-secondary">Ingredient Matrix</a>
+              <Link href="/ingredients" className="btn-secondary">Botanical Story</Link>
             </motion.div>
             <motion.div variants={revealUp} className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {[{ label: "Status", value: NOORISH_GOLD.status }, { label: "Dose", value: NOORISH_GOLD.usageRatio }, { label: "Pouch", value: NOORISH_GOLD.pouchDose }, { label: "Physical", value: NOORISH_GOLD.physicalState }].map((item) => (
+              {[{ label: "Nature", value: "100% Botanical" }, { label: "Heart", value: "One Golden Base" }, { label: "Ritual", value: "Precious 150ml" }, { label: "Feel", value: "Deep Amber Glow" }].map((item) => (
                 <div key={item.label} className="rounded-[1.75rem] border border-ink/10 bg-white/80 p-5 text-left">
                   <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-ink/40">{item.label}</div>
                   <div className="mt-2 text-sm font-semibold text-ink/75">{item.value}</div>
@@ -184,20 +177,22 @@ export default function NoorishGoldShowcase() {
         </div>
       </section>
 
-      <section id="ingredient-matrix" className="section-shell mt-20">
+      <section id="botanical-story" className="section-shell mt-20">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mx-auto mb-10 max-w-3xl text-center">
-          <h2 className="display-heading text-4xl md:text-5xl">Complete Ingredient Matrix</h2>
-          <p className="mt-4 text-sm leading-relaxed text-ink/60 md:text-base">Exact composition as finalized. No additions or subtractions.</p>
+          <h2 className="display-heading text-4xl md:text-5xl">Inside Nature&apos;s Golden Heart</h2>
+          <p className="mt-4 text-sm leading-relaxed text-ink/60 md:text-base">We don&apos;t share the recipe — we share the feeling. Six botanicals, one golden heart, and a ritual that feels like nature itself.</p>
         </motion.div>
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="overflow-hidden rounded-[2.5rem] border border-ink/10 bg-white/70 shadow-sm backdrop-blur">
-          <div className="hidden md:block"><table className="w-full border-collapse text-left text-sm">
-            <thead className="bg-ink/5 text-ink/70"><tr><th className="px-6 py-4 font-semibold uppercase tracking-[0.12em]">Ingredient</th><th className="px-6 py-4 font-semibold uppercase tracking-[0.12em]">%</th><th className="px-6 py-4 font-semibold uppercase tracking-[0.12em]">Food Tech Purpose</th><th className="px-6 py-4 font-semibold uppercase tracking-[0.12em]">Flavor Role</th></tr></thead>
-            <tbody>{INGREDIENT_MATRIX.map((item) => (<tr key={item.name} className="border-t border-ink/10 hover:bg-[#E7D3A8]/5 transition-colors"><td className="px-6 py-5 align-top font-semibold text-ink">{item.name}</td><td className="px-6 py-5 align-top whitespace-nowrap font-bold text-ink/80">{item.percent.toFixed(2)}%</td><td className="px-6 py-5 align-top text-ink/65">{item.foodTechPurpose}</td><td className="px-6 py-5 align-top text-ink/65">{item.flavorRole}</td></tr>))}</tbody>
-          </table></div>
-          <div className="grid gap-4 p-4 md:hidden">{INGREDIENT_MATRIX.map((item) => (<div key={item.name} className="rounded-[1.75rem] border border-ink/10 bg-white/80 p-5"><div className="flex items-start justify-between gap-4"><h3 className="font-semibold text-ink">{item.name}</h3><span className="shrink-0 rounded-full bg-[#E7D3A8]/20 px-3 py-1 text-xs font-bold text-ink/75">{item.percent.toFixed(2)}%</span></div><p className="mt-3 text-sm leading-relaxed text-ink/65">{item.foodTechPurpose}</p><p className="mt-2 text-xs leading-relaxed text-ink/50">{item.flavorRole}</p></div>))}</div>
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="glass rounded-[2.5rem] border border-ink/10 bg-white/75 p-8 text-center shadow-sm backdrop-blur md:p-12">
+          <Sparkles className="mx-auto text-[#C79A44]" size={28} />
+          <h3 className="display-heading mt-4 text-3xl md:text-4xl">One Golden Heart</h3>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-ink/60 md:text-base">Every NOORIVA ritual is built on the same golden botanical heart — a signature blend that gives each pouch its unmistakable warmth, body, and glow. The exact recipe stays ours. The feeling is yours.</p>
+          <Link href="/ingredients" className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#5eead4] to-[#E7D3A8] px-7 py-3.5 text-sm font-bold text-ink transition hover:scale-105">
+            Explore the Botanical Story <ArrowRight size={16} />
+          </Link>
         </motion.div>
-        {INGREDIENT_MATRIX_NOTE ? <p className="mt-6 rounded-2xl border border-ink/10 bg-white/60 p-4 text-xs text-ink/55">{INGREDIENT_MATRIX_NOTE}</p> : null}
       </section>
+
+      
 
       <section id="flavor-architecture" className="section-shell mt-20">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mx-auto mb-10 max-w-3xl text-center">
@@ -213,67 +208,13 @@ export default function NoorishGoldShowcase() {
         </div>
       </section>
 
-      <section id="functional-layering" className="section-shell mt-20">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mx-auto mb-10 max-w-3xl text-center">
-          <h2 className="display-heading text-4xl md:text-5xl">Functional Layering Per Pouch</h2>
-          <p className="mt-4 text-sm leading-relaxed text-ink/60 md:text-base">Each 150ml pouch contains 18g of NOORISH GOLD, dosed at 12% w/w.</p>
-        </motion.div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {FUNCTIONAL_LAYERING_PER_POUCH.map((item, i) => (
-            <motion.div key={item.ingredient} initial={{ opacity: 0, y: 40, scale: 0.95 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, margin: "-40px" }} transition={{ duration: 0.5, delay: i * 0.08 }} className="glass h-full rounded-[2rem] border border-ink/10 bg-white/75 p-7 backdrop-blur-md transition hover:-translate-y-1 hover:shadow-lg">
-              <div className="flex items-center justify-between gap-3"><h3 className="font-semibold text-ink">{item.ingredient}</h3><span className="rounded-full bg-[#E7D3A8]/20 px-3 py-1 text-xs font-bold text-ink/70">{item.amount}</span></div>
-              <p className="mt-4 text-sm leading-relaxed text-ink/65">{item.role}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+      
 
-      <section id="manufacturing" className="section-shell mt-20">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mx-auto mb-10 max-w-3xl text-center">
-          <h2 className="display-heading text-4xl md:text-5xl">Manufacturing & Integration Protocol</h2>
-        </motion.div>
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="overflow-hidden rounded-[2.5rem] border border-ink/10 bg-white/70 shadow-sm backdrop-blur">
-          <div className="hidden md:block"><table className="w-full border-collapse text-left text-sm">
-            <thead className="bg-ink/5 text-ink/70"><tr><th className="px-6 py-4 font-semibold uppercase tracking-[0.12em]">Step</th><th className="px-6 py-4 font-semibold uppercase tracking-[0.12em]">Protocol</th><th className="px-6 py-4 font-semibold uppercase tracking-[0.12em]">Rationale</th></tr></thead>
-            <tbody>{MANUFACTURING_PROTOCOL.map((row) => (<tr key={row.step} className="border-t border-ink/10 hover:bg-[#E7D3A8]/5 transition-colors"><td className="px-6 py-5 font-semibold text-ink">{row.step}</td><td className="px-6 py-5 text-ink/70">{row.protocol}</td><td className="px-6 py-5 text-ink/60">{row.rationale}</td></tr>))}</tbody>
-          </table></div>
-          <div className="grid gap-4 p-4 md:hidden">{MANUFACTURING_PROTOCOL.map((row) => (<div key={row.step} className="rounded-[1.75rem] border border-ink/10 bg-white/80 p-5"><div className="text-xs font-bold uppercase tracking-[0.16em] text-ink/45">{row.step}</div><p className="mt-3 text-sm font-medium text-ink">{row.protocol}</p><p className="mt-3 text-sm leading-relaxed text-ink/60">{row.rationale}</p></div>))}</div>
-        </motion.div>
-      </section>
+      
 
-      <section id="stability" className="section-shell mt-20">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mx-auto mb-10 max-w-3xl text-center">
-          <h2 className="display-heading text-4xl md:text-5xl">Stability & Shelf-Life Performance</h2>
-        </motion.div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {STABILITY_AND_SHELF_LIFE.map((item, i) => (
-            <motion.div key={item} initial={{ opacity: 0, y: 40, scale: 0.95 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, margin: "-40px" }} transition={{ duration: 0.5, delay: i * 0.08 }} className="glass h-full rounded-[2rem] border border-ink/10 bg-white/75 p-7 backdrop-blur-md">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500/10 text-green-700">✓</div>
-              <p className="mt-4 text-sm leading-relaxed text-ink/70">{item}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+      
 
-      <section id="commercial" className="section-shell mt-20">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mx-auto mb-10 max-w-3xl text-center">
-          <h2 className="display-heading text-4xl md:text-5xl">Commercial & Regulatory Notes</h2>
-        </motion.div>
-        <div className="grid gap-4 md:grid-cols-2">
-          {COMMERCIAL_NOTES.map((item, i) => (
-            <motion.div key={item} initial={{ opacity: 0, y: 40, scale: 0.95 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, margin: "-40px" }} transition={{ duration: 0.5, delay: i * 0.08 }} className="glass h-full rounded-[2rem] border border-ink/10 bg-white/75 p-7 backdrop-blur-md"><p className="text-sm leading-relaxed text-ink/70">{item}</p></motion.div>
-          ))}
-        </div>
-        <motion.div initial={{ opacity: 0, y: 40, scale: 0.97 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }} className="relative mt-10 overflow-hidden rounded-[2.5rem] p-8 md:p-12">
-          <motion.div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #4A2C1A, #8E6B3F, #C79A44, #4A2C1A)", backgroundSize: "200% 200%" }} animate={{ backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} />
-          <FloatingParticles colors={["#E7D3A8", "#C79A44", "#FFD7A1", "#F3E9D8"]} />
-          <div className="relative text-white">
-            <h3 className="display-heading text-3xl md:text-5xl">{FINAL_VERDICT.title}</h3>
-            <p className="mt-4 max-w-4xl text-sm leading-relaxed opacity-90 md:text-base">{FINAL_VERDICT.description}</p>
-            <p className="mt-6 inline-block rounded-full border border-white/25 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em]">{FINAL_VERDICT.status}</p>
-          </div>
-        </motion.div>
-      </section>
+      
 
       <section id="rituals" className="section-shell mt-20">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mx-auto mb-10 max-w-3xl text-center">

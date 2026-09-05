@@ -1,27 +1,23 @@
-"use client";
+'use client';
 
-import { Fragment, useEffect } from "react";
-import Link from "next/link";
-import dynamic from "next/dynamic";
-import NoorixEntrance from "@/components/noorix/NoorixEntrance";
-import { useStore } from "@/lib/store";
-import { useT } from "@/lib/i18n";
-import TopBar from "@/components/ui/TopBar";
-import MobileNav from "@/components/ui/MobileNav";
-import BagDrawer from "@/components/commerce/BagDrawer";
-import CheckoutOverlay from "@/components/commerce/CheckoutOverlay";
-import OrderWhatsApp from "@/components/OrderWhatsApp";
-import Playground from "@/components/Playground";
-import GlobalRipple from "@/components/ui/GlobalRipple";
-import CursorTrail from "@/components/ui/CursorTrail";
-import BackToTop from "@/components/ui/BackToTop";
-import StickyCart from "@/components/ui/StickyCart";
-import ReferralBanner from "@/components/ui/ReferralBanner";
+import { Fragment, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import NoorixEntrance from '@/components/noorix/NoorixEntrance';
+import { useStore } from '@/lib/store';
+import { useT } from '@/lib/i18n';
+import TopBar from '@/components/ui/TopBar';
+import MobileNav from '@/components/ui/MobileNav';
+import BagDrawer from '@/components/commerce/BagDrawer';
+import CheckoutOverlay from '@/components/commerce/CheckoutOverlay';
+import OrderWhatsApp from '@/components/OrderWhatsApp';
+import Playground from '@/components/Playground';
+import GlobalRipple from '@/components/ui/GlobalRipple';
+import CursorTrail from '@/components/ui/CursorTrail';
+import BackToTop from '@/components/ui/ScrollToTop';
+import StickyCart from '@/components/ui/StickyCart';
 
-import { WHATSAPP_NUMBER } from "@/lib/data";
-
-import SceneStage, { AuroraField } from "@/components/SceneStage";
-import { getScene } from "@/lib/scenes";
+import SceneStage, { AuroraField } from '@/components/SceneStage';
+import { getScene } from '@/lib/scenes';
 import {
   Hero,
   Collection,
@@ -33,17 +29,33 @@ import {
   Testimonials,
   FAQ,
   ReferralSection,
-} from "@/components/Sections";
+} from '@/components/Sections';
 
-const ScrollScene = dynamic(() => import("./three/ScrollScene"), {
+import {
+  RitualOfDay,
+  QuizTeaser,
+  ClubTeaser,
+  WeatherStrip,
+  GlowCards,
+  GlowNotes,
+  AmbassadorIngredientsCTAs,
+} from '@/components/home/HomeExtras';
+
+const ScrollScene = dynamic(() => import('./three/ScrollScene'), {
   ssr: false,
   loading: () => <div className="fixed inset-0 z-0 bg-cream" />,
 });
 
-// Order MUST match SCENES in lib/scenes.js
 const SCENE_CHILDREN = [
-  <Hero key="home" />,
-  <Collection key="flavours" />,
+  <Fragment key="home">
+    <Hero />
+    <QuizTeaser />
+    <ClubTeaser />
+  </Fragment>,
+  <Fragment key="flavours">
+    <RitualOfDay />
+    <Collection />
+  </Fragment>,
   <Fragment key="inside">
     <Ingredients />
     <Trust />
@@ -59,10 +71,13 @@ const SCENE_CHILDREN = [
   <Playground key="play" />,
   <Fragment key="voices">
     <Testimonials />
+    <GlowCards />
+    <GlowNotes />
+    <WeatherStrip />
+    <AmbassadorIngredientsCTAs />
     <ReferralSection />
     <NoorixEntrance />
     <FAQ />
-    <Footer />
   </Fragment>,
 ];
 
@@ -72,7 +87,7 @@ export default function NoorivaApp() {
 
   useEffect(() => {
     document.documentElement.lang = language;
-    document.documentElement.dir = language === "en" ? "ltr" : "rtl";
+    document.documentElement.dir = language === 'en' ? 'ltr' : 'rtl';
   }, [language]);
 
   return (
@@ -93,84 +108,5 @@ export default function NoorivaApp() {
       <StickyCart />
       <GlobalRipple />
     </div>
-  );
-}
-
-function Footer() {
-  const t = useT();
-
-  const footerLinks = [
-    { label: "NOORISH GOLD", href: "/noorish-gold" },
-    { label: "Glow Drinks", href: "/glow-drinks" },
-    { label: "Energy Drinks", href: "/energy-drinks" },
-    { label: "Fresh Drinks", href: "/fresh-drinks" },
-    { label: "All 12 Rituals", href: "/#flavours" },
-    { label: "Ingredient Matrix", href: "/noorish-gold#ingredient-matrix" },
-    { label: "FAQ", href: "/#faq" },
-    {
-      label: "Order on WhatsApp",
-      href: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi NOORISH GOLD! I'd like to order the glow drink collection, with NOORISH GOLD signature and halal-compliant positioning.")}`,
-    },
-
-  ];
-
-  return (
-    <footer className="section-shell pb-10 pt-8">
-      <div className="glass rounded-[2.5rem] bg-white/70 p-8 text-center md:p-12">
-        <div className="mx-auto max-w-4xl">
-          <div className="display-heading holo-text text-3xl md:text-4xl">NOORIVA</div>
-
-          <p className="mt-2 text-sm font-semibold text-ink/65 md:text-base">
-            {t("tagline")}
-          </p>
-
-          <p className="mx-auto mt-4 max-w-xl text-[11px] leading-relaxed text-ink/45 md:text-xs">
-            NOORISH GOLD is the production-ready signature hero complex added at 12% w/w to every 150ml pouch, powering 12 premium energy drink, glow drink, and fresh drink rituals for Pakistan.
-          </p>
-
-          <nav aria-label="Footer navigation" className="mt-8 flex flex-wrap items-center justify-center gap-2">
-            {footerLinks.map((link) => {
-              const isExternal = link.href.startsWith("http");
-              const className =
-                "inline-flex min-h-[44px] items-center justify-center rounded-full border border-ink/10 bg-white/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink/70 transition hover:-translate-y-0.5 hover:text-ink";
-
-              if (isExternal) {
-                return (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    className={className}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {link.label}
-                  </a>
-                );
-              }
-
-              return (
-                <Link key={link.href} href={link.href} className={className}>
-                  {link.label}
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="mt-8 grid gap-2 text-[11px] leading-relaxed text-ink/40 md:grid-cols-2">
-            <p>
-              {t("footer.note")}
-            </p>
-
-            <p>
-              Premium drink positioning for Karachi, Lahore, Islamabad, Rawalpindi, Faisalabad, Multan, Peshawar, Quetta, and nationwide Pakistan ordering.
-            </p>
-          </div>
-
-          <p className="mt-8 text-[11px] tracking-widest text-ink/35">
-            © {new Date().getFullYear()} NOORIVA — {t("tagline")}
-          </p>
-        </div>
-      </div>
-    </footer>
   );
 }

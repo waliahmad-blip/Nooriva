@@ -1,0 +1,39 @@
+import IngredientStory from '@/components/ingredients/IngredientStory';
+
+export const metadata = {
+  title: 'Inside Nature’s Golden Heart — NOORIVA Botanical Story',
+  description:
+    'Discover the botanical soul of NOORIVA — saffron, rose, mastic, amla, sea buckthorn, and hibiscus. A sensory journey through nature’s golden heart, without revealing the recipe.',
+  keywords: [
+    'NOORIVA ingredients', 'botanical story', 'saffron rose drink',
+    'natural skin food', 'golden botanical heart', 'organic glow ritual',
+    'mastic amla hibiscus', 'nature drink story',
+  ],
+  alternates: { canonical: 'https://nooriva.co/ingredients' },
+  openGraph: {
+    type: 'website',
+    url: 'https://nooriva.co/ingredients',
+    title: 'Inside Nature’s Golden Heart',
+    description:
+      'The botanical soul of NOORIVA — a sensory journey through nature’s golden heart.',
+    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+  },
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'NOORIVA Ingredient Story',
+  description:
+    'The botanical story behind NOORIVA’s natural glow rituals.',
+  url: 'https://nooriva.co/ingredients',
+};
+
+export default function IngredientsPage() {
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <IngredientStory />
+    </>
+  );
+}

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ShoppingBag, Volume2, VolumeX, User, Sparkles } from "lucide-react";
+import { ShoppingBag, Volume2, VolumeX, User, Sparkles, Users, CloudSun, Crown, Leaf } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { playPop } from "@/lib/sound";
 import LanguageToggle from "./LanguageToggle";
@@ -37,9 +37,7 @@ export default function TopBar() {
           aria-label="NOORIVA Home"
         >
           <AnimatedLogo size="small" />
-          <span className="display-heading text-base font-bold tracking-[0.25em] text-ink md:text-lg">
-            NOORIVA
-          </span>
+          
         </Link>
 
         {/* Action buttons */}
@@ -57,6 +55,26 @@ export default function TopBar() {
           >
             <Sparkles size={16} />
             <span className="hidden sm:inline">Noorix AI</span>
+          </Link>
+          <Link href="/club" className="flex items-center gap-1.5 rounded-full border border-ink/10 bg-white/60 px-3 py-2 text-xs font-semibold text-ink/70 backdrop-blur-md transition hover:bg-white" aria-label="NOORIVA Club">
+            <Users size={16} />
+            <span className="hidden lg:inline">Club</span>
+          </Link>
+          <Link href="/weather" className="flex items-center gap-1.5 rounded-full border border-ink/10 bg-white/60 px-3 py-2 text-xs font-semibold text-ink/70 backdrop-blur-md transition hover:bg-white" aria-label="Weather Glow">
+            <CloudSun size={16} />
+            <span className="hidden lg:inline">Weather</span>
+          </Link>
+          <Link href="/quiz" className="flex items-center gap-1.5 rounded-full border border-ink/10 bg-white/60 px-3 py-2 text-xs font-semibold text-ink/70 backdrop-blur-md transition hover:bg-white" aria-label="Glow Quiz">
+            <Sparkles size={16} />
+            <span className="hidden lg:inline">Quiz</span>
+          </Link>
+          <Link href="/ambassador" className="flex items-center gap-1.5 rounded-full border border-ink/10 bg-white/60 px-3 py-2 text-xs font-semibold text-ink/70 backdrop-blur-md transition hover:bg-white" aria-label="Ambassador Hub">
+            <Crown size={16} />
+            <span className="hidden lg:inline">Ambassador</span>
+          </Link>
+          <Link href="/ingredients" className="flex items-center gap-1.5 rounded-full border border-ink/10 bg-white/60 px-3 py-2 text-xs font-semibold text-ink/70 backdrop-blur-md transition hover:bg-white" aria-label="Ingredients Story">
+            <Leaf size={16} />
+            <span className="hidden lg:inline">Story</span>
           </Link>
           <button
             onClick={toggleSound}

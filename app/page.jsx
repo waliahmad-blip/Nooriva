@@ -1,29 +1,30 @@
-import NoorivaApp from "@/components/NoorivaApp";
+import NoorivaApp from '@/components/NoorivaApp';
 
 export const metadata = {
   title: {
-    default: "NOORIVA — NOORISH GOLD Glow Drinks in Pakistan | Drink Your Glow",
+    default: 'NOORIVA — Natural Glow Rituals | Skin Food, Straight from Nature',
   },
   description:
-    "Discover NOORISH GOLD by NOORIVA: 12 premium energy drink, glow drink, and fresh fruit drink rituals for Pakistan. A production-ready 12% w/w signature hero complex with rose, saffron, date syrup, amla, sea buckthorn, hibiscus, and mastic.",
+    'Discover NOORIVA’s botanical rituals — premium glow drinks, natural energy, and skin-food hydration crafted from saffron, rose, and organic botanicals. Drink your natural glow.',
   keywords: [
-    "NOORIVA",
-    "NOORISH GOLD",
-    "drink your glow",
-    "energy drink Pakistan",
-    "glow drink Pakistan",
-    "fresh drink Pakistan",
-    "halal drink Pakistan",
-    "rose drink Pakistan",
-    "saffron drink Pakistan",
-    "beauty drink Pakistan",
-    "pouch drink Pakistan",
+    'NOORIVA',
+    'natural glow drink',
+    'skin food drink',
+    'organic glow ritual',
+    'botanical energy drink',
+    'saffron rose drink',
+    'plant-based wellness',
+    'drink your natural glow',
+    'radiance from within',
+    'clean hydration',
+    'rose garden drink',
+    'saffron glow',
   ],
-  authors: [{ name: "NOORIVA" }],
-  creator: "NOORIVA",
-  publisher: "NOORIVA",
+  authors: [{ name: 'NOORIVA' }],
+  creator: 'NOORIVA',
+  publisher: 'NOORIVA',
   alternates: {
-    canonical: "https://nooriva.co/",
+    canonical: 'https://nooriva.co/',
   },
   robots: {
     index: true,
@@ -31,34 +32,34 @@ export const metadata = {
     googleBot: {
       index: true,
       follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
     },
   },
   openGraph: {
-    type: "website",
-    url: "https://nooriva.co/",
-    title: "NOORIVA — NOORISH GOLD Glow Drinks in Pakistan",
+    type: 'website',
+    url: 'https://nooriva.co/',
+    title: 'NOORIVA — Natural Glow Rituals',
     description:
-      "Discover NOORISH GOLD by NOORIVA: 12 premium energy drink, glow drink, and fresh fruit drink rituals for Pakistan.",
-    siteName: "NOORIVA",
-    locale: "en_PK",
+      'Botanical skin-food rituals from NOORIVA. Saffron sunrises, rose gardens, and pure natural radiance.',
+    siteName: 'NOORIVA',
+    locale: 'en_US',
     images: [
       {
-        url: "/og-image.png",
+        url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: "NOORIVA NOORISH GOLD premium glow drinks in Pakistan",
+        alt: 'NOORIVA natural glow rituals — skin food straight from nature',
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
-    title: "NOORIVA — NOORISH GOLD Glow Drinks in Pakistan",
+    card: 'summary_large_image',
+    title: 'NOORIVA — Natural Glow Rituals',
     description:
-      "Discover NOORISH GOLD by NOORIVA: 12 premium energy drink, glow drink, and fresh fruit drink rituals for Pakistan.",
-    images: ["/og-image.png"],
+      'Botanical skin-food rituals from NOORIVA. Drink your natural glow.',
+    images: ['/og-image.png'],
   },
 };
 

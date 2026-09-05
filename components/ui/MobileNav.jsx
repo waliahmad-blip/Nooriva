@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Home, ShoppingBag, Sparkles, Moon, Crown, Gamepad2, MessageCircle, User, Bot } from "lucide-react";
+import { Home, ShoppingBag, Sparkles, Moon, Crown, Gamepad2, MessageCircle, Users, CloudSun, Leaf, User, Bot } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useT } from "@/lib/i18n";
 import { SCENES } from "@/lib/scenes";
@@ -76,6 +76,26 @@ export default function MobileNav() {
           />
           <Bot size={18} className="relative text-ink" />
           <span className="relative text-[8px] font-bold leading-none text-ink">AI</span>
+        </Link>
+        <Link href="/club" aria-label="NOORIVA Club" className="scene-dock-btn">
+          <Users size={20} />
+          <span className="scene-dock-label">Club</span>
+        </Link>
+        <Link href="/weather" aria-label="Weather Glow" className="scene-dock-btn">
+          <CloudSun size={20} />
+          <span className="scene-dock-label">Weather</span>
+        </Link>
+        <Link href="/quiz" aria-label="Glow Quiz" className="scene-dock-btn">
+          <Sparkles size={20} />
+          <span className="scene-dock-label">Quiz</span>
+        </Link>
+        <Link href="/ambassador" aria-label="Ambassador Hub" className="scene-dock-btn">
+          <Crown size={20} />
+          <span className="scene-dock-label">Ambassador</span>
+        </Link>
+        <Link href="/ingredients" aria-label="Ingredients Story" className="scene-dock-btn">
+          <Leaf size={20} />
+          <span className="scene-dock-label">Story</span>
         </Link>
 
         {/* Account Link (No useSession to avoid hydration errors) */}

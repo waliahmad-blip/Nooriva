@@ -29,6 +29,56 @@ import LanguageToggle from '../ui/LanguageToggle';
    ══════════════════════════════════════════════════════════════ */
 
 const FEATURES = [
+  // ═══ HIGH PRIORITY (4) ═══
+  {
+    id: 'stressCortisol',
+    icon: Brain,
+    needsImage: false,
+    color: '#ef4444',
+    tagline: 'Stress & Cortisol Tracker',
+    description: 'High-priority AI stress and cortisol rhythm tracking. Log mood, energy, and pressure signals to catch burnout before it hits — with daily recovery and guided breathwork.',
+    highlights: ['Cortisol rhythm', 'Burnout alerts', 'Breathwork rescue', 'Recovery score'],
+    priority: 'high',
+  },
+  {
+    id: 'smoothMenopause',
+    icon: Flower2,
+    needsImage: false,
+    color: '#ec4899',
+    tagline: 'Smooth Menopause',
+    description: 'A supportive AI companion for perimenopause and menopause. Track symptoms, get culturally-aware nutrition, cooling rituals, and hormone-aware skin guidance.',
+    highlights: ['Symptom tracker', 'Cooling rituals', 'Hormone-aware skin', 'Culturally adapted'],
+    priority: 'high',
+  },
+  {
+    id: 'brandAmbassador',
+    icon: Star,
+    needsImage: false,
+    color: '#f59e0b',
+    tagline: 'Be Our Ambassador',
+    description: 'Love NOORIVA? Join the ambassador program. Share your glow, earn points, unlock rewards, and grow with the brand — open to creators with 5,000+ engaged followers.',
+    highlights: ['5K+ followers', 'Points & rewards', 'Creator perks', 'Early drops'],
+    priority: 'high',
+  },
+  {
+    id: 'noorivaClub',
+    icon: Heart,
+    needsImage: false,
+    color: '#f472b6',
+    tagline: 'NOORIVA Club',
+    description: 'The girls gang, unfiltered. Heart-to-heart discussions, women empowerment circles, Lady of the Day, Week & Month spotlights — your safe space to glow together.',
+    highlights: ['Girls gang', 'Empowerment circles', 'Lady of the Day', 'Heart-to-heart'],
+    priority: 'high',
+  },
+  {
+    id: 'apiHub',
+    icon: Globe,
+    needsImage: false,
+    color: '#f59e0b',
+    tagline: 'API Hub',
+    description: 'Your live console of 20+ free APIs — nutrition, recipes, weather, prayer times, trivia, and more.',
+    highlights: ['Live APIs', 'No keys', 'Food & weather'],
+  },
   // ═══ MERGED FEATURES (6) ═══
   {
     id: 'skinIntelligence',
@@ -535,6 +585,11 @@ const FEATURE_CATEGORY_MAP = {
   recoveryScore: 'fitness',
   pregnancyWellness: 'skin',
   apiHub: 'hub',
+  stressCortisol: 'wellness',
+  smoothMenopause: 'wellness',
+  brandAmbassador: 'community',
+  noorivaClub: 'community',
+  apiHub: 'hub',
 };
 
 /* ══════════════════════════════════════════════════════════════
@@ -542,6 +597,30 @@ const FEATURE_CATEGORY_MAP = {
    ══════════════════════════════════════════════════════════════ */
 
 const SUGGESTED_PROMPTS = {
+  stressCortisol: [
+    'Check my stress level',
+    'Track my cortisol rhythm',
+    'Give me a burnout rescue',
+    'Start breathing exercise',
+  ],
+  smoothMenopause: [
+    'Log my menopause symptoms',
+    'Recommend cooling rituals',
+    'Hormone-aware skincare tips',
+    'What should I eat this phase?',
+  ],
+  brandAmbassador: [
+    'How do I become an ambassador?',
+    'Check my rewards status',
+    'Explain the creator perks',
+    'How do points work?',
+  ],
+  noorivaClub: [
+    'Join the girls gang',
+    'Today’s empowerment circle',
+    'Who is Lady of the Day?',
+    'Start a heart-to-heart',
+  ],
   skinIntelligence: [
     'Analyze my skin for acne',
     'Check for dark spots',
@@ -813,6 +892,54 @@ const SUGGESTED_PROMPTS = {
    ══════════════════════════════════════════════════════════════ */
 
 const CONTEXT_CONFIGS = {
+  stressCortisol: {
+    intro: 'Track your stress and cortisol rhythm with a few taps. I will spot burnout before it hits.',
+    fields: [
+      { key: 'stressLevel', label: 'How stressed are you right now?', type: 'tapCards', options: [
+        { value: 'calm', label: 'Calm', desc: 'Feeling clear' },
+        { value: 'tense', label: 'Tense', desc: 'Shoulders tight' },
+        { value: 'anxious', label: 'Anxious', desc: 'Racing thoughts' },
+        { value: 'overwhelmed', label: 'Overwhelmed', desc: 'Too much happening' },
+      ]},
+      { key: 'energy', label: 'Your energy today?', type: 'tags', options: ['High', 'Normal', 'Low', 'Exhausted'] },
+      { key: 'sleepHours', label: 'Hours of sleep last night?', type: 'counter', min: 0, max: 14, defaultValue: 6 },
+    ],
+  },
+  smoothMenopause: {
+    intro: 'Tell me where you are in your journey — I will make it smoother.',
+    fields: [
+      { key: 'stage', label: 'Which stage?', type: 'tapCards', options: [
+        { value: 'peri', label: 'Perimenopause', desc: 'Transitioning' },
+        { value: 'meno', label: 'Menopause', desc: '12 months no cycle' },
+        { value: 'post', label: 'Postmenopause', desc: 'After menopause' },
+      ]},
+      { key: 'symptoms', label: 'What are you feeling?', type: 'tags', multi: true, options: ['Hot flashes', 'Night sweats', 'Mood swings', 'Brain fog', 'Dry skin', 'Sleep trouble', 'Low energy', 'Anxiety'] },
+    ],
+  },
+  brandAmbassador: {
+    intro: 'Let us see if you are a match for the NOORIVA ambassador family.',
+    fields: [
+      { key: 'platform', label: 'Your main platform?', type: 'tapCards', options: [
+        { value: 'instagram', label: 'Instagram', desc: 'Reels & stories' },
+        { value: 'tiktok', label: 'TikTok', desc: 'Short videos' },
+        { value: 'youtube', label: 'YouTube', desc: 'Long-form' },
+      ]},
+      { key: 'followers', label: 'Your follower range?', type: 'tags', options: ['5K–10K', '10K–50K', '50K–100K', '100K+'] },
+      { key: 'content', label: 'Content you love making?', type: 'tags', multi: true, options: ['Skincare', 'Wellness', 'Food', 'Lifestyle', 'Fashion', 'Fitness'] },
+    ],
+  },
+  noorivaClub: {
+    intro: 'Welcome to the girls gang. Pick your vibe and jump in.',
+    fields: [
+      { key: 'vibe', label: 'What are you here for?', type: 'tags', multi: true, options: ['Heart-to-heart', 'Empowerment', 'Glow tips', 'Making friends', 'Lady of the Day'] },
+      { key: 'energy', label: 'Today’s energy?', type: 'tapCards', options: [
+        { value: 'soft', label: 'Soft', desc: 'Need a safe space' },
+        { value: 'bold', label: 'Bold', desc: 'Ready to shine' },
+        { value: 'chatty', label: 'Chatty', desc: 'Let us talk' },
+        { value: 'curious', label: 'Curious', desc: 'Exploring' },
+      ]},
+    ],
+  },
   freeChat: {
     intro: 'Ask me anything about health, beauty, skin, nutrition, or wellness. I am here to help you glow.',
     fields: [],
@@ -1822,7 +1949,7 @@ export default function NoorixChat() {
   return (
     <div
       onMouseMove={(e) => setMousePos({ x: e.clientX, y: e.clientY })}
-      className="fixed inset-0 z-0 flex h-[100dvh] w-full flex-col overflow-hidden bg-cream-50 text-ink"
+      className="fixed inset-0 z-0 flex h-[100dvh] w-full flex-col overflow-hidden bg-[#050509] text-white"
     >
       <div
         aria-hidden="true"
@@ -1841,10 +1968,10 @@ export default function NoorixChat() {
 
       <Link
         href="/"
-        className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/70 border border-ink/10 backdrop-blur-xl hover:bg-white transition-all duration-300 group shadow-sm"
+        className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/70 border border-white/10 backdrop-blur-xl hover:bg-white transition-all duration-300 group shadow-sm"
       >
-        <Home size={16} className="text-ink/60 group-hover:text-ink transition-colors" />
-        <span className="text-sm font-semibold text-ink/90 group-hover:text-ink transition-colors">Home</span>
+        <Home size={16} className="text-white/60 group-hover:text-white transition-colors" />
+        <span className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">Home</span>
       </Link>
 
       <div className="fixed bottom-24 right-4 z-40 md:bottom-6 md:right-6">
@@ -1885,23 +2012,23 @@ export default function NoorixChat() {
             className="fixed inset-0 z-50 flex flex-col"
             style={{ background: 'transparent' }}
           >
-            <div className="relative z-10 flex items-center justify-between px-5 py-4 border-b border-ink/10 bg-white/70 backdrop-blur-md">
+            <div className="relative z-10 flex items-center justify-between px-5 py-4 border-b border-white/10 bg-white/70 backdrop-blur-md">
               <div className="flex items-center gap-3">
                 {noorixFeature ? (
                   <button onClick={backNoorix} className="rounded-full bg-noorix-surface p-2 hover:bg-noorix-surface-raised transition-colors">
                     <ArrowLeft size={18} className="text-white" />
-                  </button><button type="button" onClick={() => speak(msg.content)} className="noorix-action-chip"><Volume2 size={11} /> Listen</button>
+                  </button>
                 ) : (
                   <div className="flex items-center gap-2">
                     <Sparkles size={18} className="text-white/60" />
                   </div>
                 )}
                 <div>
-                  <h2 className="text-lg font-bold display-heading text-ink">
-                    {feature ? t('noorix.feature.' + feature.id) : 'Noorix'}
+                  <h2 className="text-lg font-bold display-heading text-white">
+                    {feature ? ((t('noorix.feature.' + feature.id) === 'noorix.feature.' + feature.id) ? feature.tagline : t('noorix.feature.' + feature.id)) : 'Noorix'}
                   </h2>
-                  <p className="text-[11px] text-ink/50">
-                    {feature ? t('noorix.feature.' + feature.id + 'Desc') : t('noorix.sub')}
+                  <p className="text-[11px] text-white/50">
+                    {feature ? (t('noorix.feature.' + feature.id + 'Desc') === 'noorix.feature.' + feature.id + 'Desc' ? feature.description : t('noorix.feature.' + feature.id + 'Desc')) : t('noorix.sub')}
                   </p>
                 </div>
               </div>
@@ -2043,7 +2170,7 @@ export default function NoorixChat() {
                                 openChat('freeChat');
                                 setTimeout(() => sendMessage(prompt), 100);
                               }}
-                              className="rounded-full border border-ink/10 bg-white/60 px-4 py-2 text-xs font-semibold text-ink/80 backdrop-blur-md transition-all hover:bg-white hover:border-ink/20 hover:scale-105"
+                              className="rounded-full border border-white/10 bg-white/60 px-4 py-2 text-xs font-semibold text-white/80 backdrop-blur-md transition-all hover:bg-white hover:border-white/20 hover:scale-105"
                             >
                               {prompt}
                             </button>
@@ -2169,7 +2296,7 @@ export default function NoorixChat() {
                               key={f.id}
                               feature={f}
                               index={i}
-                              title={t('noorix.feature.' + f.id)}
+                              title={(t('noorix.feature.' + f.id) === 'noorix.feature.' + f.id) ? f.tagline : t('noorix.feature.' + f.id)}
                               onClick={() => (f.id === 'apiHub' ? (window.location.href = '/api-hub') : openChat(f.id))}
                             />
                           );
@@ -2228,7 +2355,7 @@ export default function NoorixChat() {
                   >
                     <button
   onClick={backNoorix}
-  className="absolute top-4 left-4 z-20 flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-bold text-ink shadow-lg backdrop-blur-md transition-all hover:bg-white hover:scale-105"
+  className="absolute top-4 left-4 z-20 flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-bold text-white shadow-lg backdrop-blur-md transition-all hover:bg-white hover:scale-105"
 >
   <ArrowLeft size={16} />
   Back to Features
@@ -2428,57 +2555,66 @@ export default function NoorixChat() {
                                     )}
 
                                     <div className="noorix-msg-actions">
-                                      <button type="button" onClick={() => shareResult(msg)} className="noorix-action-chip">
-                                        <Share2 size={11} />
-                                        Share
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          window.open(
-                                            'mailto:?subject=' +
-                                              encodeURIComponent('Noorix Analysis') +
-                                              '&body=' +
-                                              encodeURIComponent(msg.content || '')
-                                          )
-                                        }
-                                        className="noorix-action-chip"
-                                      >
-                                        ✉️ Email
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          const blob = new Blob([msg.content || ''], { type: 'text/plain' });
-                                          const url = URL.createObjectURL(blob);
-                                          const a = document.createElement('a');
-                                          a.href = url;
-                                          a.download = 'noorix-analysis.txt';
-                                          a.click();
-                                          URL.revokeObjectURL(url);
-                                        }}
-                                        className="noorix-action-chip"
-                                      >
-                                        📥 Download
-                                      </button>
-
-                                      {msg.raw?.actions?.map((action, ai) => {
-                                        if (action.type === 'addProduct' && action.payload) {
-                                          return (
-                                            <button
-                                              key={ai}
-                                              type="button"
-                                              onClick={() => addToCart(action.payload)}
-                                              className="noorix-action-chip noorix-action-chip--accent"
-                                            >
-                                              <ShoppingCart size={11} />
-                                              {action.label || 'Add to Bag'}
-                                            </button>
-                                          );
-                                        }
-                                        return null;
-                                      })}
-                                    </div>
+  <button type="button" onClick={() => shareResult(msg)} className="noorix-action-chip">
+    <Share2 size={11} /> Share
+  </button>
+  <button type="button" onClick={() => speak(msg.content)} className="noorix-action-chip">
+    <Volume2 size={11} /> Listen
+  </button>
+  <button
+    type="button"
+    onClick={() => window.open("mailto:?subject=" + encodeURIComponent("Noorix Analysis") + "&body=" + encodeURIComponent(msg.content || ""))}
+    className="noorix-action-chip"
+  >
+    ✉️ Email
+  </button>
+  <button
+    type="button"
+    onClick={() => {
+      const blob = new Blob([msg.content || ""], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "noorix-analysis.txt";
+      a.click();
+      URL.revokeObjectURL(url);
+    }}
+    className="noorix-action-chip"
+  >
+    📥 Download
+  </button>
+  {msg.raw?.actions?.map((action, ai) => {
+    if (action.type === "addProduct" && action.payload) {
+      return (
+        <button key={ai} type="button" onClick={() => addToCart(action.payload)} className="noorix-action-chip noorix-action-chip--accent">
+          <ShoppingCart size={11} /> {action.label || "Add to Bag"}
+        </button>
+      );
+    }
+    if (action.type === "viewProduct" && action.slug) {
+      return (
+        <button key={ai} type="button" onClick={() => { window.location.href = "/drinks/" + action.slug; }} className="noorix-action-chip noorix-action-chip--accent">
+          <ArrowRight size={11} /> {action.label || "View Ritual"}
+        </button>
+      );
+    }
+    if (action.type === "openLink" && action.url) {
+      return (
+        <button key={ai} type="button" onClick={() => window.open(action.url, "_blank")} className="noorix-action-chip noorix-action-chip--accent">
+          <ArrowRight size={11} /> {action.label || "Open"}
+        </button>
+      );
+    }
+    if (action.type === "openWhatsApp") {
+      return (
+        <button key={ai} type="button" onClick={() => window.open("https://wa.me/923210550303?text=" + encodeURIComponent(action.text || "Hi NOORIVA! I need help with..."), "_blank")} className="noorix-action-chip noorix-action-chip--accent">
+          <MessageCircle size={11} /> {action.label || "WhatsApp"}
+        </button>
+      );
+    }
+    return null;
+  })}
+</div>
 
                                     {msg.raw?.disclaimer && (
                                       <p className="noorix-disclaimer">{msg.raw.disclaimer}</p>
@@ -2599,16 +2735,16 @@ export default function NoorixChat() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="rounded-[2rem] border border-ink/10 bg-white/90 p-8 max-w-sm w-full text-center shadow-aura"
+              className="rounded-[2rem] border border-white/10 bg-white/90 p-8 max-w-sm w-full text-center shadow-aura"
               onClick={function(e) { e.stopPropagation(); }}
             >
               <div className="text-4xl mb-4">
                 {blocked.type === 'limit' ? '⏰' : '🔓'}
               </div>
-              <h3 className="text-xl font-bold mb-2 text-ink">
+              <h3 className="text-xl font-bold mb-2 text-white">
                 {blocked.type === 'limit' ? 'Daily Limit Reached' : 'Feature Unlocked'}
               </h3>
-              <p className="text-sm text-ink/60 mb-6">
+              <p className="text-sm text-white/60 mb-6">
                 {blocked.type === 'limit'
                   ? 'You have used all your free analyses for today. Upgrade for more.'
                   : 'All features are available. Enjoy your glow journey.'}
@@ -2747,6 +2883,14 @@ export default function NoorixChat() {
         @keyframes noorix-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); } }
       `}</style>
 
+            
+      <style>{`
+        .text-noorix-text { color: #ffffff !important; }
+        .text-noorix-muted { color: rgba(255,255,255,0.55) !important; }
+        .bg-noorix-surface { background: rgba(255,255,255,0.06) !important; }
+        .bg-noorix-surface-raised { background: rgba(255,255,255,0.10) !important; }
+        .border-noorix-border { border-color: rgba(255,255,255,0.12) !important; }
+      `}</style>
       <NoorixPlans isOpen={plansOpen} onClose={function() { setPlansOpen(false); }} />
     </div>
   );
