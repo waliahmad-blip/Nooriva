@@ -2,8 +2,56 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://nooriva.co/</loc>
-    <lastModified>2026-08-17</lastModified>
-    <changeFrequency>weekly</changeFrequency>
+    <lastmod>2026-08-31T00:00:00+05:00</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+
+  <url>
+    <loc>https://nooriva.co/noorish-gold</loc>
+    <lastmod>2026-08-31T00:00:00+05:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.98</priority>
+  </url>
+
+    <url>
+    <loc>https://nooriva.co/noorix</loc>
+    <lastmod>2026-08-31T00:00:00+05:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://nooriva.co/energy-drinks</loc>
+    <lastmod>2026-08-31T00:00:00+05:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://nooriva.co/glow-drinks</loc>
+    <lastmod>2026-08-31T00:00:00+05:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://nooriva.co/fresh-drinks</loc>
+    <lastmod>2026-08-31T00:00:00+05:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url><loc>https://nooriva.co/drinks/rose-halo</loc><lastmod>2026-08-31T00:00:00+05:00</lastmod><changefreq>weekly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://nooriva.co/drinks/peach-dusk</loc><lastmod>2026-08-31T00:00:00+05:00</lastmod><changefreq>weekly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://nooriva.co/drinks/mango-blaze</loc><lastmod>2026-08-31T00:00:00+05:00</lastmod><changefreq>weekly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://nooriva.co/drinks/saffron-mist</loc><lastmod>2026-08-31T00:00:00+05:00</lastmod><changefreq>weekly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://nooriva.co/drinks/berry-bloom</loc><lastmod>2026-08-31T00:00:00+05:00</lastmod><changefreq>weekly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://nooriva.co/drinks/coco-glow</loc><lastmod>2026-08-31T00:00:00+05:00</lastmod><changefreq>weekly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://nooriva.co/drinks/cherry-veil</loc><lastmod>2026-08-31T00:00:00+05:00</lastmod><changefreq>weekly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://nooriva.co/drinks/passion-luxe</loc><lastmod>2026-08-31T00:00:00+05:00</lastmod><changefreq>weekly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://nooriva.co/drinks/acai-dew</loc><lastmod>2026-08-31T00:00:00+05:00</lastmod><changefreq>weekly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://nooriva.co/drinks/pearl-sheen</loc><lastmod>2026-08-31T00:00:00+05:00</lastmod><changefreq>weekly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://nooriva.co/drinks/aloe-tide</loc><lastmod>2026-08-31T00:00:00+05:00</lastmod><changefreq>weekly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://nooriva.co/drinks/bamboo-silk</loc><lastmod>2026-08-31T00:00:00+05:00</lastmod><changefreq>weekly</changefreq><priority>0.90</priority></url>
 </urlset>

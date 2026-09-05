@@ -1,28 +1,27 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Truck, Clock } from 'lucide-react';
 
 export default function DeliveryTimer() {
-  var [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
+  const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
 
-  useEffect(function() {
-    function update() {
-      var now = new Date();
-      var target = new Date();
+  useEffect(() => {
+    const update = () => {
+      const now = new Date();
+      const target = new Date();
       target.setHours(20, 0, 0, 0);
       if (now > target) target.setDate(target.getDate() + 1);
-      var diff = target - now;
+      const diff = target - now;
       setTimeLeft({
         h: Math.floor(diff / 3600000),
         m: Math.floor((diff % 3600000) / 60000),
         s: Math.floor((diff % 60000) / 1000),
       });
-    }
+    };
     update();
-    var timer = setInterval(update, 1000);
-    return function() { clearInterval(timer); };
+    const timer = setInterval(update, 1000);
+    return () => clearInterval(timer);
   }, []);
 
   return (

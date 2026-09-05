@@ -1,4 +1,14 @@
 User-agent: *
 Allow: /
 
+Sitemap: https://nooriva.co/sitemap.xml# robots.txt for NOORIVA — NOORISH GOLD
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+
+# Nooriva PWA / manifest
 Sitemap: https://nooriva.co/sitemap.xml
+
+# Local brand domain hint
+Host: https://nooriva.co

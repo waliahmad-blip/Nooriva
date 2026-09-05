@@ -1,21 +1,20 @@
 'use client';
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronUp } from 'lucide-react';
 
 export default function BackToTop() {
-  var [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
 
-  useEffect(function() {
-    function onScroll() { setVisible(window.scrollY > 400); }
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 400);
     window.addEventListener('scroll', onScroll, { passive: true });
-    return function() { window.removeEventListener('scroll', onScroll); };
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  function scrollTop() {
+  const scrollTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  }, []);
 
   return (
     <AnimatePresence>

@@ -1,37 +1,45 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-var PROOFS = [
-  { name: 'Sana', city: 'Lahore', action: 'just ordered The Devoted' },
-  { name: 'Ayesha', city: 'Karachi', action: 'loves Aurora Rose' },
-  { name: 'Fatima', city: 'Islamabad', action: 'started her glow journey' },
-  { name: 'Zainab', city: 'Faisalabad', action: 'ordered 3 pouches' },
-  { name: 'Huda', city: 'Multan', action: 'is glowing with Violet Eclipse' },
-  { name: 'Mahnoor', city: 'Lahore', action: 'shared her before/after' },
-  { name: 'Iqra', city: 'Karachi', action: 'runs on Sunrise Solstice' },
-  { name: 'Noor', city: 'Peshawar', action: 'just joined the Society' },
+const PROOFS = [
+  { name: 'ROSE HALO', city: 'Karachi', action: 'Wake Up Luminous' },
+  { name: 'PEACH DUSK', city: 'Lahore', action: 'Sleep Beautiful' },
+  { name: 'MANGO BLAZE', city: 'Islamabad', action: 'Burn Bright' },
+  { name: 'SAFFRON MIST', city: 'Rawalpindi', action: 'Repair in Gold' },
+  { name: 'BERRY BLOOM', city: 'Multan', action: '3 PM, Still Glowing' },
+  { name: 'COCO GLOW', city: 'Peshawar', action: 'Reset Your Light' },
+  { name: 'CHERRY VEIL', city: 'Faisalabad', action: 'Drift Into Glow' },
+  { name: 'ACAI DEW', city: 'Quetta', action: 'Pure Clarity' },
+  { name: 'PASSION LUXE', city: 'Lahore', action: 'Age in Reverse' },
+  { name: 'PEARL SHEEN', city: 'Karachi', action: 'Glow Unfiltered' },
+  { name: 'ALOE TIDE', city: 'Islamabad', action: 'Barrier of Light' },
+  { name: 'BAMBOO SILK', city: 'Rawalpindi', action: 'Reflect Your Light' },
 ];
 
 export default function SocialProof() {
-  var [current, setCurrent] = useState(0);
-  var [visible, setVisible] = useState(false);
+  const [current, setCurrent] = useState(0);
+  const [visible, setVisible] = useState(false);
 
-  useEffect(function() {
-    var showTimer = setTimeout(function() { setVisible(true); }, 3000);
-    var cycleTimer = setInterval(function() {
-      setCurrent(function(prev) { return (prev + 1) % PROOFS.length; });
+  useEffect(() => {
+    const showTimer = setTimeout(() => {
+      setVisible(true);
+    }, 3000);
+    const cycleTimer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % PROOFS.length);
     }, 5000);
-    return function() { clearTimeout(showTimer); clearInterval(cycleTimer); };
+    return () => {
+      clearTimeout(showTimer);
+      clearInterval(cycleTimer);
+    };
   }, []);
 
   if (!visible) return null;
 
-  var proof = PROOFS[current];
+  const proof = PROOFS[current];
 
   return (
-    <div className="fixed bottom-24 left-4 z-20 md:bottom-6 md:left-6 max-w-[220px]">
+    <div className="fixed bottom-24 left-4 z-20 max-w-[220px] md:bottom-6 md:left-6">
       <AnimatePresence mode="wait">
         <motion.div
           key={current}

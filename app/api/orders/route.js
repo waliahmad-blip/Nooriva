@@ -121,7 +121,7 @@ export async function POST(request) {
     if (await saveToSheets(order)) storedIn.push("google-sheets");
     if (saveToLocalFile(order)) storedIn.push("local-file");
 
-    console.log("NOORIVA ORDER", order, "storedIn:", storedIn.join(",") || "console-only");
+    if (process.env.NODE_ENV === 'development') console.log("NOORIVA ORDER", order, "storedIn:", storedIn.join(",") || "console-only");
 
     return NextResponse.json({
       ok: true,

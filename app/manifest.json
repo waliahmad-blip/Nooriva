@@ -1,12 +1,18 @@
 {
-  "name": "NOORIVA — Drink Your Glow",
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "id": "/",
+  "name": "NOORIVA — NOORISH GOLD Drink Your Glow",
   "short_name": "NOORIVA",
-  "description": "Pakistan's first halal beauty elixir. Collagen, glutathione and biotin in six celestial flavours.",
+  "description": "Discover NOORISH GOLD by NOORIVA — 12 premium energy drink, glow drink, and fresh fruit drink rituals for Pakistan. 12% w/w signature base. Drink your glow.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#FAF7F2",
-  "theme_color": "#FAF7F2",
-  "orientation": "portrait",
+  "theme_color": "#E7D3A8",
+  "lang": "en-PK",
+  "dir": "ltr",
+  "categories": ["food", "beverage", "shopping", "lifestyle", "health"],
   "icons": [
     {
       "src": "/icon.svg",
@@ -25,6 +31,46 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "NOORIVA NOORISH GOLD glow drinks in Pakistan"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Shop NOORISH GOLD",
+      "short_name": "Shop",
+      "description": "Browse the 12 Noorish Gold glow rituals.",
+      "url": "/#flavours",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Find My Ritual",
+      "short_name": "Ritual",
+      "description": "Find your personal glow ritual.",
+      "url": "/#rituals",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Order on WhatsApp",
+      "short_name": "Order",
+      "description": "Order NOORISH GOLD pouches in Pakistan.",
+      "url": "/#flavours",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }

@@ -1,36 +1,90 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useSession } from "next-auth/react";
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import Link from 'next/link';
+import { Home, MicOff, ShoppingCart } from 'lucide-react';
 import {
-  X, ArrowLeft, Send, Camera, Sparkles,
-  Sun, Moon, Dumbbell, ScanLine,
-  BookOpen, GlassWater, Stethoscope, Salad,
-  Pill, Scissors, Beaker, CloudSun, Heart,
-  MessageCircle, Mic, MicOff, Share2, ShoppingCart, Volume2, Zap, Shield, ChevronRight,
+  Sparkles, LogOut, Send, ShoppingBag, ArrowRight, User, Zap, Star, Crown, Loader2,
+  Heart, Calendar, Sun, Moon, Search, Lock, GlassWater, MessageCircle, ScanLine,
+  Dumbbell, Pill, Bed, Beaker, Stethoscope, Camera, Mic, Check, Trophy, Copy, X,
+  ArrowLeft, Share2, Volume2, Shield, ChevronRight, FileText, Activity, Brain, Wind,
+  Languages, Dna, Flower2, ChefHat, Brush, Smile, Music, Palette, Baby, RefreshCw,
+  Scissors, CloudSun, BookOpen, Salad, Clock, AlertTriangle, Target, Coffee, Footprints,
+  Eye, Leaf, Droplets, Thermometer, Apple, Globe
 } from 'lucide-react';
+
 import { useStore } from '@/lib/store';
 import { useT } from '@/lib/i18n';
 import { isFeatureAllowed, checkDailyLimit, getRequiredPlan } from '@/lib/noorix-plans';
 import NoorixOrb from './NoorixOrb';
 import NoorixPlans from './NoorixPlans';
-import NoorixHologram from './NoorixHologram';
-import NoorixTutorial from './NoorixTutorial';
+import NoorixFeatureCard from './NoorixFeatureCard';
+import LanguageToggle from '../ui/LanguageToggle';
 
 /* ══════════════════════════════════════════════════════════════
    FEATURE REGISTRY — 14 AI-Powered Health & Beauty Features
    ══════════════════════════════════════════════════════════════ */
 
 const FEATURES = [
+  // ═══ MERGED FEATURES (6) ═══
   {
-    id: 'skinPhoto',
+    id: 'skinIntelligence',
     icon: Camera,
     needsImage: true,
     color: '#ff8fb2',
-    tagline: 'AI Dermatology',
-    description: 'Upload a photo of any skin concern — acne, dark spots, rashes, or irritation. Noorix performs differential triage with emergency red-flag detection and personalized holistic coaching.',
-    highlights: ['Differential triage', 'Red-flag alerts', 'Holistic coaching'],
+    tagline: 'Skin Intelligence',
+    description: 'Upload a photo of any skin concern. Noorix performs differential triage, classifies the condition, predicts your skin age, and builds a personalized coaching plan — all in one analysis.',
+    highlights: ['Differential triage', 'Condition classification', 'Skin age prediction', 'Rejuvenation plan'],
   },
+  {
+    id: 'ingredientIntelligence',
+    icon: ScanLine,
+    needsImage: true,
+    color: '#22d3ee',
+    tagline: 'Ingredient Intelligence',
+    description: 'Photograph any product label. Noorix decodes every ingredient, checks for harmful chemicals, flags allergens, verifies halal status, and checks for conflicts across your entire routine.',
+    highlights: ['Full ingredient decode', 'Halal verification', 'Conflict detection', 'Safety verdict'],
+  },
+  {
+    id: 'glowJournal',
+    icon: BookOpen,
+    needsImage: false,
+    color: '#d946ef',
+    tagline: 'Glow Journal',
+    description: 'Daily mood check-ins and skin observations become powerful data. Noorix identifies patterns linking breakouts to stress, diet, sleep, and hormones — and tells you exactly what triggers your flare-ups.',
+    highlights: ['Mood-skin correlation', 'Pattern detection', 'Trigger identification', 'Coping strategies'],
+  },
+  {
+    id: 'treatmentRoutine',
+    icon: Heart,
+    needsImage: false,
+    color: '#ec4899',
+    tagline: 'Ritual Architect',
+    description: 'Share your skin goal and current products. Noorix architects a complete treatment plan with AM/PM rituals, step-by-step instructions, ingredient pairing rules, and a results timeline.',
+    highlights: ['Personalized treatment', 'AM/PM ritual design', 'Ingredient pairing', 'Results timeline'],
+  },
+  {
+    id: 'progressStreaks',
+    icon: Sparkles,
+    needsImage: true,
+    color: '#8b5cf6',
+    tagline: 'Progress & Streaks',
+    description: 'Upload before and after photos to visually track your skin transformation. Noorix analyzes improvements, tracks your daily glow streaks, and unlocks achievement badges for consistency.',
+    highlights: ['Before/after comparison', 'Visual tracking', 'Daily streaks', 'Achievement badges'],
+  },
+  {
+    id: 'wellnessToolkit',
+    icon: Zap,
+    needsImage: false,
+    color: '#6366f1',
+    tagline: 'Wellness Toolkit',
+    description: 'Monthly calendar overview, PDF report generation, full-text conversation search, one-tap quick actions, and dark mode — everything you need to manage your glow journey in one place.',
+    highlights: ['Monthly calendar', 'PDF reports', 'Smart search', 'Quick actions', 'Dark mode'],
+  },
+
+  // ═══ KEPT FEATURES (12) ═══
   {
     id: 'mealPhoto',
     icon: Salad,
@@ -59,15 +113,6 @@ const FEATURES = [
     highlights: ['Circadian analysis', 'Bedtime routine', 'Skin-sleep link'],
   },
   {
-    id: 'stress',
-    icon: Sun,
-    needsImage: false,
-    color: '#f59e0b',
-    tagline: 'Mood Intelligence',
-    description: 'Quick emoji-based mood check-in that correlates your emotional state with skin flare-ups. Noorix provides coping strategies, stress-fighting nutrition, and calming rituals.',
-    highlights: ['Mood-skin correlation', 'Coping strategies', 'Calming rituals'],
-  },
-  {
     id: 'fitness',
     icon: Dumbbell,
     needsImage: false,
@@ -75,24 +120,6 @@ const FEATURES = [
     tagline: 'Athletic Dermatology',
     description: 'Tell Noorix your workout type and intensity. Receive pre and post-exercise skincare protocols, sweat-acne prevention, hydration strategies, and the ideal NOORIVA timing for recovery.',
     highlights: ['Pre/post skincare', 'Sweat-acne prevention', 'Recovery protocol'],
-  },
-  {
-    id: 'product',
-    icon: ScanLine,
-    needsImage: true,
-    color: '#22d3ee',
-    tagline: 'Ingredient Intelligence',
-    description: 'Photograph any product label and Noorix decodes every ingredient for your specific skin type. Get safety ratings, benefit analysis, and a clear verdict on whether to use it.',
-    highlights: ['Full ingredient decode', 'Skin type matching', 'Safety verdict'],
-  },
-  {
-    id: 'diary',
-    icon: BookOpen,
-    needsImage: false,
-    color: '#d946ef',
-    tagline: 'Pattern Recognition',
-    description: 'Daily skin observations become powerful data. Noorix identifies patterns linking breakouts to diet, stress, sleep, and hormones — and tells you exactly what triggers your flare-ups.',
-    highlights: ['Pattern detection', 'Trigger identification', 'Lifestyle correlation'],
   },
   {
     id: 'hydration',
@@ -118,17 +145,8 @@ const FEATURES = [
     needsImage: true,
     color: '#f97316',
     tagline: 'Scalp Analytics',
-    description: 'Upload a hair or scalp photo for AI analysis. Noorix assesses strand health, scalp condition, hair loss patterns, and dandruff severity — then recommends targeted nutrition and care routines.',
+    description: 'Upload a hair or scalp photo for analysis. Noorix assesses strand health, scalp condition, hair loss patterns, and dandruff severity — then recommends targeted nutrition and care routines.',
     highlights: ['Scalp assessment', 'Loss pattern analysis', 'Growth nutrition'],
-  },
-  {
-    id: 'ingredient',
-    icon: Beaker,
-    needsImage: true,
-    color: '#8b5cf6',
-    tagline: 'Chemical Decoder',
-    description: 'Snap any ingredient list — skincare, haircare, food, or supplements. Noorix identifies harmful chemicals, flags allergens, checks halal status, and rates overall safety for your body.',
-    highlights: ['Harmful chemical flags', 'Allergen detection', 'Halal verification'],
   },
   {
     id: 'sun',
@@ -140,20 +158,11 @@ const FEATURES = [
     highlights: ['UV risk assessment', 'SPF recommendation', 'After-sun care'],
   },
   {
-    id: 'routine',
-    icon: Heart,
-    needsImage: false,
-    color: '#ec4899',
-    tagline: 'Ritual Architect',
-    description: 'Share your skin goal and current products. Noorix architects a complete AM and PM skincare ritual with step-by-step instructions, ingredient pairing rules, and a results timeline.',
-    highlights: ['AM/PM ritual design', 'Ingredient pairing', 'Results timeline'],
-  },
-  {
     id: 'freeChat',
     icon: MessageCircle,
     needsImage: false,
     color: '#a78bfa',
-    tagline: '✨ Noorix Chat',
+    tagline: 'Ask Noorix',
     description: 'Have a free-form conversation with Noorix about anything — skin concerns, nutrition questions, product recommendations, wellness advice, or just chat about your glow journey. Ask anything, anytime.',
     highlights: ['Ask anything', 'Multi-turn memory', 'Personalized advice'],
     featured: true,
@@ -163,118 +172,18 @@ const FEATURES = [
     icon: Volume2,
     needsImage: false,
     color: '#0ea5e9',
-    tagline: 'Voice Assistant',
+    tagline: 'Voice Output',
     description: 'Noorix speaks responses aloud. Listen to health advice, nutrition tips, and wellness coaching hands-free while you cook, exercise, or relax.',
     highlights: ['Text-to-speech', 'Hands-free listening', 'Multi-language'],
-  },
-  {
-    id: 'progressPhotos',
-    icon: Camera,
-    needsImage: true,
-    color: '#8b5cf6',
-    tagline: 'Progress Tracker',
-    description: 'Upload before and after photos to visually track your skin transformation. Noorix analyzes improvements and identifies what is working.',
-    highlights: ['Before/after comparison', 'Visual tracking', 'AI analysis'],
-  },
-  {
-    id: 'streaks',
-    icon: Sparkles,
-    needsImage: false,
-    color: '#f59e0b',
-    tagline: 'Gamification',
-    description: 'Track your glow streaks, earn badges, and unlock achievements. Consistency is the secret to radiant skin — let Noorix keep you motivated.',
-    highlights: ['Daily streaks', 'Achievement badges', 'Progress milestones'],
-  },
-  {
-    id: 'wellnessCalendar',
-    icon: BookOpen,
-    needsImage: false,
-    color: '#10b981',
-    tagline: 'Monthly View',
-    description: 'See your entire wellness journey in a calendar view. Track check-ins, mood patterns, skin observations, and ritual completions by date.',
-    highlights: ['Monthly overview', 'Pattern visualization', 'Daily logs'],
-  },
-  {
-    id: 'exportReport',
-    icon: BookOpen,
-    needsImage: false,
-    color: '#6366f1',
-    tagline: 'PDF Reports',
-    description: 'Generate a comprehensive wellness report from all your Noorix data. Download as PDF to share with your dermatologist or keep for records.',
-    highlights: ['PDF generation', 'Shareable reports', 'Complete history'],
-  },
-  {
-    id: 'chatSearch',
-    icon: ScanLine,
-    needsImage: false,
-    color: '#ec4899',
-    tagline: 'Smart Search',
-    description: 'Search through all your past Noorix conversations. Find that supplement recommendation, skin advice, or nutrition tip from weeks ago.',
-    highlights: ['Full-text search', 'Conversation history', 'Instant results'],
-  },
-  {
-    id: 'quickActions',
-    icon: Zap,
-    needsImage: false,
-    color: '#f97316',
-    tagline: 'Speed Tools',
-    description: 'One-tap shortcuts for common tasks: quick skin check, water log, mood check-in, supplement reminder, and daily ritual completion.',
-    highlights: ['One-tap actions', 'Common tasks', 'Speed optimized'],
-  },
-  {
-    id: 'moodJournal',
-    icon: Heart,
-    needsImage: false,
-    color: '#d946ef',
-    tagline: 'Emotional Wellness',
-    description: 'Daily mood logging with emoji-based check-ins. Noorix correlates your emotional patterns with skin health and suggests coping strategies.',
-    highlights: ['Emoji mood tracking', 'Pattern correlation', 'Wellness insights'],
-  },
-  {
-    id: 'darkMode',
-    icon: Moon,
-    needsImage: false,
-    color: '#1e293b',
-    tagline: 'Night Mode',
-    description: 'Switch to a beautiful dark theme for nighttime use. Easier on the eyes, better for sleep, and looks stunning with the Noorix orb.',
-    highlights: ['Dark theme', 'Sleep friendly', 'Eye comfort'],
-  },
-  {
-    id: 'freeChat',
-    icon: MessageCircle,
-    needsImage: false,
-    color: '#a78bfa',
-    tagline: '✨ Noorix Chat',
-    description: 'Have a free-form conversation with Noorix about anything — skin concerns, nutrition questions, product recommendations, wellness advice, or just chat about your glow journey. Ask anything, anytime.',
-    highlights: ['Ask anything', 'Multi-turn memory', 'Personalized advice'],
-    featured: true,
   },
   {
     id: 'medicalImage',
     icon: Stethoscope,
     needsImage: true,
     color: '#ef4444',
-    tagline: 'Medical AI',
-    description: 'Advanced medical image analysis powered by MedSigLip. Upload skin lesions, rashes, wounds, or any medical image for AI-powered identification and triage guidance.',
+    tagline: 'Medical Imaging',
+    description: 'Advanced medical image analysis. Upload skin lesions, rashes, wounds, or any medical image for identification and triage guidance with clinical precision.',
     highlights: ['Medical-grade analysis', 'Condition identification', 'Severity assessment'],
-  },
-  {
-    id: 'skinClassification',
-    icon: ScanLine,
-    needsImage: true,
-    color: '#f97316',
-    tagline: 'Skin Classifier',
-    description: 'AI classifies skin conditions from photos using medical imaging models. Identifies acne types, pigmentation patterns, and skin texture analysis.',
-    highlights: ['Acne classification', 'Pigmentation analysis', 'Texture scoring'],
-  },
-  {
-    id: 'treatmentPlan',
-    icon: Heart,
-    needsImage: false,
-    color: '#10b981',
-    tagline: 'Treatment AI',
-    description: 'Get a personalized treatment plan based on your skin analysis. Includes product recommendations, lifestyle changes, and a timeline for expected results.',
-    highlights: ['Personalized plan', 'Product timeline', 'Progress milestones'],
   },
   {
     id: 'healthRisk',
@@ -285,27 +194,618 @@ const FEATURES = [
     description: 'Comprehensive health risk assessment based on your lifestyle, family history, and current symptoms. Identifies potential risks before they become problems.',
     highlights: ['Risk scoring', 'Prevention tips', 'Early detection'],
   },
+
+  // ═══ NEW FEATURES (11) ═══
   {
-    id: 'skinAge',
+    id: 'glowScore',
     icon: Sparkles,
-    needsImage: true,
-    color: '#ec4899',
-    tagline: 'Age Detector',
-    description: 'Upload a selfie and Noorix predicts your skin age versus your actual age. Discover how your skin truly ages and get a personalized rejuvenation plan to turn back the clock.',
-    highlights: ['Skin age prediction', 'Rejuvenation plan', 'Before/after tracking'],
+    needsImage: false,
+    color: '#fbbf24',
+    tagline: 'Daily Glow Score',
+    description: 'Your personalized 0-100 glow score, calculated from all your Noorix interactions — sleep, hydration, mood, nutrition, and skincare. Track your radiance trend over time.',
+    highlights: ['0-100 daily score', 'Trend tracking', 'Factor breakdown', 'Improvement tips'],
   },
   {
-    id: 'ingredientConflict',
+    id: 'glowRitualFinder',
+    icon: Heart,
+    needsImage: false,
+    color: '#ec4899',
+    tagline: 'Ritual Finder',
+    description: 'Answer 3 quick questions — no typing. Noorix matches you to your perfect NOORISH GOLD ritual based on your goals, taste, and lifestyle. Discover your glow match.',
+    highlights: ['3-question match', 'Personality-based', 'NOORISH GOLD pairing', 'Taste profile'],
+  },
+  {
+    id: 'weatherGlow',
+    icon: CloudSun,
+    needsImage: false,
+    color: '#0ea5e9',
+    tagline: 'Weather Glow',
+    description: 'Real-time Pakistan weather data — UV index, humidity, pollution, and temperature — personalized to your city. Noorix gives daily skin advice based on actual conditions.',
+    highlights: ['Live weather API', 'UV index advice', 'Humidity impact', 'Pollution protection'],
+  },
+  {
+    id: 'culturalAdapt',
+    icon: Moon,
+    needsImage: false,
+    color: '#6366f1',
+    tagline: 'Cultural Adapt',
+    description: 'Ramadan fasting, monsoon humidity, wedding season stress, winter dryness — Noorix adjusts your glow routine for Pakistani cultural and seasonal contexts.',
+    highlights: ['Ramadan guidance', 'Monsoon skincare', 'Wedding season', 'Seasonal adaptation'],
+  },
+  {
+    id: 'beforeAfter',
+    icon: Camera,
+    needsImage: true,
+    color: '#8b5cf6',
+    tagline: 'Visual Diff',
+    description: 'Upload two photos — Day 1 and today. Noorix analyzes the visual difference, generates a glow improvement chart, and creates a shareable before/after card.',
+    highlights: ['Visual comparison', 'Improvement chart', 'Shareable card', 'Progress metrics'],
+  },
+  {
+    id: 'multilingualVoice',
+    icon: Volume2,
+    needsImage: false,
+    color: '#a78bfa',
+    tagline: 'Multilingual Voice',
+    description: 'Noorix speaks to you in Urdu, Arabic, or English with a natural, beautiful voice. Every response can be heard aloud — perfect for hands-free wellness guidance.',
+    highlights: ['Urdu voice', 'Arabic voice', 'English voice', 'Natural synthesis'],
+  },
+  {
+    id: 'labReport',
     icon: Beaker,
     needsImage: true,
-    color: '#f97316',
-    tagline: 'Conflict Checker',
-    description: 'Paste or photograph your current skincare products. Noorix checks every ingredient combination for conflicts, redundancies, and dangerous interactions. Never mix the wrong products again.',
-    highlights: ['Conflict detection', 'Ingredient synergy', 'Safe combinations'],
+    color: '#10b981',
+    tagline: 'Lab Report Analysis',
+    description: 'Upload blood test or lab report as PDF or photo. Noorix extracts values, explains what they mean, and correlates results with your skin, hair, and overall glow.',
+    highlights: ['PDF upload', 'Value extraction', 'Health correlation', 'Doctor-ready summary'],
   },
-];
+  {
+    id: 'voiceConversation',
+    icon: MessageCircle,
+    needsImage: false,
+    color: '#0ea5e9',
+    tagline: 'Voice Conversation',
+    description: 'Full bidirectional voice chat. Speak to Noorix in Urdu, Arabic, or English — she speaks back. No typing at all. True hands-free glow guidance for cooking, driving, or exercising.',
+    highlights: ['Voice input', 'Voice output', 'Urdu/Arabic/English', 'Hands-free'],
+  },
+  {
+    id: 'liveIngredientResearch',
+    icon: ScanLine,
+    needsImage: true,
+    color: '#22d3ee',
+    tagline: 'Live Ingredient Research',
+    description: 'When analyzing ingredients, Noorix searches in real-time for the latest safety studies, product recalls, and research. Always up-to-date — never relying on outdated training data.',
+    highlights: ['Real-time search', 'Safety recalls', 'Latest research', 'Verified sources'],
+  },
+  {
+    id: 'multiAngleVideo',
+    icon: Camera,
+    needsImage: true,
+    color: '#ff8fb2',
+    tagline: 'Multi-Angle Video',
+    description: 'Upload a 5-10 second video instead of a single photo. Noorix analyzes multiple angles, lighting conditions, and expressions for far more accurate skin assessment.',
+    highlights: ['Video upload', 'Multi-angle analysis', 'Lighting assessment', 'Expression tracking'],
+  },
+  {
 
+    id: 'refillReminder',
+    icon: Pill,
+    needsImage: false,
+    color: '#f97316',
+    tagline: 'Smart Refill',
+    description: 'Noorix tracks your NOORISH GOLD usage patterns and sends smart refill reminders. Based on your actual consumption rate — never run out of your glow ritual.',
+    highlights: ['Usage tracking', 'Smart timing', 'Auto-reminder', 'One-tap reorder'],
+  },
+    {
+    id: 'moodJournal',
+    icon: Smile,
+    needsImage: false,
+    color: '#f472b6',
+    tagline: 'Mood Journal',
+    description: 'Quick mood entry and sentiment analysis. Noorix tracks your emotional patterns, identifies triggers, and provides personalized encouragement.',
+    highlights: ['Mood tracking', 'Sentiment analysis', 'Trigger identification', 'Gratitude prompts'],
+  },
+
+    // ═══ BRAND NEW FEATURES (20) ═══
+  {
+    id: 'aiDietChart',
+    icon: ChefHat,
+    needsImage: false,
+    color: '#f59e0b',
+    tagline: 'AI Diet Chart',
+    description: 'Get a beautifully crafted visual diet chart as a downloadable image. Personalized macros, meal timing, and Pakistani cuisine options for maximum glow.',
+    highlights: ['Visual chart', 'Personalized macros', 'Pakistani cuisine', 'Downloadable'],
+  },
+  {
+    id: 'workoutVisualizer',
+    icon: Dumbbell,
+    needsImage: false,
+    color: '#ef4444',
+    tagline: 'Workout Visualizer',
+    description: 'Creates visual workout plan cards with exercise diagrams, sets/reps, and rest timers. Perfect for sharing to Instagram.',
+    highlights: ['Visual plan', 'Exercise diagrams', 'Sets & reps', 'Shareable'],
+  },
+  {
+    id: 'drugInteractionChecker',
+    icon: Shield,
+    needsImage: false,
+    color: '#dc2626',
+    tagline: 'Drug Interaction',
+    description: 'Real-time interaction checker between your medications and supplements. Uses Google Search for the latest medical databases.',
+    highlights: ['Real-time data', 'Google Search', 'Medication safety', 'Supplement alerts'],
+  },
+  {
+    id: 'liveVoiceTranslator',
+    icon: Languages,
+    needsImage: false,
+    color: '#0ea5e9',
+    tagline: 'Voice Translator',
+    description: 'Real-time voice translation. Speak in Urdu, Noorix responds in English or vice versa. Perfect for multilingual Pakistani users.',
+    highlights: ['Real-time', 'Urdu ↔ English', 'Voice input', 'Live translation'],
+  },
+  {
+    id: 'geneticReportReader',
+    icon: Dna,
+    needsImage: false,
+    color: '#7c3aed',
+    tagline: 'Genetic Reader',
+    description: 'Upload your genetic test PDF (23andMe etc). Noorix analyzes genetic predispositions and creates personalized wellness recommendations.',
+    highlights: ['PDF upload', 'Genetic analysis', 'Predisposition check', 'Personalized plan'],
+  },
+  {
+    id: 'hormoneCycleWellness',
+    icon: Flower2,
+    needsImage: false,
+    color: '#ec4899',
+    tagline: 'Hormone Cycle',
+    description: 'Female-specific feature. Tracks hormonal phases and adjusts skincare, nutrition, and exercise recommendations based on cycle stage.',
+    highlights: ['Cycle tracking', 'Phase-based recs', 'Skincare adjust', 'Nutrition timing'],
+  },
+  {
+    id: 'yogaPostureCorrector',
+    icon: Activity,
+    needsImage: true,
+    color: '#5eead4',
+    tagline: 'Posture AI',
+    description: 'Upload video of yoga pose or posture. Noorix analyzes alignment, identifies issues, and suggests corrections with visual guides.',
+    highlights: ['Video upload', 'Alignment analysis', 'Correction guides', 'Real-time feedback'],
+  },
+  {
+    id: 'aiRecipeGenerator',
+    icon: ChefHat,
+    needsImage: false,
+    color: '#f97316',
+    tagline: 'Recipe AI',
+    description: 'Generates healthy Pakistani recipes based on your health goals, allergies, and available ingredients. Includes visual recipe cards.',
+    highlights: ['Pakistani cuisine', 'Allergy-aware', 'Visual cards', 'Goal-based'],
+  },
+  {
+    id: 'sleepStoryGenerator',
+    icon: Bed,
+    needsImage: false,
+    color: '#6366f1',
+    tagline: 'Sleep Stories',
+    description: 'Generates personalized bedtime stories with Nooriva branding. Uses calming language, Urdu poetry, and ambient sound suggestions.',
+    highlights: ['Personalized stories', 'Urdu poetry', 'Calming language', 'Ambient sounds'],
+  },
+  {
+    id: 'hydrationGamification',
+    icon: GlassWater,
+    needsImage: false,
+    color: '#0ea5e9',
+    tagline: 'Hydration Game',
+    description: 'Turns hydration tracking into a game. Daily challenges, streaks, badges, and social sharing. Visual progress cards.',
+    highlights: ['Gamified', 'Daily challenges', 'Badges', 'Social sharing'],
+  },
+  {
+    id: 'aiMakeupMatch',
+    icon: Brush,
+    needsImage: true,
+    color: '#ff8fb2',
+    tagline: 'Makeup Match',
+    description: 'Upload selfie. Noorix matches foundation shade, lipstick color, and blush to your exact skin tone using computer vision.',
+    highlights: ['Selfie upload', 'Shade matching', 'Color analysis', 'Product recs'],
+  },
+  {
+    id: 'wellnessReportPdf',
+    icon: FileText,
+    needsImage: false,
+    color: '#8b5cf6',
+    tagline: 'Wellness Report',
+    description: 'Generates comprehensive monthly wellness reports (PDF) with charts, trends, recommendations, and Nooriva product suggestions.',
+    highlights: ['Monthly PDF', 'Charts & trends', 'Recommendations', 'Product suggestions'],
+  },
+  {
+    id: 'fastingRamadanTracker',
+    icon: Calendar,
+    needsImage: false,
+    color: '#10b981',
+    tagline: 'Ramadan Tracker',
+    description: 'Intermittent fasting tracker with Ramadan mode. Adjusts hydration, nutrition, and skincare recommendations for fasting periods.',
+    highlights: ['Ramadan mode', 'Fasting tracker', 'Hydration adjust', 'Skincare for fasting'],
+  },
+  {
+    id: 'mentalWellnessCompanion',
+    icon: Brain,
+    needsImage: false,
+    color: '#a78bfa',
+    tagline: 'Mental Wellness',
+    description: 'AI-powered mental health support. Mood tracking, CBT exercises, breathing techniques, and crisis resource detection.',
+    highlights: ['Mood tracking', 'CBT exercises', 'Breathing techniques', 'Crisis detection'],
+  },
+  {
+    id: 'allergyDetective',
+    icon: Shield,
+    needsImage: false,
+    color: '#dc2626',
+    tagline: 'Allergy AI',
+    description: 'Cross-references your allergies against product ingredients, restaurant menus, and environment. Real-time alerts via Google Search.',
+    highlights: ['Allergy check', 'Google Search', 'Real-time alerts', 'Menu scanning'],
+  },
+  {
+    id: 'moodMusicRecommender',
+    icon: Music,
+    needsImage: false,
+    color: '#f472b6',
+    tagline: 'Mood Music',
+    description: 'Recommends music playlists based on mood, energy level, and time of day. Integrates with your wellness data.',
+    highlights: ['Mood-based', 'Energy matching', 'Time-aware', 'Playlist recs'],
+  },
+  {
+    id: 'skincareRoutineCard',
+    icon: Palette,
+    needsImage: false,
+    color: '#ff8fb2',
+    tagline: 'Routine Card',
+    description: 'Creates beautiful visual morning/night routine cards with product images, order, and timing. Shareable to Instagram Stories.',
+    highlights: ['Visual routine', 'AM/PM cards', 'Product order', 'Instagram-ready'],
+  },
+  {
+    id: 'recoveryScore',
+    icon: Activity,
+    needsImage: false,
+    color: '#5eead4',
+    tagline: 'Recovery Score',
+    description: 'Daily recovery score (0-100) combining sleep, hydration, nutrition, stress, and exercise data. Tells you to push hard or rest.',
+    highlights: ['Daily score', 'Multi-factor', 'Push or rest', 'Trend tracking'],
+  },
+  {
+    id: 'pregnancyWellness',
+    icon: Baby,
+    needsImage: false,
+    color: '#ec4899',
+    tagline: 'Pregnancy Guide',
+    description: 'Trimester-specific nutrition, skincare (pregnancy-safe products), exercise, and symptom guidance. Halal & culturally adapted.',
+    highlights: ['Trimester-specific', 'Pregnancy-safe', 'Halal adapted', 'Symptom guide'],
+  },
+
+];
 const FEATURE_MAP = Object.fromEntries(FEATURES.map((f) => [f.id, f]));
+
+/* Category mapping so the filter pills actually work */
+const FEATURE_CATEGORY_MAP = {
+  skinIntelligence: 'skin',
+  ingredientIntelligence: 'skin',
+  glowJournal: 'skin',
+  treatmentRoutine: 'skin',
+  progressStreaks: 'skin',
+  wellnessToolkit: 'skin',
+  mealPhoto: 'nutrition',
+  supplement: 'nutrition',
+  sleep: 'sleep',
+  fitness: 'fitness',
+  hydration: 'nutrition',
+  symptom: 'skin',
+  hair: 'skin',
+  sun: 'skin',
+  freeChat: 'skin',
+  voiceOutput: 'skin',
+  medicalImage: 'skin',
+  healthRisk: 'skin',
+  glowScore: 'skin',
+  glowRitualFinder: 'skin',
+  weatherGlow: 'skin',
+  culturalAdapt: 'skin',
+  beforeAfter: 'skin',
+  multilingualVoice: 'skin',
+  labReport: 'skin',
+  voiceConversation: 'skin',
+  liveIngredientResearch: 'skin',
+  multiAngleVideo: 'skin',
+  refillReminder: 'nutrition',
+  moodJournal: 'sleep',
+  aiDietChart: 'nutrition',
+  workoutVisualizer: 'fitness',
+  drugInteractionChecker: 'skin',
+  liveVoiceTranslator: 'skin',
+  geneticReportReader: 'skin',
+  hormoneCycleWellness: 'skin',
+  yogaPostureCorrector: 'fitness',
+  aiRecipeGenerator: 'nutrition',
+  sleepStoryGenerator: 'sleep',
+  hydrationGamification: 'nutrition',
+  aiMakeupMatch: 'skin',
+  wellnessReportPdf: 'skin',
+  fastingRamadanTracker: 'nutrition',
+  mentalWellnessCompanion: 'sleep',
+  allergyDetective: 'nutrition',
+  moodMusicRecommender: 'skin',
+  skincareRoutineCard: 'skin',
+  recoveryScore: 'fitness',
+  pregnancyWellness: 'skin',
+  apiHub: 'hub',
+};
+
+/* ══════════════════════════════════════════════════════════════
+   SUGGESTED PROMPTS — Pre-written, one-tap engagement per feature
+   ══════════════════════════════════════════════════════════════ */
+
+const SUGGESTED_PROMPTS = {
+  skinIntelligence: [
+    'Analyze my skin for acne',
+    'Check for dark spots',
+    'Predict my skin age',
+    'Is this redness serious?',
+  ],
+  ingredientIntelligence: [
+    'Decode this product label',
+    'Check for harmful chemicals',
+    'Verify halal status',
+    'Find ingredient conflicts',
+  ],
+  glowJournal: [
+    'Log my mood today',
+    'Track my skin patterns',
+    'Find my breakout triggers',
+    'Suggest coping strategies',
+  ],
+  treatmentRoutine: [
+    'Build my AM/PM routine',
+    'Treat my acne',
+    'Reduce dark spots',
+    'Create anti-aging plan',
+  ],
+  progressStreaks: [
+    'Compare my before/after',
+    'Track my glow streak',
+    'Show my achievements',
+    'Analyze my progress',
+  ],
+  wellnessToolkit: [
+    'Show my monthly calendar',
+    'Generate PDF report',
+    'Search my past chats',
+    'Quick actions',
+  ],
+  mealPhoto: [
+    'Analyze this meal',
+    'Check macros',
+    'Rate skin nutrients',
+    'Suggest healthier option',
+  ],
+  supplement: [
+    'Build my supplement stack',
+    'Improve hair growth',
+    'Boost my energy',
+    'Check interactions',
+  ],
+  sleep: [
+    'Analyze my sleep',
+    'Fix my circadian rhythm',
+    'Create bedtime routine',
+    'Link sleep to skin',
+  ],
+  fitness: [
+    'Protect my skin during workouts',
+    'Prevent sweat acne',
+    'Post-workout skincare',
+    'Hydration for exercise',
+  ],
+  hydration: [
+    'Track my water intake',
+    'Improve skin elasticity',
+    'Build drinking schedule',
+    'Check dehydration signs',
+  ],
+  symptom: [
+    'Check my symptoms',
+    'Is this an emergency?',
+    'Find possible causes',
+    'When to see a doctor',
+  ],
+  hair: [
+    'Analyze my scalp',
+    'Check hair loss pattern',
+    'Treat dandruff',
+    'Boost hair growth',
+  ],
+  sun: [
+    'Check UV protection',
+    'Recommend SPF',
+    'After-sun care',
+    'Protect my skin tone',
+  ],
+  freeChat: [
+    'How can I glow today?',
+    'Recommend a NOORISH GOLD ritual',
+    'What should I eat for glowing skin?',
+    'Help me sleep better',
+  ],
+  voiceOutput: [
+    'Speak my wellness advice',
+    'Read my routine aloud',
+    'Voice my nutrition tips',
+  ],
+  medicalImage: [
+    'Analyze this medical image',
+    'Identify this skin lesion',
+    'Assess severity',
+  ],
+  healthRisk: [
+    'Assess my health risks',
+    'Check my lifestyle factors',
+    'Prevent future issues',
+  ],
+  glowScore: [
+    'Calculate my glow score',
+    'Show my trend',
+    'Break down my factors',
+    'How to improve?',
+  ],
+  glowRitualFinder: [
+    'Find my perfect ritual',
+    'Match my taste profile',
+    'Discover NOORISH GOLD pairing',
+  ],
+  weatherGlow: [
+    'Check today\'s UV index',
+    'Protect from pollution',
+    'Humidity skincare advice',
+  ],
+  culturalAdapt: [
+    'Ramadan skincare guidance',
+    'Monsoon humidity tips',
+    'Wedding season glow',
+    'Winter dryness care',
+  ],
+  beforeAfter: [
+    'Compare my progress photos',
+    'Generate improvement chart',
+    'Create shareable card',
+  ],
+  multilingualVoice: [
+    'Speak in Urdu',
+    'Speak in Arabic',
+    'Speak in English',
+  ],
+  labReport: [
+    'Analyze my blood test',
+    'Explain my lab values',
+    'Correlate with skin health',
+  ],
+  voiceConversation: [
+    'Start voice chat',
+    'Speak in Urdu',
+    'Hands-free guidance',
+  ],
+  liveIngredientResearch: [
+    'Search latest safety studies',
+    'Check product recalls',
+    'Verify ingredient research',
+  ],
+  multiAngleVideo: [
+    'Analyze my video',
+    'Multi-angle skin assessment',
+    'Check lighting conditions',
+  ],
+  refillReminder: [
+    'Track my NOORISH GOLD usage',
+    'Set smart refill reminder',
+    'Reorder my ritual',
+  ],
+  moodJournal: [
+    'Log my mood',
+    'Analyze my emotions',
+    'Find my triggers',
+    'Gratitude prompt',
+  ],
+  aiDietChart: [
+    'Create my diet chart',
+    'Personalize my macros',
+    'Pakistani meal plan',
+  ],
+  workoutVisualizer: [
+    'Create workout plan',
+    'Show exercise diagrams',
+    'Share to Instagram',
+  ],
+  drugInteractionChecker: [
+    'Check my medications',
+    'Supplement interactions',
+    'Safety alerts',
+  ],
+  liveVoiceTranslator: [
+    'Translate Urdu to English',
+    'Translate English to Urdu',
+    'Live voice translation',
+  ],
+  geneticReportReader: [
+    'Analyze my genetic report',
+    'Check predispositions',
+    'Personalized wellness plan',
+  ],
+  hormoneCycleWellness: [
+    'Track my cycle',
+    'Phase-based skincare',
+    'Nutrition timing',
+  ],
+  yogaPostureCorrector: [
+    'Analyze my yoga pose',
+    'Correct my posture',
+    'Alignment feedback',
+  ],
+  aiRecipeGenerator: [
+    'Generate healthy recipe',
+    'Pakistani cuisine',
+    'Allergy-aware recipe',
+  ],
+  sleepStoryGenerator: [
+    'Tell me a bedtime story',
+    'Urdu poetry sleep story',
+    'Calming ambient sounds',
+  ],
+  hydrationGamification: [
+    'Start hydration challenge',
+    'Show my badges',
+    'Daily water game',
+  ],
+  aiMakeupMatch: [
+    'Match my foundation shade',
+    'Find lipstick color',
+    'Analyze my skin tone',
+  ],
+  wellnessReportPdf: [
+    'Generate monthly report',
+    'Show my trends',
+    'Product suggestions',
+  ],
+  fastingRamadanTracker: [
+    'Track my fast',
+    'Ramadan hydration',
+    'Skincare while fasting',
+  ],
+  mentalWellnessCompanion: [
+    'Track my mood',
+    'CBT exercise',
+    'Breathing technique',
+    'Crisis resources',
+  ],
+  allergyDetective: [
+    'Check my allergies',
+    'Scan product ingredients',
+    'Real-time alerts',
+  ],
+  moodMusicRecommender: [
+    'Recommend music for my mood',
+    'Match my energy',
+    'Time-aware playlist',
+  ],
+  skincareRoutineCard: [
+    'Create AM/PM card',
+    'Visual routine',
+    'Instagram-ready card',
+  ],
+  recoveryScore: [
+    'Calculate recovery score',
+    'Should I rest or push?',
+    'Show my trend',
+  ],
+  pregnancyWellness: [
+    'Trimester nutrition',
+    'Pregnancy-safe skincare',
+    'Exercise guidance',
+  ],
+};
 
 /* ══════════════════════════════════════════════════════════════
    CONTEXT FORM CONFIGS — Interactive, Pre-filled, Zero Typing
@@ -485,7 +985,7 @@ const CONTEXT_CONFIGS = {
         { value: 'sleep', label: 'Better Sleep', desc: 'Rest and recovery' },
       ]},
       { key: 'age', label: 'Your age range?', type: 'tags', options: ['18-24', '25-34', '35-44', '45-54', '55+'] },
-      { key: 'current', label: 'Currently taking anything?', type: 'tags', options: ['Nothing', 'Collagen', 'Biotin', 'Multivitamin', 'Vitamin D', 'Iron', 'Probiotics', 'Other'] },
+      { key: 'current', label: 'Current glow routine?', type: 'tags', options: ['Nothing', 'NOORISH GOLD', 'ROSE HALO', 'SAFFRON MIST', 'MANGO BLAZE', 'BERRY BLOOM', 'COCO GLOW', 'ACAI DEW', 'PEARL SHEEN', 'ALOE TIDE', 'Other'] },
     ],
   },
   sleep: {
@@ -827,7 +1327,6 @@ function formatAIContent(result) {
   return sections.join('\n');
 }
 
-/* ── Markdown-lite renderer ── */
 function renderMarkdown(text) {
   if (!text) return null;
   var lines = text.split('\n');
@@ -838,10 +1337,10 @@ function renderMarkdown(text) {
     if (listItems.length > 0) {
       elements.push(
         <ul key={'list-' + elements.length} className="mt-1 space-y-1 pl-1">
-          {listItems.map(function(item, i) {
+          {listItems?.map(function(item, i) {
             return (
-              <li key={i} className="text-sm text-ink/70 flex items-start gap-1.5">
-                <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-ink/30" />
+              <li key={i} className="text-sm text-noorix-text flex items-start gap-1.5">
+                <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-white/30" />
                 <span dangerouslySetInnerHTML={{ __html: formatInline(item) }} />
               </li>
             );
@@ -868,7 +1367,7 @@ function renderMarkdown(text) {
       );
     } else {
       elements.push(
-        <p key={i} className="text-sm text-ink/80 leading-relaxed" dangerouslySetInnerHTML={{ __html: formatInline(line) }} />
+        <p key={i} className="text-sm text-noorix-text leading-relaxed" dangerouslySetInnerHTML={{ __html: formatInline(line) }} />
       );
     }
   }
@@ -878,21 +1377,23 @@ function renderMarkdown(text) {
 
 function formatInline(text) {
   return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-ink">$1</strong>')
-    .replace(/_(.+?)_/g, '<em class="text-ink/50">$1</em>');
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-noorix-text">$1</strong>')
+    .replace(/_(.+?)_/g, '<em class="text-noorix-muted">$1</em>');
 }
 
 /* ══════════════════════════════════════════════════════════════
    INTERACTIVE FORM COMPONENTS — Zero Typing Required
    ══════════════════════════════════════════════════════════════ */
 
-function TapCardsField({ field, value, onChange }) {
-  var isMulti = field.multi;
-  var selected = isMulti ? (value || []) : [value].filter(Boolean);
+function TapCardsField({ field, value, onChange, accent = '#ff8fb2' }) {
+  const isMulti = field.multi;
+  const selected = isMulti ? (value || []) : [value].filter(Boolean);
 
   function toggle(val) {
     if (isMulti) {
-      var next = selected.includes(val) ? selected.filter(function(v) { return v !== val; }) : selected.concat([val]);
+      const next = selected.includes(val)
+        ? selected.filter((v) => v !== val)
+        : selected.concat([val]);
       onChange(next);
     } else {
       onChange(selected[0] === val ? '' : val);
@@ -901,28 +1402,25 @@ function TapCardsField({ field, value, onChange }) {
 
   return (
     <div>
-      <label className="block text-xs font-medium text-ink/60 mb-2">{field.label}</label>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {field.options.map(function(opt) {
-          var isSelected = selected.includes(opt.value);
+      <label className="noorix-field-label">{field.label}</label>
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+        {field.options?.map((opt) => {
+          const isSelected = selected.includes(opt.value);
           return (
             <motion.button
               key={opt.value}
-              whileTap={{ scale: 0.95 }}
-              onClick={function() { toggle(opt.value); }}
-              className={
-                'rounded-xl border p-3 text-left transition-all duration-200 ' +
-                (isSelected
-                  ? 'border-ink bg-ink text-cream shadow-md'
-                  : 'border-ink/10 bg-white/60 hover:border-ink/20 hover:bg-white/80')
-              }
+              type="button"
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => toggle(opt.value)}
+              style={isSelected ? { '--field-accent': accent } : undefined}
+              className={`noorix-tap-card ${isSelected ? 'is-selected' : ''}`}
             >
-              <span className="text-sm font-medium">{opt.label}</span>
-              {opt.desc && (
-                <span className={'block text-[10px] mt-0.5 ' + (isSelected ? 'text-cream/70' : 'text-ink/40')}>
-                  {opt.desc}
-                </span>
-              )}
+              <span className="noorix-tap-radio">
+                {isSelected ? <Check size={10} strokeWidth={3} /> : null}
+              </span>
+              <span className="noorix-tap-label">{opt.label}</span>
+              {opt.desc && <span className="noorix-tap-desc">{opt.desc}</span>}
             </motion.button>
           );
         })}
@@ -931,13 +1429,15 @@ function TapCardsField({ field, value, onChange }) {
   );
 }
 
-function TagsField({ field, value, onChange }) {
-  var isMulti = field.multi;
-  var selected = isMulti ? (value || []) : [value].filter(Boolean);
+function TagsField({ field, value, onChange, accent = '#ff8fb2' }) {
+  const isMulti = field.multi;
+  const selected = isMulti ? (value || []) : [value].filter(Boolean);
 
   function toggle(val) {
     if (isMulti) {
-      var next = selected.includes(val) ? selected.filter(function(v) { return v !== val; }) : selected.concat([val]);
+      const next = selected.includes(val)
+        ? selected.filter((v) => v !== val)
+        : selected.concat([val]);
       onChange(next);
     } else {
       onChange(selected[0] === val ? '' : val);
@@ -946,21 +1446,19 @@ function TagsField({ field, value, onChange }) {
 
   return (
     <div>
-      <label className="block text-xs font-medium text-ink/60 mb-2">{field.label}</label>
-      <div className="flex flex-wrap gap-1.5">
-        {field.options.map(function(opt) {
-          var isSelected = selected.includes(opt);
+      <label className="noorix-field-label">{field.label}</label>
+      <div className="flex flex-wrap gap-2">
+        {field.options?.map((opt) => {
+          const isSelected = selected.includes(opt);
           return (
             <button
               key={opt}
-              onClick={function() { toggle(opt); }}
-              className={
-                'rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-200 ' +
-                (isSelected
-                  ? 'bg-ink text-cream shadow-sm'
-                  : 'bg-white/60 border border-ink/10 text-ink/60 hover:border-ink/20 hover:bg-white')
-              }
+              type="button"
+              onClick={() => toggle(opt)}
+              style={isSelected ? { '--tag-accent': accent } : undefined}
+              className={`noorix-tag ${isSelected ? 'is-selected' : ''}`}
             >
+              {isSelected && <Check size={11} strokeWidth={3} />}
               {opt}
             </button>
           );
@@ -971,24 +1469,36 @@ function TagsField({ field, value, onChange }) {
 }
 
 function CounterField({ field, value, onChange }) {
-  var current = value != null ? value : (field.defaultValue || 0);
+  const current = value != null ? value : field.defaultValue || 0;
+
   return (
     <div>
-      <label className="block text-xs font-medium text-ink/60 mb-2">{field.label}</label>
-      <div className="flex items-center gap-4">
-        <button
-          onClick={function() { onChange(Math.max(field.min || 0, current - 1)); }}
-          className="h-10 w-10 rounded-full bg-white/60 border border-ink/10 text-ink font-bold text-lg hover:bg-white transition-colors flex items-center justify-center"
+      <label className="noorix-field-label">{field.label}</label>
+      <div className="noorix-counter-shell">
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.88 }}
+          onClick={() => onChange(Math.max(field.min || 0, current - 1))}
+          className="noorix-counter-btn"
+          aria-label="Decrease"
         >
           −
-        </button>
-        <span className="text-3xl font-bold w-16 text-center display-heading">{current}</span>
-        <button
-          onClick={function() { onChange(Math.min(field.max || 20, current + 1)); }}
-          className="h-10 w-10 rounded-full bg-white/60 border border-ink/10 text-ink font-bold text-lg hover:bg-white transition-colors flex items-center justify-center"
+        </motion.button>
+
+        <div className="noorix-counter-value">
+          <span>{current}</span>
+          {field.unit ? <small>{field.unit}</small> : null}
+        </div>
+
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.88 }}
+          onClick={() => onChange(Math.min(field.max || 20, current + 1))}
+          className="noorix-counter-btn"
+          aria-label="Increase"
         >
           +
-        </button>
+        </motion.button>
       </div>
     </div>
   );
@@ -999,12 +1509,28 @@ function CounterField({ field, value, onChange }) {
    ══════════════════════════════════════════════════════════════ */
 
 export default function NoorixChat() {
+  const { data: session } = useSession();
   var t = useT();
   var noorixOpen = useStore(function(s) { return s.noorixOpen; });
+  var setNoorixOpen = useStore(function(s) { return s.setNoorixOpen; });
+  const [filter, setFilter] = useState('all');
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(function() {
+    useStore.setState({ noorixOpen: true });
+  }, []);
+
   var noorixFeature = useStore(function(s) { return s.noorixFeature; });
   var noorixMessages = useStore(function(s) { return s.noorixMessages; });
   var toggleNoorix = useStore(function(s) { return s.toggleNoorix; });
   var closeNoorix = useStore(function(s) { return s.closeNoorix; });
+  var handleCloseNoorix = function() {
+    closeNoorix();
+    if (typeof window !== 'undefined') {
+      window.location.href = '/';
+    }
+  };
+
   var setNoorixFeature = useStore(function(s) { return s.setNoorixFeature; });
   var backNoorix = useStore(function(s) { return s.backNoorix; });
   var addNoorixMessage = useStore(function(s) { return s.addNoorixMessage; });
@@ -1042,7 +1568,6 @@ export default function NoorixChat() {
   var noorixDailyUsed = useStore(function(s) { return s.noorixDailyUsed; });
   var noorixDailyDate = useStore(function(s) { return s.noorixDailyDate; });
   var useNoorixCredit = useStore(function(s) { return s.useNoorixCredit; });
-  var addToCart = useStore(function(s) { return s.addToCart; });
   var glowScore = useStore(function(s) { return s.glowScore; });
   var ritualStreak = useStore(function(s) { return s.ritualStreak; });
 
@@ -1060,17 +1585,15 @@ export default function NoorixChat() {
   });
   var trial = trialState[0];
 
-  var hologramState = useState(false);
-  var showHologram = hologramState[0];
-  var setShowHologram = hologramState[1];
-
-  var tutorialState = useState(false);
-  var showTutorial = tutorialState[0];
-  var setShowTutorial = tutorialState[1];
-
-  var [hasSeenHologram, setHasSeenHologram] = useState(function() {
-    return typeof window !== 'undefined' && !!localStorage.getItem('noorix-hologram-seen');
-  });
+  useEffect(function() {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const featureId = params.get('feature');
+    if (featureId && FEATURE_MAP[featureId] && !noorixFeature) {
+      setNoorixFeature(featureId);
+      useStore.setState({ noorixOpen: true });
+    }
+  }, [noorixFeature, setNoorixFeature]);
 
   var messagesEndRef = useRef(null);
   var inputRef = useRef(null);
@@ -1078,7 +1601,8 @@ export default function NoorixChat() {
 
   var feature = noorixFeature ? FEATURE_MAP[noorixFeature] : null;
   var messages = noorixFeature ? (noorixMessages[noorixFeature] || []) : [];
-  var contextConfig = noorixFeature ? CONTEXT_CONFIGS[noorixFeature] : null;
+  var contextConfig = noorixFeature ? (CONTEXT_CONFIGS[noorixFeature] || { intro: feature?.description || "Describe what you need help with.", fields: [{ key: "query", label: "What do you need?", type: "tags", options: feature?.highlights || ["General advice"] }] }) : null;
+  var suggestedPrompts = noorixFeature ? (SUGGESTED_PROMPTS[noorixFeature] || ((feature?.highlights || []).map(function(h){return "Help me with " + h.toLowerCase();}))) : [];
 
   useEffect(function() {
     if (messagesEndRef.current) {
@@ -1101,47 +1625,21 @@ export default function NoorixChat() {
   }, [noorixFeature]);
 
   var openChat = useCallback(function(featureId) {
-    var effectivePlan = getEffectivePlan();
-    // Check plan access
-    if (!isFeatureAllowed(effectivePlan, featureId)) {
-      var required = getRequiredPlan(featureId);
-      setBlocked({ type: 'feature', featureId: featureId, required: required });
-      return;
-    }
-    // Check daily limit
-    var today = new Date().toDateString();
-    var usedToday = (noorixDailyDate === today) ? noorixDailyUsed : 0;
-    var limit = checkDailyLimit(effectivePlan, usedToday);
-    if (!limit.allowed) {
-      setBlocked({ type: 'limit', remaining: 0, limit: limit.limit });
-      return;
-    }
     setBlocked(null);
     setNoorixFeature(featureId);
-  }, [setNoorixFeature, noorixPlan, noorixDailyUsed, noorixDailyDate]);
+  }, [setNoorixFeature]);
 
-  var handleImageSelect = useCallback(function(e) {
-    var file = e.target.files && e.target.files[0];
-    if (!file) return;
-    var validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
-    if (validTypes.indexOf(file.type) === -1 || file.size > 20 * 1024 * 1024) return;
-    fileToDataURL(file).then(function(preview) {
-      setImage({ file: file, preview: preview });
-      if (fileRef.current) fileRef.current.value = '';
-    });
-  }, []);
-
-  var sendMessage = useCallback(function() {
+  var sendMessage = useCallback(function(customText) {
     if (sending || !noorixFeature || !feature) return;
-    var hasInput = input.trim().length > 0;
+    var messageText = (customText || input.trim());
     var hasImage = !!image;
     var hasContext = Object.keys(contextValues).length > 0;
-    if (!hasInput && !hasImage && !hasContext) return;
+    if (!messageText && !hasImage && !hasContext) return;
 
     var summary = buildContextSummary(noorixFeature, contextValues);
-    var messageText = input.trim() || summary || ('Analyze my ' + t('noorix.feature.' + noorixFeature).toLowerCase());
+    var finalText = messageText || summary || ('Analyze my ' + t('noorix.feature.' + noorixFeature).toLowerCase());
 
-    var userMsg = { role: 'user', content: messageText, image: image ? image.preview : null, timestamp: Date.now() };
+    var userMsg = { role: 'user', content: finalText, image: image ? image.preview : null, timestamp: Date.now() };
     addNoorixMessage(noorixFeature, userMsg);
     setInput('');
     setImage(null);
@@ -1196,7 +1694,7 @@ export default function NoorixChat() {
       });
     })
     .catch(function(err) {
-      console.error('[Noorix] send error:', err);
+      if (process.env.NODE_ENV === 'development') console.error('[Noorix] send error:', err);
       addNoorixMessage(noorixFeature, {
         role: 'assistant',
         content: 'Sorry, something went wrong: ' + err.message + '. Please try again.',
@@ -1280,9 +1778,59 @@ export default function NoorixChat() {
     });
   }
 
+  function handleImageSelect(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Please choose an image under 5MB.');
+      event.target.value = '';
+      return;
+    }
+
+    fileToDataURL(file)
+      .then((dataUrl) => {
+        setImage({ preview: dataUrl, file });
+      })
+      .catch(() => {
+        alert('Could not read that image. Try another one.');
+      });
+
+    event.target.value = '';
+  }
+
+  function handleSuggestedPrompt(prompt) {
+    sendMessage(prompt);
+  }
+
   return (
-    <div>
-      {/* ═══ Floating Button ═══ */}
+    <div
+      onMouseMove={(e) => setMousePos({ x: e.clientX, y: e.clientY })}
+      className="fixed inset-0 z-0 flex h-[100dvh] w-full flex-col overflow-hidden bg-cream-50 text-ink"
+    >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-70"
+        style={{
+          background: `
+            radial-gradient(circle at 20% 30%, rgba(255,143,178,0.22) 0%, transparent 45%),
+            radial-gradient(circle at 80% 20%, rgba(167,139,250,0.18) 0%, transparent 45%),
+            radial-gradient(circle at 50% 80%, rgba(103,232,249,0.15) 0%, transparent 45%),
+            radial-gradient(circle at 80% 80%, rgba(94,234,212,0.12) 0%, transparent 45%)
+          `,
+          backgroundSize: '180% 180%',
+          animation: 'noorixChatAurora 16s ease-in-out infinite alternate',
+        }}
+      />
+
+      <Link
+        href="/"
+        className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/70 border border-ink/10 backdrop-blur-xl hover:bg-white transition-all duration-300 group shadow-sm"
+      >
+        <Home size={16} className="text-ink/60 group-hover:text-ink transition-colors" />
+        <span className="text-sm font-semibold text-ink/90 group-hover:text-ink transition-colors">Home</span>
+      </Link>
+
       <div className="fixed bottom-24 right-4 z-40 md:bottom-6 md:right-6">
         <motion.button
           onClick={toggleNoorix}
@@ -1301,17 +1849,16 @@ export default function NoorixChat() {
             : <div className="relative z-10 w-7 h-7 rounded-full" style={{ background: 'conic-gradient(from 0deg, #ff8fb2, #ffd7a1, #a78bfa, #67e8f9, #ff8fb2)', animation: 'noorix-btn-spin 4s linear infinite', boxShadow: '0 0 12px rgba(167,139,250,0.6)' }} />
           }
         </motion.button>
-        <style jsx>{'\n          @keyframes noorix-btn-spin { to { transform: rotate(360deg); } }\n          @keyframes noorix-shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }\n        '}</style>
+        <style>{`
+          @keyframes noorix-btn-spin { to { transform: rotate(360deg); } }
+          @keyframes noorix-shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+          @keyframes quantum-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+          @keyframes quantum-glow { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+          @keyframes quantum-crack { 0% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); } 100% { clip-path: polygon(0 0, 45% 0, 50% 50%, 0 100%); } }
+        `}</style>
       </div>
 
-      {/* ═══ Full-Screen Overlay ═══ */}
       <AnimatePresence>
-        {noorixOpen && !hasSeenHologram && (
-          <NoorixHologram isVisible={noorixOpen && !hasSeenHologram} onDismiss={function() { localStorage.setItem('noorix-hologram-seen', 'true'); setHasSeenHologram(true); }} />
-        )}
-        {showTutorial && (
-          <NoorixTutorial isOpen={showTutorial} onClose={function() { setShowTutorial(false); }} />
-        )}
         {noorixOpen && (
           <motion.div
             key="noorix-overlay"
@@ -1320,91 +1867,86 @@ export default function NoorixChat() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-50 flex flex-col"
-            style={{ background: 'rgba(250, 247, 242, 0.97)' }}
+            style={{ background: 'transparent' }}
           >
-            {/* ── Header ── */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-ink/5">
+            <div className="relative z-10 flex items-center justify-between px-5 py-4 border-b border-ink/10 bg-white/70 backdrop-blur-md">
               <div className="flex items-center gap-3">
                 {noorixFeature ? (
-                  <button onClick={backNoorix} className="rounded-full bg-ink/5 p-2 hover:bg-ink/10 transition-colors">
-                    <ArrowLeft size={18} />
+                  <button onClick={backNoorix} className="rounded-full bg-noorix-surface p-2 hover:bg-noorix-surface-raised transition-colors">
+                    <ArrowLeft size={18} className="text-white" />
                   </button>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <Sparkles size={18} className="text-ink/60" />
+                    <Sparkles size={18} className="text-white/60" />
                   </div>
                 )}
                 <div>
-                  <h2 className="text-lg font-bold display-heading">
+                  <h2 className="text-lg font-bold display-heading text-ink">
                     {feature ? t('noorix.feature.' + feature.id) : 'Noorix'}
                   </h2>
-                  <p className="text-[11px] text-ink/40">
+                  <p className="text-[11px] text-ink/50">
                     {feature ? t('noorix.feature.' + feature.id + 'Desc') : t('noorix.sub')}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {/* Usage counter */}
-                {noorixPlan !== 'lite' || true ? (
-                  <button
-                    onClick={function() { setPlansOpen(true); }}
-                    className="relative flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden"
+                <button
+                  onClick={function() { setPlansOpen(true); }}
+                  className="relative flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden"
+                  style={{
+                    background: noorixPlan === 'lite'
+                      ? 'linear-gradient(135deg, #94a3b8, #cbd5e1)'
+                      : noorixPlan === 'glow'
+                      ? 'linear-gradient(135deg, #ff8fb2, #ffd7a1)'
+                      : noorixPlan === 'pro'
+                      ? 'linear-gradient(135deg, #a78bfa, #67e8f9)'
+                      : 'linear-gradient(135deg, #f59e0b, #ef4444)',
+                    color: 'white',
+                    boxShadow: noorixPlan === 'lite'
+                      ? '0 4px 15px rgba(148,163,184,0.4)'
+                      : noorixPlan === 'glow'
+                      ? '0 4px 15px rgba(255,143,178,0.4)'
+                      : noorixPlan === 'pro'
+                      ? '0 4px 15px rgba(167,139,250,0.4)'
+                      : '0 4px 15px rgba(245,158,11,0.4)',
+                  }}
+                >
+                  <div
+                    className="absolute inset-0 opacity-30"
                     style={{
-                      background: noorixPlan === 'lite'
-                        ? 'linear-gradient(135deg, #94a3b8, #cbd5e1)'
-                        : noorixPlan === 'glow'
-                        ? 'linear-gradient(135deg, #ff8fb2, #ffd7a1)'
-                        : noorixPlan === 'pro'
-                        ? 'linear-gradient(135deg, #a78bfa, #67e8f9)'
-                        : 'linear-gradient(135deg, #f59e0b, #ef4444)',
-                      color: 'white',
-                      boxShadow: noorixPlan === 'lite'
-                        ? '0 4px 15px rgba(148,163,184,0.4)'
-                        : noorixPlan === 'glow'
-                        ? '0 4px 15px rgba(255,143,178,0.4)'
-                        : noorixPlan === 'pro'
-                        ? '0 4px 15px rgba(167,139,250,0.4)'
-                        : '0 4px 15px rgba(245,158,11,0.4)',
+                      background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
+                      animation: 'noorix-shimmer 2s ease-in-out infinite',
                     }}
-                  >
-                    {/* Animated shimmer */}
-                    <div
-                      className="absolute inset-0 opacity-30"
-                      style={{
-                        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
-                        animation: 'noorix-shimmer 2s ease-in-out infinite',
-                      }}
-                    />
-                    <span className="relative z-10 flex items-center gap-1.5">
-                      {noorixPlan === 'lite' ? '⚡' : noorixPlan === 'glow' ? '✨' : noorixPlan === 'pro' ? '👑' : '💎'}
-                    {({ lite: 'Free', glow: 'Glow', pro: 'Pro', max: 'Max', elite: 'Elite', premium: 'Premium', ultimate: 'Ultimate', supreme: 'Supreme' })[getEffectivePlan()] || 'Free'}
-                      {getEffectivePlan() === 'lite' && (() => {
-                        var today = new Date().toDateString();
-                        var used = (noorixDailyDate === today) ? noorixDailyUsed : 0;
-                        return ' · ' + used + '/5';
-                      })()}
-                      {getEffectivePlan() === 'glow' && (() => {
-                        var today = new Date().toDateString();
-                        var used = (noorixDailyDate === today) ? noorixDailyUsed : 0;
-                        return ' · ' + used + '/25';
-                      })()}
-                      {getEffectivePlan() === 'lite' && ' · Upgrade'}
-                    </span>
-                  </button>
-                ) : null}
-                <button onClick={closeNoorix} className="rounded-full bg-ink/5 p-2.5 hover:bg-ink/10 transition-colors">
+                  />
+                  <span className="relative z-10 flex items-center gap-1.5">
+                    {noorixPlan === 'lite' ? '⚡' : noorixPlan === 'glow' ? '✨' : noorixPlan === 'pro' ? '👑' : '💎'}
+                    {(() => {
+                      var planMap = { lite: 'Free', glow: 'Glow', pro: 'Pro', max: 'Max', elite: 'Elite', premium: 'Premium', ultimate: 'Ultimate', supreme: 'Supreme' };
+                      return planMap[getEffectivePlan()] || 'Free';
+                    })()}
+                    {getEffectivePlan() === 'lite' && (() => {
+                      var today = new Date().toDateString();
+                      var used = (noorixDailyDate === today) ? noorixDailyUsed : 0;
+                      return ' · ' + used + '/5';
+                    })()}
+                    {getEffectivePlan() === 'glow' && (() => {
+                      var today = new Date().toDateString();
+                      var used = (noorixDailyDate === today) ? noorixDailyUsed : 0;
+                      return ' · ' + used + '/25';
+                    })()}
+                    {getEffectivePlan() === 'lite' && ' · Upgrade'}
+                  </span>
+                </button>
+                <div className="rounded-full bg-noorix-surface p-0.5 backdrop-blur-md"><LanguageToggle /></div>
+                <button onClick={handleCloseNoorix} className="rounded-full bg-noorix-surface p-2.5 hover:bg-noorix-surface-raised transition-colors">
                   <X size={18} />
                 </button>
               </div>
             </div>
 
-            {/* ── Content ── */}
             <div className="flex-1 overflow-hidden">
               <AnimatePresence mode="wait">
                 {!noorixFeature ? (
-                  /* ═══════════════════════════════════════
-                     LANDING — Feature Grid
-                     ═══════════════════════════════════════ */
                   <motion.div
                     key="landing"
                     initial={{ opacity: 0 }}
@@ -1412,117 +1954,163 @@ export default function NoorixChat() {
                     exit={{ opacity: 0, y: -20 }}
                     className="h-full overflow-y-auto no-scrollbar"
                   >
-                    <div className="mx-auto max-w-3xl px-5 py-8">
-                      {/* Orb + Greeting */}
+                    <div className="noorix-landing-root mx-auto max-w-6xl px-4 sm:px-6 py-6 md:py-10 relative">
+                      <div className="noorix-aurora" aria-hidden="true" />
+                      <div className="noorix-aurora noorix-aurora--alt" aria-hidden="true" />
+
                       <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                        className="flex flex-col items-center mb-10"
+                        initial={{ y: 24, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                        className="noorix-hero"
                       >
+                        <div className="noorix-hero-badge">
+                          <Sparkles size={13} />
+                          <span>NOORIX · PERSONAL GLOW INTELLIGENCE</span>
+                        </div>
+
                         <motion.div
-                          animate={{ scale: [1, 1.08, 1] }}
-                          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                          initial={{ scale: 0.75, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                          className="noorix-orb-hero"
                         >
-                          <NoorixOrb size={160} />
+                          <NoorixOrb size={58} />
                         </motion.div>
+
                         <motion.h3
+                          suppressHydrationWarning
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.3 }}
-                          className="mt-5 text-2xl md:text-3xl font-bold display-heading text-center"
+                          transition={{ delay: 0.28 }}
+                          className="noorix-greeting display-heading"
                         >
-                          {t('noorix.greeting')}
+                          {(() => {
+                            const hour = new Date().getHours();
+                            const userName = session?.user?.name || session?.user?.email || 'Glow Seeker';
+                            const firstName = userName.split(' ')[0];
+
+                            if (hour >= 5 && hour < 12) {
+                              return `Good morning, ${firstName}. Let's start your day with a glow check.`;
+                            }
+                            if (hour >= 12 && hour < 17) {
+                              return `Good afternoon, ${firstName}. Ready for your afternoon glow?`;
+                            }
+                            if (hour >= 17 && hour < 21) {
+                              return `Good evening, ${firstName}. Let's wind down and optimize your recovery.`;
+                            }
+                            return `Burning the midnight oil, ${firstName}? Let me help you prepare for rest.`;
+                          })()}
                         </motion.h3>
+
                         <motion.p
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          transition={{ delay: 0.5 }}
-                          className="mt-2 text-sm text-ink/50 text-center max-w-md"
+                          transition={{ delay: 0.42 }}
+                          className="noorix-hero-sub"
                         >
-                          Choose a feature to begin your personalized experience. Tap, snap, or select — no typing required.
+                          Choose a feature below to begin your personalized experience. Tap, snap, or select — no typing required.
                         </motion.p>
 
-                        {/* Introduction stats */}
+                        {/* Quick action prompts on landing */}
                         <motion.div
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.7 }}
-                          className="mt-6 flex flex-wrap justify-center gap-4"
+                          transition={{ delay: 0.5 }}
+                          className="mt-6 flex flex-wrap justify-center gap-2"
+                        >
+                          {['Analyze my skin', 'Plan my diet', 'Recommend a ritual', 'Check my glow score'].map((prompt) => (
+                            <button
+                              key={prompt}
+                              type="button"
+                              onClick={() => {
+                                openChat('freeChat');
+                                setTimeout(() => sendMessage(prompt), 100);
+                              }}
+                              className="rounded-full border border-ink/10 bg-white/60 px-4 py-2 text-xs font-semibold text-ink/80 backdrop-blur-md transition-all hover:bg-white hover:border-ink/20 hover:scale-105"
+                            >
+                              {prompt}
+                            </button>
+                          ))}
+                        </motion.div>
+
+                        <motion.div
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.56 }}
+                          className="noorix-stats"
                         >
                           {[
-                            { num: '15', label: 'AI Features', color: '#ff8fb2' },
+                            { num: String(FEATURES.length), label: 'AI Features', color: '#ff8fb2' },
                             { num: '24/7', label: 'Always Available', color: '#a78bfa' },
                             { num: '100%', label: 'Privacy First', color: '#67e8f9' },
                             { num: '0', label: 'Data Stored', color: '#5eead4' },
-                          ].map(function(stat, i) {
-                            return (
-                              <motion.div
-                                key={stat.label}
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: 0.8 + i * 0.1 }}
-                                className="flex flex-col items-center px-4 py-2"
-                              >
-                                <span className="text-2xl font-bold display-heading" style={{ color: stat.color }}>{stat.num}</span>
-                                <span className="text-[10px] text-ink/40 font-medium uppercase tracking-wider">{stat.label}</span>
-                              </motion.div>
-                            );
-                          })}
+                          ].map((stat, i) => (
+                            <motion.div
+                              key={stat.label}
+                              initial={{ opacity: 0, scale: 0.85 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: 0.64 + i * 0.08 }}
+                              className="noorix-stat-card"
+                            >
+                              <span className="noorix-stat-num" style={{ color: stat.color }}>
+                                {stat.num}
+                              </span>
+                              <span className="noorix-stat-label">{stat.label}</span>
+                            </motion.div>
+                          ))}
                         </motion.div>
 
-                        {/* How it works */}
                         <motion.div
-                          initial={{ opacity: 0, y: 10 }}
+                          initial={{ opacity: 0, y: 12 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 1 }}
-                          className="mt-6 flex flex-wrap justify-center gap-6"
+                          transition={{ delay: 0.78 }}
+                          className="noorix-steps"
                         >
                           {[
                             { icon: '🌸', title: 'Snap', desc: 'Upload a photo of skin, meal, or product' },
                             { icon: '🔮', title: 'Analyze', desc: 'AI processes and identifies patterns' },
                             { icon: '💫', title: 'Glow', desc: 'Get personalized recommendations' },
-                          ].map(function(step, i) {
-                            return (
-                              <div key={step.title} className="flex items-center gap-3 text-left">
-                                <div className="text-2xl">{step.icon}</div>
-                                <div>
-                                  <p className="text-sm font-semibold text-ink">{step.title}</p>
-                                  <p className="text-[11px] text-ink/45 max-w-[140px]">{step.desc}</p>
-                                </div>
-                                {i < 2 && <span className="text-ink/20 text-lg ml-2 hidden sm:block">→</span>}
+                          ].map((step, i) => (
+                            <div key={step.title} className="noorix-step">
+                              <div className="noorix-step-icon">{step.icon}</div>
+                              <div>
+                                <p className="noorix-step-title">{step.title}</p>
+                                <p className="noorix-step-desc">{step.desc}</p>
                               </div>
-                            );
-                          })}
+                              {i < 2 && <span className="noorix-step-arrow">→</span>}
+                            </div>
+                          ))}
                         </motion.div>
 
-                        {/* Glow Score + Trial Badge */}
                         <motion.div
-                          initial={{ opacity: 0, y: 10 }}
+                          initial={{ opacity: 0, y: 14 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 1.2 }}
-                          className="mt-6 flex flex-wrap justify-center gap-3"
+                          transition={{ delay: 0.92 }}
+                          className="noorix-metrics"
                         >
-                          <div className="glass rounded-2xl px-5 py-3 flex items-center gap-3">
-                            <div className="text-2xl">✨</div>
+                          <div className="noorix-metric-card">
+                            <div className="noorix-metric-icon">✨</div>
                             <div>
-                              <p className="text-xs text-ink/40 font-medium">Your Glow Score</p>
-                              <p className="text-xl font-bold display-heading holo-text">{glowScore}</p>
+                              <p className="noorix-metric-label">Your Glow Score</p>
+                              <p className="noorix-metric-value holo-text">{glowScore}</p>
                             </div>
                           </div>
-                          <div className="glass rounded-2xl px-5 py-3 flex items-center gap-3">
-                            <div className="text-2xl">🔥</div>
+
+                          <div className="noorix-metric-card">
+                            <div className="noorix-metric-icon">🔥</div>
                             <div>
-                              <p className="text-xs text-ink/40 font-medium">Ritual Streak</p>
-                              <p className="text-xl font-bold display-heading">{ritualStreak} days</p>
+                              <p className="noorix-metric-label">Ritual Streak</p>
+                              <p className="noorix-metric-value">{ritualStreak} days</p>
                             </div>
                           </div>
+
                           {noorixPlan === 'lite' && trial && trial.end > Date.now() && (
-                            <div className="glass rounded-2xl px-5 py-3 flex items-center gap-3 ring-2 ring-purple-400/30">
-                              <div className="text-2xl">🎁</div>
+                            <div className="noorix-metric-card noorix-trial-card">
+                              <div className="noorix-metric-icon">🎁</div>
                               <div>
-                                <p className="text-xs text-purple-500 font-medium">Free Pro Trial</p>
-                                <p className="text-sm font-bold text-purple-600">
+                                <p className="noorix-metric-label">Free Pro Trial</p>
+                                <p className="noorix-metric-value">
                                   {Math.ceil((trial.end - Date.now()) / (1000 * 60 * 60 * 24))} days left
                                 </p>
                               </div>
@@ -1531,155 +2119,89 @@ export default function NoorixChat() {
                         </motion.div>
                       </motion.div>
 
-                      {/* Tutorial Button */}
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 1.5 }}
-                        className="flex justify-center mb-6"
-                      >
-                        <button
-                          onClick={function() { setShowTutorial(true); }}
-                          className="flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium glass hover:-translate-y-0.5 transition-all"
-                        >
-                          <Sparkles size={16} className="text-purple-500" />
-                          Take the Noorix Tour
-                          <ChevronRight size={14} className="text-ink/40" />
-                        </button>
-                      </motion.div>
+                      <div className="noorix-filter-shell">
+                        {['all', 'skin', 'nutrition', 'fitness', 'sleep', 'hub'].map((category) => {
+                          const active = filter === category;
+                          const count =
+                            category === 'all'
+                              ? FEATURES.length
+                              : FEATURES.filter((f) => (FEATURE_CATEGORY_MAP[f.id] || 'skin') === category).length;
 
-                      {/* Feature Cards */}
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {FEATURES.map(function(f, i) {
-                          var Icon = f.icon;
                           return (
                             <motion.button
-                              key={f.id}
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.1 + i * 0.04 }}
-                              onClick={function() { openChat(f.id); }}
-                              className={'group rounded-2xl p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer ' + (f.featured ? 'relative overflow-hidden ring-2 ring-purple-400/40 shadow-lg' : 'glass')}
-                              style={f.featured ? { background: 'linear-gradient(135deg, rgba(167,139,250,0.15), rgba(255,143,178,0.1), rgba(103,232,249,0.1))' } : {}}
+                              key={category}
+                              type="button"
+                              whileTap={{ scale: 0.94 }}
+                              onClick={() => setFilter(category)}
+                              className={`noorix-filter-pill ${active ? 'is-active' : ''}`}
+                              style={active ? { '--pill-accent': '#ff8fb2' } : undefined}
                             >
-                              {f.featured && (
-                                <div className="absolute inset-0 opacity-30" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)', animation: 'noorix-shimmer 3s ease-in-out infinite' }} />
-                              )}
-                              {/* Icon + Tagline */}
-                              <div className="flex items-start justify-between mb-3">
-                                <div
-                                  className="flex h-11 w-11 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110"
-                                  style={{ background: f.color + '18' }}
-                                >
-                                  <Icon size={22} style={{ color: f.color }} />
-                                </div>
-                                <span
-                                  className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full"
-                                  style={{ color: f.color, background: f.color + '15' }}
-                                >
-                                  {f.tagline}
-                                </span>
-                              </div>
-
-                              {/* Title */}
-                              <h4 className="text-base font-bold text-ink leading-tight mb-1.5">
-                                {t('noorix.feature.' + f.id)}
-                              </h4>
-
-                              {/* Description */}
-                              <p className="text-xs text-ink/55 leading-relaxed mb-3">
-                                {f.description}
-                              </p>
-
-                              {/* Highlights */}
-                              <div className="flex flex-wrap gap-1">
-                                {f.highlights.map(function(h) {
-                                  return (
-                                    <span
-                                      key={h}
-                                      className="text-[10px] font-medium px-2 py-0.5 rounded-full border"
-                                      style={{ borderColor: f.color + '30', color: f.color, background: f.color + '08' }}
-                                    >
-                                      {h}
-                                    </span>
-                                  );
-                                })}
-                              </div>
+                              <span>{category === 'all' ? 'All' : category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                              <span className="noorix-filter-count">{count}</span>
                             </motion.button>
                           );
                         })}
                       </div>
 
-                      {/* Upgrade Banner */}
+                      <div className="noorix-grid">
+                        {FEATURES.map((f, i) => {
+                          const category = FEATURE_CATEGORY_MAP[f.id] || 'skin';
+                          if (filter !== 'all' && category !== filter) return null;
+
+                          return (
+                            <NoorixFeatureCard
+                              key={f.id}
+                              feature={f}
+                              index={i}
+                              title={t('noorix.feature.' + f.id)}
+                              onClick={() => (f.id === 'apiHub' ? (window.location.href = '/api-hub') : openChat(f.id))}
+                            />
+                          );
+                        })}
+                      </div>
+
                       {noorixPlan === 'lite' && (
                         <motion.div
                           initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.8 }}
-                          className="mt-8 relative overflow-hidden rounded-2xl p-6 cursor-pointer group"
-                          onClick={function() { setPlansOpen(true); }}
-                          style={{
-                            background: 'linear-gradient(135deg, #ff8fb2, #a78bfa, #67e8f9)',
-                          }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.6 }}
+                          className="noorix-upgrade-banner noorix-upgrade-banner--glow"
+                          onClick={() => setPlansOpen(true)}
                         >
-                          {/* Animated shimmer */}
-                          <div
-                            className="absolute inset-0 opacity-20"
-                            style={{
-                              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)',
-                              animation: 'noorix-shimmer 3s ease-in-out infinite',
-                            }}
-                          />
-                          <div className="relative flex items-center justify-between">
-                            <div>
-                              <h4 className="text-white font-bold text-lg">Unlock All {FEATURES.length} Features</h4>
-                              <p className="text-white/80 text-sm mt-1">Upgrade to Noorix Glow for unlimited AI-powered wellness</p>
-                            </div>
-                            <div className="flex items-center gap-2 text-white font-bold text-sm group-hover:translate-x-1 transition-transform">
-                              From Rs4,999/mo
-                              <span className="text-lg">→</span>
-                            </div>
+                          <div className="noorix-upgrade-copy">
+                            <h4>Unlock All {FEATURES.length} Features</h4>
+                            <p>Upgrade to Noorix Glow for unlimited AI-powered wellness</p>
+                          </div>
+                          <div className="noorix-upgrade-cta">
+                            From Rs4,999/mo
+                            <span>→</span>
                           </div>
                         </motion.div>
                       )}
 
-                      {/* Pro upsell for Glow users */}
                       {noorixPlan === 'glow' && (
                         <motion.div
                           initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.8 }}
-                          className="mt-8 relative overflow-hidden rounded-2xl p-6 cursor-pointer group"
-                          onClick={function() { setPlansOpen(true); }}
-                          style={{
-                            background: 'linear-gradient(135deg, #a78bfa, #67e8f9)',
-                          }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.6 }}
+                          className="noorix-upgrade-banner noorix-upgrade-banner--pro"
+                          onClick={() => setPlansOpen(true)}
                         >
-                          <div
-                            className="absolute inset-0 opacity-20"
-                            style={{
-                              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)',
-                              animation: 'noorix-shimmer 3s ease-in-out infinite',
-                            }}
-                          />
-                          <div className="relative flex items-center justify-between">
-                            <div>
-                              <h4 className="text-white font-bold text-lg">Go Pro — Unlimited Everything</h4>
-                              <p className="text-white/80 text-sm mt-1">Remove daily limits, get priority speed and wellness reports</p>
-                            </div>
-                            <div className="flex items-center gap-2 text-white font-bold text-sm group-hover:translate-x-1 transition-transform">
-                              Rs7,999/mo
-                              <span className="text-lg">→</span>
-                            </div>
+                          <div className="noorix-upgrade-copy">
+                            <h4>Go Pro — Unlimited Everything</h4>
+                            <p>Remove daily limits, get priority speed and wellness reports</p>
+                          </div>
+                          <div className="noorix-upgrade-cta">
+                            Rs7,999/mo
+                            <span>→</span>
                           </div>
                         </motion.div>
                       )}
                     </div>
                   </motion.div>
                 ) : (
-                  /* ═══════════════════════════════════════
-                     CHAT VIEW
-                     ═══════════════════════════════════════ */
                   <motion.div
                     key={'chat-' + noorixFeature}
                     initial={{ opacity: 0, x: 40 }}
@@ -1688,28 +2210,51 @@ export default function NoorixChat() {
                     transition={{ duration: 0.3 }}
                     className="h-full flex flex-col relative"
                   >
-                    {/* Chat background gradient */}
-                    <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(167,139,250,0.03) 0%, transparent 30%, rgba(255,143,178,0.02) 100%)' }} />
-                    {/* Context form */}
+                    <button
+  onClick={backNoorix}
+  className="absolute top-4 left-4 z-20 flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-bold text-ink shadow-lg backdrop-blur-md transition-all hover:bg-white hover:scale-105"
+>
+  <ArrowLeft size={16} />
+  Back to Features
+</button>
+<div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(167,139,250,0.03) 0%, transparent 30%, rgba(255,143,178,0.02) 100%)' }} />
+
                     {showContext && messages.length === 0 && contextConfig && contextConfig.fields && contextConfig.fields.length > 0 && (
                       <div className="flex-1 overflow-y-auto no-scrollbar px-5 py-4">
                         <div className="mx-auto max-w-xl space-y-5">
-                          {/* Intro */}
                           <div className="flex items-center gap-3 mb-2">
                             <NoorixOrb size={36} />
                             <div>
-                              <p className="text-sm font-medium text-ink">{t('noorix.feature.' + feature.id)}</p>
-                              <p className="text-xs text-ink/50">{contextConfig.intro}</p>
+                              <p className="text-sm font-medium text-noorix-text">{t('noorix.feature.' + feature.id)}</p>
+                              <p className="text-xs text-noorix-muted">{contextConfig.intro}</p>
                             </div>
                           </div>
 
-                          {/* Dynamic fields */}
-                          {contextConfig.fields.map(function(field) {
+                          {/* Suggested prompts for this feature */}
+                          {suggestedPrompts.length > 0 && (
+                            <div>
+                              <p className="noorix-field-label">Try one of these</p>
+                              <div className="flex flex-wrap gap-2">
+                                {suggestedPrompts.slice(0, 4).map((prompt) => (
+                                  <button
+                                    key={prompt}
+                                    type="button"
+                                    onClick={() => handleSuggestedPrompt(prompt)}
+                                    className="noorix-tag"
+                                  >
+                                    {prompt}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {contextConfig?.fields?.map(function(field) {
                             if (field.type === 'tapCards') {
-                              return <TapCardsField key={field.key} field={field} value={contextValues[field.key]} onChange={function(v) { setContextValue(field.key, v); }} />;
+                              return <TapCardsField key={field.key} field={field} value={contextValues[field.key]} onChange={function(v) { setContextValue(field.key, v); }} accent={feature.color} />;
                             }
                             if (field.type === 'tags') {
-                              return <TagsField key={field.key} field={field} value={contextValues[field.key]} onChange={function(v) { setContextValue(field.key, v); }} />;
+                              return <TagsField key={field.key} field={field} value={contextValues[field.key]} onChange={function(v) { setContextValue(field.key, v); }} accent={feature.color} />;
                             }
                             if (field.type === 'counter') {
                               return <CounterField key={field.key} field={field} value={contextValues[field.key]} onChange={function(v) { setContextValue(field.key, v); }} />;
@@ -1717,20 +2262,19 @@ export default function NoorixChat() {
                             return null;
                           })}
 
-                          {/* Image upload for photo features */}
                           {feature.needsImage && (
                             <div>
-                              <label className="block text-xs font-medium text-ink/60 mb-2">Upload photo</label>
+                              <label className="block text-xs font-medium text-noorix-muted mb-2">Upload photo</label>
                               <button
                                 onClick={function() { if (fileRef.current) fileRef.current.click(); }}
-                                className="w-full rounded-2xl border-2 border-dashed border-ink/10 p-4 text-center text-sm text-ink/50 hover:border-ink/20 hover:bg-white/50 transition-colors"
+                                className="w-full rounded-2xl border-2 border-dashed border-noorix-border p-4 text-center text-sm text-noorix-muted hover:border-white/30 hover:bg-noorix-surface/50 transition-colors"
                               >
-                                <Camera size={20} className="mx-auto mb-1 text-ink/40" />
+                                <Camera size={20} className="mx-auto mb-1 text-noorix-muted" />
                                 {image ? 'Photo selected — tap to change' : 'Tap to upload a photo'}
                               </button>
                               {image && (
                                 <div className="mt-2 relative w-20 h-20 rounded-xl overflow-hidden">
-                                  <img src={image.preview} alt="" className="w-full h-full object-cover" />
+                                  <img src={image.preview} alt="Selected photo preview for Noorix AI analysis" className="w-full h-full object-cover" />
                                   <button
                                     onClick={function() { setImage(null); }}
                                     className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/50 text-white flex items-center justify-center text-xs"
@@ -1742,26 +2286,28 @@ export default function NoorixChat() {
                             </div>
                           )}
 
-                          {/* Analyze button */}
-                          <button onClick={sendMessage} disabled={sending} className="btn-primary w-full !py-3 text-sm">
+                          <button
+                            onClick={() => sendMessage()}
+                            disabled={sending}
+                            className="w-full rounded-full !py-3 text-sm font-bold text-black disabled:opacity-50 transition-all hover:brightness-110"
+                            style={{ background: `linear-gradient(135deg, ${feature.color}, ${feature.colorB})` }}
+                          >
                             {sending ? t('noorix.thinking') : 'Analyze'}
                           </button>
                         </div>
                       </div>
                     )}
 
-                    {/* Messages */}
-                    {(!showContext || messages.length > 0 || (contextConfig && contextConfig.fields && contextConfig.fields.length === 0)) && (
+                    {(!showContext || messages.length > 0 || !contextConfig || (contextConfig.fields && contextConfig.fields.length === 0)) && (
                       <div className="flex-1 overflow-y-auto no-scrollbar px-5 py-4">
                         <div className="mx-auto max-w-xl space-y-4">
-                          {/* Welcome message */}
                           {messages.length === 0 && !showContext && (
                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex items-start gap-3">
                               <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 3, repeat: Infinity }}>
                                 <NoorixOrb size={36} className="shrink-0 mt-1" />
                               </motion.div>
-                              <div className="glass rounded-2xl rounded-tl-md p-4 max-w-[80%]">
-                                <p className="text-sm text-ink/80">
+                              <div className="rounded-2xl border border-noorix-border bg-noorix-surface rounded-tl-md p-4 max-w-[80%]">
+                                <p className="text-sm text-noorix-text">
                                   {feature && feature.needsImage
                                     ? 'Upload a photo and I will analyze it. You can also type a question below.'
                                     : 'Tell me more — tap selections below or type your question.'}
@@ -1770,82 +2316,150 @@ export default function NoorixChat() {
                             </motion.div>
                           )}
 
-                          {/* Message list */}
-                          {messages.map(function(msg, i) {
+                          {/* Suggested prompts in chat empty state */}
+                          {messages.length === 0 && suggestedPrompts.length > 0 && (
+                            <div className="flex flex-wrap gap-2 pl-10">
+                              {suggestedPrompts.slice(0, 4).map((prompt) => (
+                                <button
+                                  key={prompt}
+                                  type="button"
+                                  onClick={() => handleSuggestedPrompt(prompt)}
+                                  className="noorix-tag"
+                                >
+                                  {prompt}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+
+                          {messages?.map((msg, i) => {
                             if (msg.role === 'user') {
                               return (
-                                <motion.div key={i} initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.3 }} className="flex justify-end">
-                                  <div className="max-w-[80%] space-y-2">
+                                <motion.div
+                                  key={i}
+                                  initial={{ opacity: 0, y: 12, scale: 0.96 }}
+                                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                                  transition={{ duration: 0.3 }}
+                                  className="noorix-msg-row noorix-msg-row--user"
+                                >
+                                  <div className="noorix-msg-user-wrap">
                                     {msg.image && (
-                                      <div className="rounded-2xl overflow-hidden w-48 h-48 ml-auto">
-                                        <img src={msg.image} alt="" className="w-full h-full object-cover" />
+                                      <div className="noorix-msg-image">
+                                        <img src={msg.image} alt="Sent to Noorix" />
                                       </div>
                                     )}
-                                    {msg.content && (
-                                      <div className="bg-ink text-cream rounded-2xl rounded-tr-md px-4 py-3 text-sm">
-                                        {msg.content}
-                                      </div>
-                                    )}
+                                    {msg.content && <div className="noorix-msg-user">{msg.content}</div>}
                                   </div>
                                 </motion.div>
                               );
                             }
-                              return (
-                                <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }} className="flex justify-start">
-                                <div className="max-w-[85%] flex items-start gap-2.5">
+
+                            return (
+                              <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 12 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.4, delay: 0.1 }}
+                                className="noorix-msg-row noorix-msg-row--assistant"
+                              >
+                                <div className="noorix-msg-assistant-wrap">
                                   <NoorixOrb size={28} className="shrink-0 mt-1" />
-                                  <div className="space-y-2">
-                                    <div className="glass rounded-2xl rounded-tl-md p-4">{renderMarkdown(msg.content)}</div>
-                                    {msg.raw && msg.raw.triage && msg.raw.triage.length > 0 && (
-                                      <div className="glass rounded-xl p-3 space-y-1.5">
-                                        <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider">Triage Results</p>
-                                        {msg.raw.triage.map(function(t, ti) {
-                                          var icon = t.likelihood === 'high' ? '🔴' : t.likelihood === 'moderate' ? '🟡' : '🟢';
+
+                                  <div className="noorix-msg-assistant">
+                                    <div className="noorix-msg-body">{renderMarkdown(msg.content)}</div>
+
+                                    {msg.raw?.triage?.length > 0 && (
+                                      <div className="noorix-data-card">
+                                        <p className="noorix-data-title">Triage Results</p>
+                                        {msg.raw.triage.map((t, ti) => {
+                                          const icon = t.likelihood === 'high' ? '🔴' : t.likelihood === 'moderate' ? '🟡' : '🟢';
                                           return (
-                                            <div key={ti} className="flex items-start gap-2 text-xs text-ink/70">
+                                            <div key={ti} className="noorix-data-row">
                                               <span>{icon}</span>
-                                              <span><strong>{t.condition}</strong> ({t.likelihood}) — {t.description}</span>
+                                              <span>
+                                                <strong>{t.condition}</strong> ({t.likelihood}) — {t.description}
+                                              </span>
                                             </div>
                                           );
                                         })}
                                       </div>
                                     )}
-                                    {msg.raw && msg.raw.macros && (
-                                      <div className="glass rounded-xl p-3">
-                                        <p className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider mb-2">Nutrition</p>
-                                        <div className="grid grid-cols-4 gap-2 text-center">
-                                          {['calories','protein','carbs','fat'].map(function(key) {
-                                            return (
-                                              <div key={key}>
-                                                <p className="text-sm font-bold text-ink">{msg.raw.macros[key] || '—'}</p>
-                                                <p className="text-[9px] text-ink/40 capitalize">{key}</p>
-                                              </div>
-                                            );
-                                          })}
+
+                                    {msg.raw?.macros && (
+                                      <div className="noorix-data-card">
+                                        <p className="noorix-data-title">Nutrition</p>
+                                        <div className="noorix-macro-grid">
+                                          {['calories', 'protein', 'carbs', 'fat'].map((key) => (
+                                            <div key={key}>
+                                              <p>{msg.raw.macros[key] || '—'}</p>
+                                              <span>{key}</span>
+                                            </div>
+                                          ))}
                                         </div>
                                         {msg.raw.overallSkinScore && (
-                                          <div className="mt-2 pt-2 border-t border-ink/5 text-center">
-                                            <p className="text-xs text-ink/50">Skin Score</p>
-                                            <p className="text-lg font-bold holo-text">{msg.raw.overallSkinScore}/10</p>
+                                          <div className="noorix-skin-score">
+                                            <p>Skin Score</p>
+                                            <span className="holo-text">{msg.raw.overallSkinScore}/10</span>
                                           </div>
                                         )}
                                       </div>
                                     )}
-                                    <div className="flex flex-wrap items-center gap-1.5 pl-1">
-                                      <button onClick={function() { shareResult(msg); }} className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium bg-ink/5 text-ink/50 hover:bg-ink/10 hover:text-ink/70 transition-colors"><Share2 size={11} /> Share</button>
-                                      <button onClick={function() { window.open('mailto:?subject=' + encodeURIComponent('Noorix Analysis') + '&body=' + encodeURIComponent(msg.content || '')); }} className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium bg-ink/5 text-ink/50 hover:bg-ink/10 hover:text-ink/70 transition-colors">✉️ Email</button>
-                                      <button onClick={function() { var b = new Blob([msg.content || ''], {type:'text/plain'}); var u = URL.createObjectURL(b); var a = document.createElement('a'); a.href = u; a.download = 'noorix-analysis.txt'; a.click(); URL.revokeObjectURL(u); }} className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium bg-ink/5 text-ink/50 hover:bg-ink/10 hover:text-ink/70 transition-colors">📥 Download</button>
-                                      <button onClick={function() { if (navigator.clipboard) navigator.clipboard.writeText(msg.content || ''); }} className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium bg-ink/5 text-ink/50 hover:bg-ink/10 hover:text-ink/70 transition-colors">📋 Copy</button>
-                                      <button onClick={function() { var w = window.open('', '_blank'); w.document.write('<html><head><title>Noorix</title><style>body{font-family:Space Grotesk,sans-serif;padding:40px;max-width:700px;margin:auto;line-height:1.6;color:#1A1410;}strong{color:#1A1410;}</style></head><body><h1>Noorix Analysis</h1><p>' + (msg.content||'').replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>') + '</p></body></html>'); w.document.close(); w.print(); }} className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium bg-ink/5 text-ink/50 hover:bg-ink/10 hover:text-ink/70 transition-colors">🖨️ Print</button>
-                                      {msg.raw && msg.raw.actions && msg.raw.actions.map(function(action, ai) {
+
+                                    <div className="noorix-msg-actions">
+                                      <button type="button" onClick={() => shareResult(msg)} className="noorix-action-chip">
+                                        <Share2 size={11} />
+                                        Share
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          window.open(
+                                            'mailto:?subject=' +
+                                              encodeURIComponent('Noorix Analysis') +
+                                              '&body=' +
+                                              encodeURIComponent(msg.content || '')
+                                          )
+                                        }
+                                        className="noorix-action-chip"
+                                      >
+                                        ✉️ Email
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const blob = new Blob([msg.content || ''], { type: 'text/plain' });
+                                          const url = URL.createObjectURL(blob);
+                                          const a = document.createElement('a');
+                                          a.href = url;
+                                          a.download = 'noorix-analysis.txt';
+                                          a.click();
+                                          URL.revokeObjectURL(url);
+                                        }}
+                                        className="noorix-action-chip"
+                                      >
+                                        📥 Download
+                                      </button>
+
+                                      {msg.raw?.actions?.map((action, ai) => {
                                         if (action.type === 'addProduct' && action.payload) {
-                                          return (<button key={ai} onClick={function() { addToCart(action.payload); }} className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors"><ShoppingCart size={11} /> {action.label || 'Add to Bag'}</button>);
+                                          return (
+                                            <button
+                                              key={ai}
+                                              type="button"
+                                              onClick={() => addToCart(action.payload)}
+                                              className="noorix-action-chip noorix-action-chip--accent"
+                                            >
+                                              <ShoppingCart size={11} />
+                                              {action.label || 'Add to Bag'}
+                                            </button>
+                                          );
                                         }
                                         return null;
                                       })}
                                     </div>
-                                    {msg.raw && msg.raw.disclaimer && (
-                                      <p className="text-[10px] text-ink/30 pl-1 italic">{msg.raw.disclaimer}</p>
+
+                                    {msg.raw?.disclaimer && (
+                                      <p className="noorix-disclaimer">{msg.raw.disclaimer}</p>
                                     )}
                                   </div>
                                 </div>
@@ -1853,15 +2467,14 @@ export default function NoorixChat() {
                             );
                           })}
 
-                          {/* Thinking indicator */}
                           {sending && (
                             <div className="flex items-start gap-2.5">
                               <NoorixOrb size={28} className="shrink-0 mt-1" />
-                              <div className="glass rounded-2xl rounded-tl-md px-4 py-3">
+                              <div className="rounded-2xl border border-noorix-border bg-noorix-surface rounded-tl-md px-4 py-3">
                                 <div className="flex items-center gap-1.5">
-                                  <span className="h-2 w-2 rounded-full bg-ink/30 animate-bounce" style={{ animationDelay: '0ms' }} />
-                                  <span className="h-2 w-2 rounded-full bg-ink/30 animate-bounce" style={{ animationDelay: '150ms' }} />
-                                  <span className="h-2 w-2 rounded-full bg-ink/30 animate-bounce" style={{ animationDelay: '300ms' }} />
+                                  <span className="h-2 w-2 rounded-full bg-white/30 animate-bounce" style={{ animationDelay: '0ms' }} />
+                                  <span className="h-2 w-2 rounded-full bg-white/30 animate-bounce" style={{ animationDelay: '150ms' }} />
+                                  <span className="h-2 w-2 rounded-full bg-white/30 animate-bounce" style={{ animationDelay: '300ms' }} />
                                 </div>
                               </div>
                             </div>
@@ -1872,55 +2485,60 @@ export default function NoorixChat() {
                       </div>
                     )}
 
-                    {/* Input bar */}
-                    {(!showContext || messages.length > 0 || (contextConfig && contextConfig.fields && contextConfig.fields.length === 0)) && (
-                      <div className="border-t border-ink/5 bg-cream/80 backdrop-blur-xl px-4 py-3">
-                        <div className="mx-auto max-w-xl flex items-end gap-2">
+                    {(!showContext ||
+                      messages.length > 0 ||
+                      (contextConfig && contextConfig.fields && contextConfig.fields.length === 0)) && (
+                      <div className="noorix-composer">
+                        <div className="noorix-composer-inner">
                           {feature && feature.needsImage && (
                             <button
-                              onClick={function() { if (fileRef.current) fileRef.current.click(); }}
-                              className="shrink-0 rounded-full bg-ink/5 p-2.5 hover:bg-ink/10 transition-colors"
+                              type="button"
+                              onClick={() => {
+                                if (fileRef.current) fileRef.current.click();
+                              }}
+                              className="noorix-composer-btn"
                               aria-label="Upload image"
                             >
-                              <Camera size={18} className="text-ink/50" />
+                              <Camera size={18} />
                             </button>
                           )}
+
                           {image && (
-                            <div className="relative w-10 h-10 shrink-0 rounded-lg overflow-hidden">
-                              <img src={image.preview} alt="" className="w-full h-full object-cover" />
-                              <button
-                                onClick={function() { setImage(null); }}
-                                className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-xs"
-                              >
+                            <div className="noorix-composer-preview">
+                              <img src={image.preview} alt="Selected" />
+                              <button type="button" onClick={() => setImage(null)}>
                                 ✕
                               </button>
                             </div>
                           )}
-                          {/* Voice button */}
+
                           <button
+                            type="button"
                             onClick={toggleVoice}
-                            className={'shrink-0 rounded-full p-2.5 transition-all ' + (isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-ink/5 text-ink/50 hover:bg-ink/10')}
+                            className={`noorix-composer-btn ${isListening ? 'is-recording' : ''}`}
                             aria-label={isListening ? 'Stop listening' : 'Voice input'}
                           >
                             {isListening ? <MicOff size={18} /> : <Mic size={18} />}
                           </button>
 
-                          <div className="flex-1 relative">
+                          <div className="noorix-composer-field">
                             <input
                               ref={inputRef}
                               type="text"
                               value={input}
-                              onChange={function(e) { setInput(e.target.value); }}
+                              onChange={(e) => setInput(e.target.value)}
                               onKeyDown={handleKeyDown}
                               placeholder={isListening ? 'Listening...' : t('noorix.inputPlaceholder')}
                               disabled={sending}
-                              className={'field !rounded-full !py-2.5 !pr-4 text-sm ' + (isListening ? '!border-red-400 !bg-red-50' : '')}
                             />
+                            {isListening && <span className="noorix-composer-status">Listening...</span>}
                           </div>
+
                           <button
-                            onClick={sendMessage}
+                            type="button"
+                            onClick={() => sendMessage()}
                             disabled={sending || (!input.trim() && !image)}
-                            className="shrink-0 rounded-full bg-ink p-2.5 text-cream disabled:opacity-30 hover:scale-105 transition-all"
+                            className="noorix-send-btn"
                             aria-label={t('noorix.send')}
                           >
                             <Send size={18} />
@@ -1929,7 +2547,6 @@ export default function NoorixChat() {
                       </div>
                     )}
 
-                    {/* Hidden file input */}
                     <input
                       ref={fileRef}
                       type="file"
@@ -1944,7 +2561,7 @@ export default function NoorixChat() {
           </motion.div>
         )}
       </AnimatePresence>
-      {/* Blocked overlay */}
+
       <AnimatePresence>
         {blocked && (
           <motion.div
@@ -1960,40 +2577,155 @@ export default function NoorixChat() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="glass rounded-[2rem] p-8 max-w-sm w-full text-center"
+              className="rounded-[2rem] border border-ink/10 bg-white/90 p-8 max-w-sm w-full text-center shadow-aura"
               onClick={function(e) { e.stopPropagation(); }}
             >
               <div className="text-4xl mb-4">
-                {blocked.type === 'limit' ? '⏰' : '🔒'}
+                {blocked.type === 'limit' ? '⏰' : '🔓'}
               </div>
-              <h3 className="text-xl font-bold mb-2">
-                {blocked.type === 'limit' ? 'Daily Limit Reached' : 'Upgrade Required'}
+              <h3 className="text-xl font-bold mb-2 text-ink">
+                {blocked.type === 'limit' ? 'Daily Limit Reached' : 'Feature Unlocked'}
               </h3>
               <p className="text-sm text-ink/60 mb-6">
                 {blocked.type === 'limit'
                   ? 'You have used all your free analyses for today. Upgrade for more.'
-                  : 'This feature requires the ' + (blocked.required ? blocked.required.name : 'Glow') + ' plan.'}
+                  : 'All features are available. Enjoy your glow journey.'}
               </p>
               <button
-                onClick={function() { setBlocked(null); setPlansOpen(true); }}
-                className="btn-primary w-full !py-3 mb-2"
-              >
-                View Plans
-              </button>
-              <button
                 onClick={function() { setBlocked(null); }}
-                className="btn-secondary w-full !py-3"
+                className="w-full rounded-full !py-3 text-sm font-bold text-white bg-gradient-to-r from-[#ff8fb2] to-[#a78bfa] hover:brightness-110 transition-all"
               >
-                Maybe Later
+                Continue
               </button>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Plans modal */}
+      {/* Global Noorix Liquid-Glass Design System */}
+      <style>{`
+        .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+
+        .noorix-landing-root { min-height: 100%; }
+        .noorix-aurora { position: absolute; top: 4%; right: 8%; width: 260px; height: 260px; border-radius: 50%; filter: blur(70px); opacity: 0.35; background: radial-gradient(circle, #ff8fb2 0%, transparent 70%); animation: noorix-aurora-drift 14s ease-in-out infinite alternate; pointer-events: none; }
+        .noorix-aurora--alt { top: auto; right: auto; bottom: 10%; left: 5%; background: radial-gradient(circle, #a78bfa 0%, transparent 70%); animation-delay: -7s; opacity: 0.28; }
+
+        .noorix-hero { position: relative; max-width: 720px; margin: 0 auto 36px; text-align: center; border-radius: 34px; padding: 28px 22px 26px; background: linear-gradient(165deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.5)); border: 1px solid rgba(255, 255, 255, 0.75); box-shadow: 0 30px 80px rgba(26, 20, 16, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); }
+        .noorix-hero-badge { display: inline-flex; align-items: center; gap: 7px; font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #ff8fb2; background: rgba(255, 143, 178, 0.1); padding: 7px 12px; border-radius: 999px; }
+        .noorix-orb-hero { display: flex; justify-content: center; margin: 20px 0 4px; }
+        .noorix-greeting { font-size: clamp(24px, 5vw, 34px); line-height: 1.16; letter-spacing: -0.03em; color: #1a1410; margin-top: 14px; }
+        .noorix-hero-sub { max-width: 520px; margin: 10px auto 0; font-size: 14px; line-height: 1.6; color: rgba(26, 20, 16, 0.55); }
+
+        .noorix-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 26px; }
+        .noorix-stat-card { min-width: 108px; padding: 12px 14px; border-radius: 22px; background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(26, 20, 16, 0.07); box-shadow: 0 10px 30px rgba(26, 20, 16, 0.04); }
+        .noorix-stat-num { display: block; font-size: 26px; font-weight: 850; letter-spacing: -0.04em; }
+        .noorix-stat-label { display: block; margin-top: 2px; font-size: 10px; font-weight: 750; letter-spacing: 0.11em; text-transform: uppercase; color: rgba(26, 20, 16, 0.4); }
+
+        .noorix-steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 24px; }
+        .noorix-step { display: flex; align-items: center; gap: 10px; }
+        .noorix-step-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 14px; font-size: 18px; background: rgba(26, 20, 16, 0.05); }
+        .noorix-step-title { font-size: 13px; font-weight: 800; color: #1a1410; }
+        .noorix-step-desc { font-size: 11px; color: rgba(26, 20, 16, 0.48); max-width: 150px; }
+        .noorix-step-arrow { margin-left: 8px; color: rgba(26, 20, 16, 0.2); font-size: 18px; }
+
+        .noorix-metrics { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 24px; }
+        .noorix-metric-card { min-width: 160px; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 22px; background: rgba(255, 255, 255, 0.65); border: 1px solid rgba(26, 20, 16, 0.07); text-align: left; }
+        .noorix-trial-card { border: 1px solid rgba(167, 139, 250, 0.22); background: rgba(167, 139, 250, 0.09); }
+        .noorix-metric-icon { font-size: 22px; }
+        .noorix-metric-label { font-size: 10px; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(26, 20, 16, 0.42); }
+        .noorix-metric-value { font-size: 22px; font-weight: 850; letter-spacing: -0.03em; color: #1a1410; }
+
+        .noorix-filter-shell { position: relative; z-index: 5; display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 22px; justify-content: center; }
+        .noorix-filter-pill { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; border: 1px solid rgba(26, 20, 16, 0.1); background: rgba(255, 255, 255, 0.58); color: rgba(26, 20, 16, 0.56); font-size: 12px; font-weight: 750; transition: all 0.3s ease; cursor: pointer; }
+        .noorix-filter-pill:hover { background: rgba(255, 255, 255, 0.85); color: #1a1410; transform: translateY(-1px); }
+        .noorix-filter-pill.is-active { color: #1a1410; background: #ffffff; border-color: rgba(255, 255, 255, 0.8); box-shadow: 0 16px 36px rgba(26, 20, 16, 0.12); }
+        .noorix-filter-count { min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: rgba(26, 20, 16, 0.07); font-size: 10px; font-weight: 850; }
+        .noorix-filter-pill.is-active .noorix-filter-count { background: var(--pill-accent); color: #1a1410; }
+
+        .noorix-grid { position: relative; z-index: 5; display: grid; grid-template-columns: 1fr; gap: 18px; }
+        @media (min-width: 640px) { .noorix-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (min-width: 1024px) { .noorix-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+        .noorix-upgrade-banner { position: relative; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 26px; padding: 20px 22px; border-radius: 26px; overflow: hidden; cursor: pointer; color: #fff; }
+        .noorix-upgrade-banner--glow { background: linear-gradient(135deg, #ff8fb2, #a78bfa, #67e8f9); }
+        .noorix-upgrade-banner--pro { background: linear-gradient(135deg, #a78bfa, #67e8f9); }
+        .noorix-upgrade-banner h4 { margin: 0 0 4px; font-size: 17px; font-weight: 850; letter-spacing: -0.02em; }
+        .noorix-upgrade-banner p { margin: 0; font-size: 12px; opacity: 0.78; }
+        .noorix-upgrade-cta { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 850; transition: transform 0.3s ease; }
+        .noorix-upgrade-banner:hover .noorix-upgrade-cta { transform: translateX(4px); }
+
+        .noorix-field-label { display: block; margin-bottom: 9px; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(26, 20, 16, 0.48); }
+        .noorix-tap-card { position: relative; border-radius: 18px; border: 1px solid rgba(26, 20, 16, 0.08); background: rgba(255, 255, 255, 0.68); padding: 14px; text-align: left; color: rgba(26, 20, 16, 0.58); transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease; cursor: pointer; }
+        .noorix-tap-card:hover { border-color: rgba(26, 20, 16, 0.16); background: rgba(255, 255, 255, 0.9); }
+        .noorix-tap-card.is-selected { border-color: var(--field-accent); background: linear-gradient(135deg, color-mix(in srgb, var(--field-accent) 16%, transparent), rgba(255, 255, 255, 0.85)); color: #1a1410; box-shadow: 0 14px 30px color-mix(in srgb, var(--field-accent) 16%, transparent); }
+        .noorix-tap-radio { position: absolute; top: 10px; right: 10px; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 999px; border: 1.5px solid rgba(26, 20, 16, 0.2); color: #fff; }
+        .noorix-tap-card.is-selected .noorix-tap-radio { border-color: var(--field-accent); background: var(--field-accent); }
+        .noorix-tap-label { display: block; font-size: 14px; font-weight: 800; }
+        .noorix-tap-desc { display: block; margin-top: 4px; font-size: 11px; color: rgba(26, 20, 16, 0.48); }
+
+        .noorix-tag { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(26, 20, 16, 0.09); background: rgba(255, 255, 255, 0.64); color: rgba(26, 20, 16, 0.6); font-size: 11px; font-weight: 700; transition: all 0.25s ease; cursor: pointer; }
+        .noorix-tag:hover { border-color: rgba(26, 20, 16, 0.16); color: #1a1410; }
+        .noorix-tag.is-selected { background: var(--tag-accent); border-color: var(--tag-accent); color: #1a1410; box-shadow: 0 10px 24px color-mix(in srgb, var(--tag-accent) 22%, transparent); }
+
+        .noorix-counter-shell { display: flex; align-items: center; gap: 16px; }
+        .noorix-counter-btn { width: 44px; height: 44px; border-radius: 16px; border: 1px solid rgba(26, 20, 16, 0.09); background: rgba(255, 255, 255, 0.62); color: #1a1410; font-size: 20px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; }
+        .noorix-counter-btn:hover { background: #fff; transform: translateY(-1px); }
+        .noorix-counter-value { display: flex; align-items: baseline; gap: 6px; }
+        .noorix-counter-value span { font-size: 42px; font-weight: 850; letter-spacing: -0.06em; color: #1a1410; }
+        .noorix-counter-value small { font-size: 12px; color: rgba(26, 20, 16, 0.4); }
+
+        .noorix-msg-row { display: flex; width: 100%; }
+        .noorix-msg-row--user { justify-content: flex-end; }
+        .noorix-msg-row--assistant { justify-content: flex-start; }
+        .noorix-msg-user-wrap { max-width: 80%; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .noorix-msg-user { padding: 12px 16px; border-radius: 20px 20px 6px 20px; background: linear-gradient(135deg, #1a1410, #3d332b); color: #fff; font-size: 13.5px; line-height: 1.55; }
+        .noorix-msg-image { width: 150px; height: 150px; border-radius: 18px; overflow: hidden; box-shadow: 0 16px 36px rgba(26, 20, 16, 0.18); }
+        .noorix-msg-image img { width: 100%; height: 100%; object-fit: cover; }
+        .noorix-msg-assistant-wrap { max-width: 85%; display: flex; align-items: flex-start; gap: 10px; }
+        .noorix-msg-assistant { flex: 1; min-width: 0; border-radius: 22px 22px 22px 6px; background: linear-gradient(165deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.66)); border: 1px solid rgba(26, 20, 16, 0.08); padding: 14px 16px; box-shadow: 0 18px 44px rgba(26, 20, 16, 0.1); }
+        .noorix-msg-body { font-size: 13.5px; line-height: 1.58; color: rgba(26, 20, 16, 0.8); }
+
+        .noorix-data-card { margin-top: 12px; padding: 12px; border-radius: 16px; background: rgba(26, 20, 16, 0.04); border: 1px solid rgba(26, 20, 16, 0.06); }
+        .noorix-data-title { font-size: 10px; font-weight: 850; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(26, 20, 16, 0.4); margin-bottom: 8px; }
+        .noorix-data-row { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: rgba(26, 20, 16, 0.72); }
+        .noorix-macro-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
+        .noorix-macro-grid p { font-size: 16px; font-weight: 850; color: #1a1410; }
+        .noorix-macro-grid span { font-size: 9px; color: rgba(26, 20, 16, 0.42); text-transform: capitalize; }
+        .noorix-skin-score { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(26, 20, 16, 0.07); text-align: center; }
+        .noorix-skin-score p { font-size: 10px; color: rgba(26, 20, 16, 0.42); }
+        .noorix-skin-score span { font-size: 24px; font-weight: 850; }
+
+        .noorix-msg-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+        .noorix-action-chip { display: inline-flex; align-items: center; gap: 5px; padding: 6px 9px; border-radius: 999px; background: rgba(26, 20, 16, 0.05); border: 1px solid rgba(26, 20, 16, 0.06); color: rgba(26, 20, 16, 0.58); font-size: 10px; font-weight: 750; transition: all 0.25s ease; cursor: pointer; }
+        .noorix-action-chip:hover { background: rgba(26, 20, 16, 0.09); color: #1a1410; }
+        .noorix-action-chip--accent { background: rgba(255, 143, 178, 0.12); border-color: rgba(255, 143, 178, 0.2); color: #d6336c; }
+        .noorix-action-chip--accent:hover { background: rgba(255, 143, 178, 0.2); color: #a61e4d; }
+        .noorix-disclaimer { margin-top: 10px; font-size: 10px; font-style: italic; color: rgba(26, 20, 16, 0.34); }
+
+        .noorix-composer { border-top: 1px solid rgba(26, 20, 16, 0.07); background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); padding: 12px 16px; }
+        .noorix-composer-inner { max-width: 640px; margin: 0 auto; display: flex; align-items: flex-end; gap: 8px; }
+        .noorix-composer-btn { flex-shrink: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 14px; border: 1px solid rgba(26, 20, 16, 0.08); background: rgba(255, 255, 255, 0.7); color: rgba(26, 20, 16, 0.56); cursor: pointer; transition: all 0.25s ease; }
+        .noorix-composer-btn:hover { background: #fff; color: #1a1410; transform: translateY(-1px); }
+        .noorix-composer-btn.is-recording { background: #ef4444; border-color: #ef4444; color: #fff; animation: noorix-pulse 1.2s ease infinite; }
+        .noorix-composer-preview { position: relative; flex-shrink: 0; width: 44px; height: 44px; border-radius: 14px; overflow: hidden; }
+        .noorix-composer-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .noorix-composer-preview button { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.48); color: #fff; font-size: 12px; border: none; cursor: pointer; }
+        .noorix-composer-field { position: relative; flex: 1; }
+        .noorix-composer-field input { width: 100%; height: 44px; padding: 0 16px; border-radius: 16px; border: 1px solid rgba(26, 20, 16, 0.09); background: rgba(255, 255, 255, 0.78); color: #1a1410; font-size: 13px; outline: none; transition: all 0.25s ease; }
+        .noorix-composer-field input::placeholder { color: rgba(26, 20, 16, 0.32); }
+        .noorix-composer-field input:focus { border-color: rgba(255, 143, 178, 0.65); background: #fff; box-shadow: 0 0 0 4px rgba(255, 143, 178, 0.1); }
+        .noorix-composer-field input:disabled { opacity: 0.55; }
+        .noorix-composer-status { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: 800; color: #ef4444; pointer-events: none; }
+        .noorix-send-btn { flex-shrink: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 16px; border: none; background: #1a1410; color: #fff; cursor: pointer; transition: all 0.25s ease; }
+        .noorix-send-btn:hover:not(:disabled) { background: #ff8fb2; transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 30px rgba(255, 143, 178, 0.28); }
+        .noorix-send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        @keyframes noorix-aurora-drift { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(-40px, 35px, 0) scale(1.15); } }
+        @keyframes noorix-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); } }
+      `}</style>
+
       <NoorixPlans isOpen={plansOpen} onClose={function() { setPlansOpen(false); }} />
     </div>
   );
 }
-

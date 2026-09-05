@@ -16,7 +16,7 @@ export default function FloatingBubbles({
   maxCount = 70,
   opacity = 0.5,
   speed = 0.35,
-  palette = ['#ff8fb2', '#ffd7a1', '#a78bfa', '#67e8f9', '#d9a7f0'],
+  palette = ['#ff8fb2', '#ffd7a1', '#D5A3AE', '#E8A33D', '#F0725F', '#9ADCD8', '#E7D3A8', '#a78bfa', '#67e8f9', '#d9a7f0', '#5eead4', '#f472b6'],
   className = '',
 }) {
   const ref = useRef(null);

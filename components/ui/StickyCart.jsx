@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag } from 'lucide-react';
@@ -7,18 +6,17 @@ import { useStore } from '@/lib/store';
 import { flavors, PRICE } from '@/lib/data';
 
 export default function StickyCart() {
-  var [visible, setVisible] = useState(false);
-  var cart = useStore(function(s) { return s.cart; });
-  var openBag = useStore(function(s) { return s.openBag; });
-  var selectedFlavor = useStore(function(s) { return s.selectedFlavor; });
+  const [visible, setVisible] = useState(false);
+  const cart = useStore((s) => s.cart);
+  const openBag = useStore((s) => s.openBag);
+  const selectedFlavor = useStore((s) => s.selectedFlavor);
+  const count = Object.values(cart).reduce((a, b) => a + b, 0);
+  const flavor = flavors.find((f) => f.id === selectedFlavor) || flavors[0];
 
-  var count = Object.values(cart).reduce(function(a, b) { return a + b; }, 0);
-  var flavor = flavors.find(function(f) { return f.id === selectedFlavor; }) || flavors[0];
-
-  useEffect(function() {
-    function onScroll() { setVisible(window.scrollY > 600); }
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 600);
     window.addEventListener('scroll', onScroll, { passive: true });
-    return function() { window.removeEventListener('scroll', onScroll); };
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
@@ -41,9 +39,10 @@ export default function StickyCart() {
             <button
               onClick={openBag}
               className="btn-primary !py-2.5 !px-5 text-sm flex items-center gap-2"
+              aria-label={count > 0 ? `View bag, ${count} items` : 'Add to bag'}
             >
               <ShoppingBag size={16} />
-              {count > 0 ? 'View Bag (' + count + ')' : 'Add to Bag'}
+              {count > 0 ? `View Bag (${count})` : 'Add to Bag'}
             </button>
           </div>
         </motion.div>

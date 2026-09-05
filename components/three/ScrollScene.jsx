@@ -36,7 +36,6 @@ function CameraDrift({ isMobile }) {
       };
       let detach = () => { };
       const ask = () => {
-        // iOS 13+ requires a user gesture for device-orientation permission
         try {
           if (
             typeof DeviceOrientationEvent !== 'undefined' &&
@@ -72,31 +71,25 @@ function CameraDrift({ isMobile }) {
   return null;
 }
 
-/**
- * Experience engine:
- * - 2D bubbles are ALWAYS rendered as a reliable background layer (works on every device, zero WebGL).
- * - 3D scene is additionally rendered on top when WebGL is healthy.
- * - If WebGL is missing, context is lost, user prefers reduced motion, or data-saver is on,
- *   we skip the 3D scene and show ONLY the 2D bubbles (graceful fallback).
- * - Tilt parallax (mobile) / mouse parallax (desktop)
- */
 export default function ScrollScene() {
   const isMobile = useIsMobile();
-  const [mode, setMode] = useState('3d'); // '3d' | '2d'
+  const [mode, setMode] = useState('3d');
 
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     const saveData = !!(conn && conn.saveData);
-    if (!webglSupported() || reduced || saveData) setMode('2d');
+    const lowPower = !!(conn && (conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g'));
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    // iOS is the main source of WebGL context loss; force 2D there.
+    // Android and desktop keep 3D.
+    if (!webglSupported() || reduced || saveData || lowPower || isIOS) {
+      setMode('2d');
+    }
   }, []);
 
-  const onContextLost = (e) => {
-    e.preventDefault();
-    setMode('2d'); // WebGL died (low memory / iOS watchdog) → graceful swap to 2D only
-  };
-
-  // 2D-only fallback (no WebGL / reduced motion / save-data)
+  // 2D-only fallback
   if (mode === '2d') {
     return (
       <div className="pointer-events-none fixed inset-0 z-0">
@@ -105,10 +98,8 @@ export default function ScrollScene() {
     );
   }
 
-  // 3D scene + always-on 2D bubble background underneath
   return (
     <div className="pointer-events-none fixed inset-0 z-0">
-      {/* Reliable 2D bubbles: animate everywhere, including mobile, with zero WebGL */}
       <FloatingBubbles />
 
       <Canvas
@@ -116,7 +107,10 @@ export default function ScrollScene() {
         dpr={isMobile ? [1, 1.5] : [1, 2]}
         gl={{ antialias: !isMobile, alpha: true }}
         onCreated={({ gl }) => {
-          gl.domElement.addEventListener('webglcontextlost', onContextLost, false);
+          gl.domElement.addEventListener('webglcontextlost', (e) => {
+            e.preventDefault();
+            setMode('2d');
+          }, false);
         }}
       >
         <ambientLight intensity={0.7} />

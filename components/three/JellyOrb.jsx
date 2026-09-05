@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useMemo, useRef, useEffect } from "react";
-import { useFrame } from "@react-three/fiber";
-import * as THREE from "three";
-import { useStore } from "@/lib/store";
-import { flavors } from "@/lib/data";
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
+import { useStore } from '@/lib/store';
+import { flavors } from '@/lib/data';
 
 const NOISE_GLSL = `
 // Simplex 3D noise by Ashima / Stefan Gustavson
@@ -87,6 +87,8 @@ const fragmentShader = `
 uniform float uTime;
 uniform vec3 uColorA;
 uniform vec3 uColorB;
+uniform vec3 uColorC;
+uniform vec3 uColorD;
 uniform float uIridescence;
 uniform float uFresnelPower;
 varying vec3 vNormal;
@@ -96,24 +98,43 @@ void main() {
   vec3 normal = normalize(vNormal);
   vec3 viewDir = normalize(vViewPosition);
   float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), uFresnelPower);
+
   float shift = sin(vDistort * 6.2831 + uTime * 0.6) * 0.5 + 0.5;
-  vec3 irid = mix(uColorA, uColorB, shift);
+  float shift2 = cos(vDistort * 4.0 - uTime * 0.4) * 0.5 + 0.5;
+
+  vec3 layer1 = mix(uColorA, uColorB, shift);
+  vec3 layer2 = mix(uColorC, uColorD, shift2);
+  vec3 irid = mix(layer1, layer2, 0.5 + fresnel * 0.35);
   irid = mix(irid, vec3(1.0), fresnel * uIridescence);
-  vec3 color = mix(uColorA * 0.6, irid, 0.65 + fresnel * 0.35);
-  color += fresnel * uIridescence * 0.5;
+
+  vec3 color = mix(uColorA * 0.5, irid, 0.6 + fresnel * 0.4);
+  color += fresnel * uIridescence * 0.55;
+
   gl_FragColor = vec4(color, 0.92);
 }
 `;
 
-export default function JellyOrb() {
+export default function JellyOrb({ palette }) {
   const meshRef = useRef();
   const materialRef = useRef();
   const selectedFlavor = useStore((s) => s.selectedFlavor);
   const lastPulse = useStore((s) => s.lastPulse);
-  const current = flavors.find((f) => f.id === selectedFlavor) || flavors[0];
 
   const seenPulse = useRef(0);
   const pulseClock = useRef(-10);
+
+  const selectedIndex = flavors.findIndex((f) => f.id === selectedFlavor);
+  const current = flavors[Math.max(0, selectedIndex)] || flavors[0];
+  const next = flavors[(Math.max(0, selectedIndex) + 1) % flavors.length];
+
+  const initialPalette = useMemo(() => {
+    if (palette && palette.length >= 4) return palette;
+    if (palette) {
+      const padded = [...palette, ...palette, ...palette, ...palette];
+      return padded.slice(0, 4);
+    }
+    return [current.color, current.colorB, next.color, next.colorB];
+  }, []);
 
   const uniforms = useMemo(
     () => ({
@@ -121,16 +142,20 @@ export default function JellyOrb() {
       uDistortion: { value: 0.32 },
       uPointer: { value: new THREE.Vector3(0, 0, 1) },
       uPointerStrength: { value: 0 },
-      uColorA: { value: new THREE.Color(current.color) },
-      uColorB: { value: new THREE.Color(current.colorB) },
-      uIridescence: { value: 0.55 },
-      uFresnelPower: { value: 2.2 },
+      uColorA: { value: new THREE.Color(initialPalette[0]) },
+      uColorB: { value: new THREE.Color(initialPalette[1]) },
+      uColorC: { value: new THREE.Color(initialPalette[2]) },
+      uColorD: { value: new THREE.Color(initialPalette[3]) },
+      uIridescence: { value: 0.75 },
+      uFresnelPower: { value: 2.0 },
     }),
     []
   );
 
-  const targetA = useRef(new THREE.Color(current.color));
-  const targetB = useRef(new THREE.Color(current.colorB));
+  const targetA = useRef(new THREE.Color(initialPalette[0]));
+  const targetB = useRef(new THREE.Color(initialPalette[1]));
+  const targetC = useRef(new THREE.Color(initialPalette[2]));
+  const targetD = useRef(new THREE.Color(initialPalette[3]));
 
   useFrame((state, delta) => {
     if (!materialRef.current || !meshRef.current) return;
@@ -138,11 +163,24 @@ export default function JellyOrb() {
 
     u.uTime.value += delta;
 
-    // Flavor color morph
-    targetA.current.set(current.color);
-    targetB.current.set(current.colorB);
+    // Build the live 4-color palette
+    let livePalette = initialPalette;
+    if (!palette) {
+      const idx = flavors.findIndex((f) => f.id === selectedFlavor);
+      const cur = flavors[idx] || flavors[0];
+      const nxt = flavors[(idx + 1) % flavors.length];
+      livePalette = [cur.color, cur.colorB, nxt.color, nxt.colorB];
+    }
+
+    targetA.current.set(livePalette[0]);
+    targetB.current.set(livePalette[1]);
+    targetC.current.set(livePalette[2]);
+    targetD.current.set(livePalette[3]);
+
     u.uColorA.value.lerp(targetA.current, 0.06);
     u.uColorB.value.lerp(targetB.current, 0.06);
+    u.uColorC.value.lerp(targetC.current, 0.06);
+    u.uColorD.value.lerp(targetD.current, 0.06);
 
     // Pointer bulge
     const px = state.pointer.x;
@@ -157,7 +195,7 @@ export default function JellyOrb() {
 
     meshRef.current.rotation.y += delta * 0.1;
 
-    // Breathing + pulse squash-and-stretch (scene transitions, flavor picks)
+    // Breathing + pulse squash-and-stretch
     const now = state.clock.elapsedTime;
     if (lastPulse !== seenPulse.current) {
       seenPulse.current = lastPulse;

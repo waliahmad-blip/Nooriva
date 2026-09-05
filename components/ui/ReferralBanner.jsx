@@ -1,13 +1,13 @@
 'use client';
-
 import { motion } from 'framer-motion';
 import { Gift, ChevronRight } from 'lucide-react';
+import { WHATSAPP_NUMBER } from '@/lib/data';
 
 export default function ReferralBanner() {
-  function openWhatsApp() {
-    var text = encodeURIComponent('Hi NOORIVA! I want to refer a friend for the Rs500 referral program.');
-    window.open('https://wa.me/923210550303?text=' + text, '_blank');
-  }
+  const openWhatsApp = () => {
+    const text = encodeURIComponent('Refer the Glow — Share NOORISH GOLD rituals with a friend');
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, '_blank');
+  };
 
   return (
     <section className="section-shell py-12">
@@ -28,7 +28,7 @@ export default function ReferralBanner() {
             </div>
             <div>
               <h3 className="text-white font-bold text-xl">Give Rs500, Get Rs500</h3>
-              <p className="text-white/80 text-sm mt-1">Refer a friend and you both get Rs500 off your next order</p>
+              <p className="text-white/80 text-sm mt-1">Refer the Glow — Share NOORISH GOLD rituals with a friend and you both get Rs500 off your next order</p>
             </div>
           </div>
           <div className="flex items-center gap-2 text-white font-bold text-sm group-hover:translate-x-1 transition-transform">

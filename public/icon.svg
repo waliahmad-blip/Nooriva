@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="noorivaGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff5e99"/>
+      <stop offset="35%" stop-color="#a78bfa"/>
+      <stop offset="70%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#5eead4"/>
+    </linearGradient>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Rounded app-icon background -->
+  <rect width="512" height="512" rx="128" fill="url(#noorivaGlow)"/>
+
+  <!-- Liquid droplet / glow orb -->
+  <path
+    d="M256 128c-88 104-142 168-142 232 0 78 64 142 142 142s142-64 142-142c0-64-54-128-142-232z"
+    fill="#ffffff"
+    fill-opacity="0.92"
+    filter="url(#softGlow)"
+  />
+
+  <!-- Inner highlight -->
+  <ellipse cx="256" cy="310" rx="64" ry="56" fill="#ffffff" fill-opacity="0.35"/>
+
+  <!-- Tiny sparkle accents -->
+  <circle cx="360" cy="140" r="14" fill="#ffffff" fill-opacity="0.9"/>
+  <circle cx="390" cy="180" r="8" fill="#ffffff" fill-opacity="0.7"/>
+  <circle cx="130" cy="180" r="10" fill="#ffffff" fill-opacity="0.8"/>
+</svg>

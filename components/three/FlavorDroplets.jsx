@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useRef, useState } from "react";
-import { useFrame } from "@react-three/fiber";
-import * as THREE from "three";
-import { flavors } from "@/lib/data";
-import { useStore } from "@/lib/store";
+import { useRef, useState } from 'react';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
+import { useStore } from '@/lib/store';
+import { flavors as defaultFlavors } from '@/lib/data';
 
 function Droplet({ flavor, index, total }) {
   const ref = useRef();
@@ -32,11 +32,11 @@ function Droplet({ flavor, index, total }) {
       onClick={() => setSelectedFlavor(flavor.id)}
       onPointerOver={() => {
         setHovered(true);
-        document.body.style.cursor = "pointer";
+        document.body.style.cursor = 'pointer';
       }}
       onPointerOut={() => {
         setHovered(false);
-        document.body.style.cursor = "auto";
+        document.body.style.cursor = 'auto';
       }}
     >
       <icosahedronGeometry args={[0.28, 16]} />
@@ -55,11 +55,13 @@ function Droplet({ flavor, index, total }) {
   );
 }
 
-export default function FlavorDroplets() {
+export default function FlavorDroplets({ flavors }) {
+  const dropletFlavors = flavors || defaultFlavors || [];
+
   return (
     <group>
-      {flavors.map((flavor, i) => (
-        <Droplet key={flavor.id} flavor={flavor} index={i} total={flavors.length} />
+      {dropletFlavors.map((flavor, i) => (
+        <Droplet key={flavor.id} flavor={flavor} index={i} total={dropletFlavors.length} />
       ))}
     </group>
   );

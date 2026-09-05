@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useRef } from 'react';
 
 /**
@@ -8,35 +7,34 @@ import { useEffect, useRef } from 'react';
  * - Respects reduced-motion
  * - Auto-cleanup on unmount
  */
-
 export default function CursorTrail() {
   const canvasRef = useRef(null);
 
-  useEffect(function() {
+  useEffect(() => {
     if (typeof window === 'undefined') return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if ('ontouchstart' in window) return;
 
-    var canvas = canvasRef.current;
+    const canvas = canvasRef.current;
     if (!canvas) return;
-    var ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    var particles = [];
-    var mouse = { x: -100, y: -100 };
-    var raf;
+    const particles = [];
+    const mouse = { x: -100, y: -100 };
+    let raf;
 
-    function resize() {
+    const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-    }
+    };
     resize();
     window.addEventListener('resize', resize);
 
-    function onMove(e) {
+    const onMove = (e) => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
-      for (var i = 0; i < 2; i++) {
+      for (let i = 0; i < 2; i++) {
         particles.push({
           x: mouse.x + (Math.random() - 0.5) * 8,
           y: mouse.y + (Math.random() - 0.5) * 8,
@@ -49,18 +47,21 @@ export default function CursorTrail() {
         });
       }
       if (particles.length > 80) particles.splice(0, particles.length - 80);
-    }
+    };
     window.addEventListener('mousemove', onMove, { passive: true });
 
-    function draw() {
+    const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (var i = particles.length - 1; i >= 0; i--) {
-        var p = particles[i];
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
         p.x += p.vx;
         p.y += p.vy;
         p.vy += 0.02;
         p.life -= p.decay;
-        if (p.life <= 0) { particles.splice(i, 1); continue; }
+        if (p.life <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
         ctx.globalAlpha = p.life * 0.7;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
@@ -69,10 +70,10 @@ export default function CursorTrail() {
       }
       ctx.globalAlpha = 1;
       raf = requestAnimationFrame(draw);
-    }
+    };
     raf = requestAnimationFrame(draw);
 
-    return function() {
+    return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', onMove);

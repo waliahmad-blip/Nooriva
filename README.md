@@ -1,64 +1,111 @@
-# NOORIVA — Drink Your Glow
+# NOORIVA — NOORISH GOLD · Drink Your Glow
 
-A cinematic, no-scroll, liquid-celestial Next.js commerce experience for NOORIVA —
-Pakistan's first halal beauty elixir. Built with Next.js 14, React Three Fiber (WebGL),
-Framer Motion, Zustand and Tailwind CSS.
+NOORIVA is a cinematic, production-minded commerce experience for Pakistan's premium NOORISH GOLD glow drink rituals.
 
-## The experience
+Built with:
 
-Instead of scrolling, the site is a **full-screen scene system**. Seven "scenes"
-(Home, Flavours, Inside, Rituals, Society, Play, Voices) are navigated with the
-mouse-wheel, touch swipe, arrow keys, or the floating dock. Every transition plays a
-**liquid-iris wipe** — staggered flavor-colored blades, a giant chapter numeral, a
-flash — while the 3D jelly orb pulses and the flavor droplet splashes. Each scene has
-its own animated aurora color field. Reduced-motion users get a calm cross-fade.
+- Next.js 14 App Router
+- React 18
+- React Three Fiber / Three.js
+- Framer Motion
+- Zustand
+- Tailwind CSS
+- PWA manifest
+- Open Graph / Twitter cards
+- robots + sitemap
+- WhatsApp/COD order flow
 
-## Features
+## Core Content Architecture
 
-- Cinematic no-scroll scene navigation (wheel / swipe / keyboard / dock)
-- Liquid-iris scene transition veil + WebAudio chimes
-- React Three Fiber 3D: breathing jelly orb, flavor droplets, glow dust
-- Flavor "injection" splash on every flavor / scene change
-- 6 flavours, cart, bag drawer, checkout, COD + WhatsApp handoff
-- Order API with pluggable persistence (Supabase -> Google Sheets -> local file)
-- Gamification: glow score, ritual streak, daily check-in (persisted)
-- 5 mini-games + spin wheel + scratch card + memory match + glow rush
-- NOORIX shopping assistant
-- English / Urdu / Arabic with full RTL flipping (persisted)
-- Zustand store with localStorage persistence
-- PWA manifest, OG/Twitter link-preview images, robots + sitemap
+All public content data is kept animation-safe in:
 
-## Run locally
+- `lib/data.js`: compatible exports used by existing `Sections.jsx`, store, quiz, commerce
+- `lib/noorishGold.js`: complete NOORISH GOLD hero-complex data
+- `lib/seoLandingPages.js`: Pakistan search-intent landing page configs
+- `lib/i18n.js`: English, Urdu, and Arabic UI strings
+
+## Routes
+
+- `/` — cinematic homepage
+- `/noorish-gold` — NOORISH GOLD signature hero complex
+- `/drinks/[slug]` — 12 individual glow drink SEO pages
+- `/energy-drinks` — energy drink Pakistan landing page
+- `/glow-drinks` — glow drink Pakistan landing page
+- `/fresh-drinks` — fresh drink Pakistan landing page
+
+## NOORISH GOLD Signature Hero Complex
+
+NOORISH GOLD is the finalized, production-ready signature hero complex added at `12% w/w` to every finished pouch:
+
+- Dose: `18g per 150ml pouch`
+- Physical state: deep amber liquid
+- Fully water-soluble
+- Zero sediment
+- Thermally stable
+- Hot-fill compatible
+- Rose hydrosol anchor
+- Filtered date syrup depth
+- Clarified amla, sea buckthorn, hibiscus
+- Saffron and mastic luxury finish
+
+## The 12 Rituals
+
+1. `ROSE HALO` — Rose + Lychee — Wake Up Luminous
+2. `PEACH DUSK` — Peach + Chamomile — Sleep Beautiful
+3. `MANGO BLAZE` — Mango + Ginger — Burn Bright
+4. `SAFFRON MIST` — Saffron + Vanilla — Repair in Gold
+5. `BERRY BLOOM` — Pomegranate + Berry — 3 PM, Still Glowing
+6. `COCO GLOW` — Coconut + Moringa — Reset Your Light
+7. `CHERRY VEIL` — Black Cherry + Rose — Drift Into Glow
+8. `PASSION LUXE` — Papaya + Passionfruit — Age in Reverse
+9. `ACAI DEW` — Acai + Blueberry — Pure Clarity
+10. `PEARL SHEEN` — Dragon Fruit + Hibiscus — Glow Unfiltered
+11. `ALOE TIDE` — Yuzu + Aloe — Barrier of Light
+12. `BAMBOO SILK` — Pearl + Bamboo — Reflect Your Light
+
+## Pending Scope / Upcoming Work
+
+The following items are tracked for future work:
+
+- Full mobile accessibility audit and fixes across all pages
+- Worldclass redesign of the NOORIVA AI / Noorix experience
+- Google Cloud / Vertex AI model routing using Google Cloud credits
+- Model capability testing before frontend integration
+- Image/vision, translation, reasoning, embeddings, and medical model routing
+- Nooriva AI interactive selected-only flow, without free-text typing as primary input
+- SEO expansion: blog clusters, store locator, local schema, Search Console verification
+- Cross-verify every file, page, route, asset, and critical content replacement
+
+## Local Development
+
+Install:
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000
-npm run build      # production build
-npm run start      # serve production build
 ```
 
-## Order persistence (optional, zero hard dependency)
+Run:
 
-The `/api/orders` route stores every order to a local `data/orders.json` by default.
-To wire a real backend, set either of these environment variables — no code changes:
-
-```
-SUPABASE_URL=...          # + SUPABASE_KEY=...   -> inserts into `orders` table
-GOOGLE_SHEETS_WEBHOOK=... # Google Apps Script URL that appends rows
+```bash
+npm run dev
 ```
 
-## Deploy (Netlify)
+Build:
 
-The repo includes a `netlify.toml`. Push and Netlify auto-detects Next.js:
-build command `npm run build`, publish directory `.next`.
-
-## Structure
-
+```bash
+npm run build
 ```
-app/            routes, global css, api/orders, manifest, og images
-components/     SceneStage (engine), Sections, Playground, overlays
-components/three/  WebGL scene, jelly orb, droplets, dust, injection
-components/ui/  TopBar, MobileNav, Noorix, dock, toggles
-components/commerce/  BagDrawer, CheckoutOverlay
-lib/            store (zustand), i18n, data, scenes, sound
+
+Start:
+
+```bash
+npm run start
 ```
+
+## Important Production Notes
+
+- Do not remove or replace animation components unless explicitly requested.
+- Existing scene navigation, page transitions, and WebGL behavior should remain stable.
+- New content should be data-driven and production-grade.
+- Keep order data free of old product names in fresh installs.
+- Use the current domain only when confirmed as live.

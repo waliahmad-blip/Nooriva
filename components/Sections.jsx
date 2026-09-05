@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ChevronDown, Check, Star } from "lucide-react";
 import { useT, useLocalized } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
+import Link from "next/link";
 import {
   flavors,
   ingredients,
@@ -16,6 +17,25 @@ import {
   faqs,
   PRICE,
 } from "@/lib/data";
+
+const FLAVOR_SLUG_BY_ID = {
+  "aurora-rose": "rose-halo",
+  "peach-dusk": "peach-dusk",
+  "sunrise-solstice": "mango-blaze",
+  "golden-zenith": "saffron-mist",
+  "berry-nebula": "berry-bloom",
+  "celestial-mint": "coco-glow",
+  "violet-eclipse": "cherry-veil",
+  "passion-luxe": "passion-luxe",
+  "acai-dew": "acai-dew",
+  "pearl-sheen": "pearl-sheen",
+  "aloe-tide": "aloe-tide",
+  "bamboo-silk": "bamboo-silk",
+};
+
+function getDrinkSlug(id) {
+  return FLAVOR_SLUG_BY_ID[id] || id;
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -72,8 +92,11 @@ export function Hero() {
         className="mt-8 flex flex-wrap items-center justify-center gap-3"
       >
         <button onClick={() => setActiveScene("flavours")} className="btn-primary">{t("hero.cta.shop")}</button>
-        <button onClick={() => setActiveScene("rituals")} className="btn-secondary">{t("hero.cta.ritual")}</button>
-      </motion.div>
+                <button onClick={() => setActiveScene("rituals")} className="btn-secondary">{t("hero.cta.ritual")}</button>
+                <Link href="/noorish-gold" className="btn-secondary">NOORISH GOLD</Link>
+                <Link href="/glow-drinks" className="btn-secondary">Glow Drinks</Link>
+                <Link href="/energy-drinks" className="btn-secondary">Energy Drinks</Link>
+              </motion.div>
 
       <motion.div
         variants={fadeUp}
@@ -120,7 +143,9 @@ export function Collection() {
                   boxShadow: `0 8px 24px ${flavor.color}44`,
                 }}
               />
-              <h3 className="display-heading text-2xl">{flavor.name}</h3>
+              <h3 className="display-heading text-2xl">
+                <Link href={`/drinks/${getDrinkSlug(flavor.id)}`}>{flavor.name}</Link>
+              </h3>
             </div>
 
             <p className="mt-3 text-sm text-ink/60">{localize(flavor.notes)}</p>
@@ -368,6 +393,12 @@ export function Testimonials() {
 }
 
 export function ReferralSection() {
+  const openWhatsApp = () => {
+    // Centralized WhatsApp number from lib/data.js WHATSAPP_NUMBER constant.
+    const text = encodeURIComponent('Refer the Glow — Share NOORISH GOLD rituals with a friend');
+    window.open(`https://${WHATSAPP_NUMBER}?text=${text}`, '_blank');
+  };
+
   return (
     <section className="section-shell py-12">
       <motion.div
@@ -375,24 +406,23 @@ export function ReferralSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.6 }}
-        onClick={function() {
-          var text = encodeURIComponent('Hi NOORIVA! I want to refer a friend for the Rs500 referral program.');
-          window.open('https://wa.me/923210550303?text=' + text, '_blank');
-        }}
+        onClick={openWhatsApp}
         className="relative overflow-hidden rounded-[2rem] p-6 md:p-8 cursor-pointer group"
         style={{ background: 'linear-gradient(135deg, #ff8fb2, #a78bfa, #67e8f9)' }}
       >
         <div className="absolute inset-0 opacity-20" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)', animation: 'noorix-shimmer 3s ease-in-out infinite' }} />
         <div className="relative flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="text-4xl">🎁</div>
+            <div className="h-[56px] w-[56px] rounded-2xl bg-white/20 flex items-center justify-center">
+              🎁
+            </div>
             <div>
               <h3 className="text-white font-bold text-xl">Give Rs500, Get Rs500</h3>
-              <p className="text-white/80 text-sm mt-1">Refer a friend and you both get Rs500 off</p>
+              <p className="text-white/80 text-sm mt-1">Refer the Glow — Share NOORISH GOLD rituals with a friend and you both get Rs500 off your next order</p>
             </div>
           </div>
           <span className="text-white font-bold text-sm group-hover:translate-x-1 transition-transform flex items-center gap-1">
-            Refer Now →
+            Refer the Glow — Share NOORISH GOLD rituals with a friend
           </span>
         </div>
       </motion.div>
