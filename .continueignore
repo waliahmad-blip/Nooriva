@@ -1,0 +1,34 @@
+# Dependencies & Build Artifacts
+node_modules
+.next
+dist
+build
+out
+coverage
+.turbo
+.cache
+
+# Lock Files (These are huge token wasters)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# Logs & Misc
+*.log
+*.tmp
+*.temp
+.DS_Store
+
+# Binary & Media Files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.ico
+*.mp4
+*.mov
+*.pdf
+*.zip
+*.rar

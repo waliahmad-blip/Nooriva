@@ -1,6 +1,7 @@
 "use client";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { Home, ShoppingBag, Sparkles, Moon, Crown, Gamepad2, MessageCircle, Users, CloudSun, Leaf, User, Bot } from "lucide-react";
+import { Home, ShoppingBag, Sparkles, Moon, Crown, Gamepad2, MessageCircle, User, Bot } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useT } from "@/lib/i18n";
 import { SCENES } from "@/lib/scenes";
@@ -19,14 +20,25 @@ export default function MobileNav() {
   const activeScene = useStore((s) => s.activeScene);
   const setActiveScene = useStore((s) => s.setActiveScene);
   const t = useT();
+  const activeBtnRef = useRef(null);
+
+  useEffect(() => {
+    if (activeBtnRef.current) {
+      activeBtnRef.current.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }
+  }, [activeScene]);
 
   return (
     <nav
-      className="fixed bottom-3 inset-x-3 z-30 md:hidden"
+      className="fixed bottom-3 inset-x-2 z-30 flex justify-center md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       aria-label="Scene navigation"
     >
-      <div className="glass flex items-center justify-between rounded-full bg-white/85 px-1.5 py-1.5">
+      <div className="glass flex items-center gap-0.5 overflow-x-auto no-scrollbar scroll-smooth rounded-full bg-white/90 px-1.5 py-1 shadow-lg backdrop-blur-xl max-w-full">
         {/* All Scene buttons kept intact */}
         {SCENES.map((scene) => {
           const Icon = ICONS[scene.id];
@@ -34,13 +46,14 @@ export default function MobileNav() {
           return (
             <button
               key={scene.id}
+              ref={isActive ? activeBtnRef : null}
               onClick={() => setActiveScene(scene.id)}
               aria-pressed={isActive}
               aria-label={t(`scene.${scene.id}`)}
-              className={`tap-target relative flex flex-col items-center justify-center gap-0.5 rounded-full px-2 py-1.5 transition-all ${
-                isActive ? "text-ink scale-105" : "text-ink/50 hover:text-ink/70"
+              className={`tap-target shrink-0 relative flex flex-col items-center justify-center gap-0.5 rounded-full px-2 py-1 transition-all ${
+                isActive ? "text-ink scale-105 font-bold" : "text-ink/60 hover:text-ink/80"
               }`}
-              style={{ minWidth: "44px", minHeight: "44px" }}
+              style={{ minWidth: "40px", minHeight: "42px" }}
             >
               {isActive && (
                 <span
@@ -50,8 +63,8 @@ export default function MobileNav() {
                   }}
                 />
               )}
-              <Icon size={18} className="relative" />
-              <span className="relative text-[8px] font-bold leading-none">
+              <Icon size={17} className="relative z-10" />
+              <span className="relative z-10 text-[8px] font-bold leading-none">
                 {t(`scene.${scene.id}`)}
               </span>
             </button>
@@ -59,13 +72,13 @@ export default function MobileNav() {
         })}
 
         {/* Divider */}
-        <div className="h-8 w-px bg-ink/10 mx-0.5" />
+        <div className="h-6 w-px shrink-0 bg-ink/10 mx-0.5" />
 
         {/* Noorix AI Link */}
         <Link
-          href="/noorix"
-          className="tap-target relative flex flex-col items-center justify-center gap-0.5 rounded-full px-2 py-1.5 transition-all hover:scale-105"
-          style={{ minWidth: "44px", minHeight: "44px" }}
+          href="/noorix/chat"
+          className="tap-target shrink-0 relative flex flex-col items-center justify-center gap-0.5 rounded-full px-2 py-1 transition-all hover:scale-105"
+          style={{ minWidth: "40px", minHeight: "42px" }}
           aria-label="Noorix AI"
         >
           <span
@@ -74,45 +87,25 @@ export default function MobileNav() {
               background: "linear-gradient(135deg, #ff8fb2, #a78bfa)",
             }}
           />
-          <Bot size={18} className="relative text-ink" />
-          <span className="relative text-[8px] font-bold leading-none text-ink">AI</span>
-        </Link>
-        <Link href="/club" aria-label="NOORIVA Club" className="scene-dock-btn">
-          <Users size={20} />
-          <span className="scene-dock-label">Club</span>
-        </Link>
-        <Link href="/weather" aria-label="Weather Glow" className="scene-dock-btn">
-          <CloudSun size={20} />
-          <span className="scene-dock-label">Weather</span>
-        </Link>
-        <Link href="/quiz" aria-label="Glow Quiz" className="scene-dock-btn">
-          <Sparkles size={20} />
-          <span className="scene-dock-label">Quiz</span>
-        </Link>
-        <Link href="/ambassador" aria-label="Ambassador Hub" className="scene-dock-btn">
-          <Crown size={20} />
-          <span className="scene-dock-label">Ambassador</span>
-        </Link>
-        <Link href="/ingredients" aria-label="Ingredients Story" className="scene-dock-btn">
-          <Leaf size={20} />
-          <span className="scene-dock-label">Story</span>
+          <Bot size={17} className="relative z-10 text-ink" />
+          <span className="relative z-10 text-[8px] font-bold leading-none text-ink">AI</span>
         </Link>
 
-        {/* Account Link (No useSession to avoid hydration errors) */}
+        {/* Account Link */}
         <Link
           href="/account"
-          className="tap-target relative flex flex-col items-center justify-center gap-0.5 rounded-full px-2 py-1.5 transition-all hover:scale-105"
-          style={{ minWidth: "44px", minHeight: "44px" }}
+          className="tap-target shrink-0 relative flex flex-col items-center justify-center gap-0.5 rounded-full px-2 py-1 transition-all hover:scale-105"
+          style={{ minWidth: "40px", minHeight: "42px" }}
           aria-label="My Account"
         >
           <span
             className="absolute inset-0 rounded-full opacity-25"
             style={{
-              background: "linear-gradient(135deg, #E7D3A8, #C79A44)",
+              background: "linear-gradient(135deg, #a78bfa, #22d3ee)",
             }}
           />
-          <User size={18} className="relative text-ink" />
-          <span className="relative text-[8px] font-bold leading-none text-ink">Me</span>
+          <User size={17} className="relative z-10 text-ink" />
+          <span className="relative z-10 text-[8px] font-bold leading-none text-ink">Me</span>
         </Link>
       </div>
     </nav>

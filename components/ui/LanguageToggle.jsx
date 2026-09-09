@@ -13,7 +13,7 @@ export default function LanguageToggle() {
         <button
           key={lang.code}
           onClick={() => setLanguage(lang.code)}
-          className={`rounded-full px-2.5 py-1.5 text-[11px] font-semibold transition ${
+          className={`rounded-full px-2 py-1 text-[10px] font-semibold transition sm:px-2.5 sm:py-1.5 sm:text-[11px] ${
             language === lang.code
               ? "bg-ink text-cream"
               : "text-ink/60 hover:text-ink"

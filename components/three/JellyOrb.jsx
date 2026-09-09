@@ -220,7 +220,7 @@ export default function JellyOrb({ palette }) {
 
   return (
     <mesh ref={meshRef}>
-      <icosahedronGeometry args={[1.6, 48]} />
+      <icosahedronGeometry args={[1.6, 6]} />
       <shaderMaterial
         ref={materialRef}
         vertexShader={vertexShader}

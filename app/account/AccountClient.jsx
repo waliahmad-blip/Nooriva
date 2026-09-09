@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import BackToHome from "@/components/ui/BackToHome";
+import AccountOrders from "@/components/account/AccountOrders";
 
 /* ═══════════════════════════════════════════════════════════
    CONSTANTS (unchanged)
@@ -88,10 +89,10 @@ function AuroraCloud({ isDark }) {
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
       <motion.div className="absolute -top-40 -left-40 h-[75vw] max-h-[550px] w-[75vw] max-w-[550px] rounded-full"
-        style={{ background: isDark ? "radial-gradient(circle, rgba(255,94,153,0.3), transparent 70%)" : "radial-gradient(circle, rgba(231,211,168,0.35), transparent 70%)", filter: "blur(100px)" }}
+        style={{ background: isDark ? "radial-gradient(circle, rgba(255,94,153,0.3), transparent 70%)" : "radial-gradient(circle, rgba(167, 139, 250,0.35), transparent 70%)", filter: "blur(100px)" }}
         animate={prefersReducedMotion ? {} : { x: [0, 80, -40, 0], y: [0, 50, 80, 0], scale: [1, 1.2, 0.9, 1] }} transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }} />
       <motion.div className="absolute -bottom-40 -right-40 h-[80vw] max-h-[600px] w-[80vw] max-w-[600px] rounded-full"
-        style={{ background: isDark ? "radial-gradient(circle, rgba(167,139,250,0.3), transparent 70%)" : "radial-gradient(circle, rgba(199,154,68,0.3), transparent 70%)", filter: "blur(110px)" }}
+        style={{ background: isDark ? "radial-gradient(circle, rgba(167,139,250,0.3), transparent 70%)" : "radial-gradient(circle, rgba(34, 211, 238,0.3), transparent 70%)", filter: "blur(110px)" }}
         animate={prefersReducedMotion ? {} : { x: [0, -70, 40, 0], y: [0, -60, -90, 0], scale: [1, 1.15, 0.95, 1] }} transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }} />
       <motion.div className="absolute top-1/3 left-1/2 h-[60vw] max-h-[450px] w-[60vw] max-w-[450px] rounded-full"
         style={{ background: isDark ? "radial-gradient(circle, rgba(34,211,238,0.18), transparent 70%)" : "radial-gradient(circle, rgba(94,234,212,0.2), transparent 70%)", filter: "blur(90px)" }}
@@ -325,7 +326,7 @@ export default function AccountClient({ session }) {
   const wellnessProgress = Math.round((completedWellness / checklist.length) * 100);
 
   return (
-    <div className={`relative min-h-screen w-full transition-colors duration-300 p-4 md:p-8 pt-24 ${isDark ? "bg-[#0a0a0f] text-white" : "bg-[#f8f6f0] text-gray-900"}`}>
+    <div className={`relative min-h-screen w-full overflow-x-clip transition-colors duration-300 p-4 md:p-8 pt-24 pb-36 ${isDark ? "bg-[#0a0a0f] text-white" : "bg-[#f8f6f0] text-gray-900"}`}>
       <AuroraCloud isDark={isDark} />
 
       <div className="relative z-10 mx-auto max-w-7xl space-y-8">
@@ -339,7 +340,7 @@ export default function AccountClient({ session }) {
               {profilePic ? (
                 <img src={profilePic} alt={`${name}'s profile`} className="h-14 w-14 rounded-2xl object-cover shadow-lg transition-transform group-hover:scale-105" />
               ) : (
-                <div className={`flex h-14 w-14 items-center justify-center rounded-2xl text-2xl font-bold text-white shadow-lg transition-transform group-hover:scale-105 ${isDark ? "bg-gradient-to-br from-[#ff8fb2] to-[#a78bfa]" : "bg-gradient-to-br from-[#E7D3A8] to-[#C79A44]"}`}>
+                <div className={`flex h-14 w-14 items-center justify-center rounded-2xl text-2xl font-bold text-white shadow-lg transition-transform group-hover:scale-105 ${isDark ? "bg-gradient-to-br from-[#ff8fb2] to-[#a78bfa]" : "bg-gradient-to-br from-[#a78bfa] to-[#22d3ee]"}`}>
                   {name.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -350,7 +351,7 @@ export default function AccountClient({ session }) {
             <div>
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-bold">{name}</h1>
-                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-md ${isDark ? "bg-gradient-to-r from-[#ff8fb2] to-[#a78bfa]" : "bg-gradient-to-r from-[#E7D3A8] to-[#C79A44]"}`}>
+                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-md ${isDark ? "bg-gradient-to-r from-[#ff8fb2] to-[#a78bfa]" : "bg-gradient-to-r from-[#a78bfa] to-[#22d3ee]"}`}>
                   <Crown size={10} /> {userPlan}
                 </span>
               </div>
@@ -415,7 +416,7 @@ export default function AccountClient({ session }) {
             {/* Stats */}
             <div className="grid grid-cols-2 gap-4">
               <motion.div whileHover={{ scale: 1.03 }} className={`rounded-2xl border p-4 text-center backdrop-blur-md ${isDark ? "bg-white/5 border-white/10" : "bg-white border-gray-200 shadow-sm"}`}>
-                <Star size={24} className={`mx-auto mb-2 ${isDark ? "text-[#ff8fb2]" : "text-[#C79A44]"}`} />
+                <Star size={24} className={`mx-auto mb-2 ${isDark ? "text-[#ff8fb2]" : "text-[#22d3ee]"}`} />
                 <p className="text-2xl font-bold">{glowScore}</p>
                 <p className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? "text-white/60" : "text-gray-500"}`}>Glow Score</p>
               </motion.div>
@@ -469,7 +470,7 @@ export default function AccountClient({ session }) {
               <p className={`mb-3 text-xs ${isDark ? "text-white/60" : "text-gray-500"}`}>Invite friends and unlock 1 free month of Glow.</p>
               <div className="flex gap-2">
                 <div className={`flex flex-1 items-center rounded-xl border px-3 py-2 font-mono text-xs font-bold ${isDark ? "bg-white/5 border-white/10 text-white" : "bg-gray-50 border-gray-200 text-gray-800"}`}>{referralCode}</div>
-                <button type="button" onClick={copyReferral} className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold text-white transition-transform active:scale-95 ${isDark ? "bg-gradient-to-r from-[#ff8fb2] to-[#a78bfa]" : "bg-gradient-to-r from-[#E7D3A8] to-[#C79A44]"}`}>
+                <button type="button" onClick={copyReferral} className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold text-white transition-transform active:scale-95 ${isDark ? "bg-gradient-to-r from-[#ff8fb2] to-[#a78bfa]" : "bg-gradient-to-r from-[#a78bfa] to-[#22d3ee]"}`}>
                   {copied ? <Check size={12} /> : <Copy size={12} />} {copied ? "Copied" : "Copy"}
                 </button>
               </div>
@@ -479,7 +480,7 @@ export default function AccountClient({ session }) {
           {/* RIGHT COLUMN */}
           <div className="space-y-6 lg:col-span-2">
             {/* Command Center */}
-            <motion.section initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className={`flex h-[480px] flex-col overflow-hidden rounded-3xl border shadow-2xl ${isDark ? "bg-white/5 border-white/10" : "bg-white border-gray-200"}`}>
+            <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`flex h-[480px] flex-col overflow-hidden rounded-3xl border shadow-2xl ${isDark ? "bg-white/5 border-white/10" : "bg-white border-gray-200"}`}>
               <div className={`flex items-center justify-between border-b p-4 ${isDark ? "border-white/10 bg-white/5" : "border-gray-200 bg-gray-50"}`}>
                 <div className="flex items-center gap-3">
                   <NoorixOrb size={28} />
@@ -498,13 +499,8 @@ export default function AccountClient({ session }) {
                 {chatMessages.map((message) => (
                   <motion.div key={message.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                     {message.role === "ai" && <NoorixOrb size={24} />}
-                    <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm shadow-sm ${message.role === "user" ? (isDark ? "bg-gradient-to-br from-[#ff8fb2] to-[#a78bfa] text-white rounded-br-none" : "bg-gradient-to-br from-[#E7D3A8] to-[#C79A44] text-white rounded-br-none") : (isDark ? "bg-white/10 border border-white/5 text-white rounded-bl-none" : "bg-white border border-gray-200 text-gray-900 rounded-bl-none")}`}>
+                    <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm shadow-sm ${message.role === "user" ? (isDark ? "bg-gradient-to-br from-[#ff8fb2] to-[#a78bfa] text-white rounded-br-none" : "bg-gradient-to-br from-[#a78bfa] to-[#22d3ee] text-white rounded-br-none") : (isDark ? "bg-white/10 border border-white/5 text-white rounded-bl-none" : "bg-white border border-gray-200 text-gray-900 rounded-bl-none")}`}>
                       <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
-{message.role === "ai" && (
-  <button type="button" onClick={() => speak(message.content)} className="mt-2 flex items-center gap-1 text-[10px] font-bold text-white/60 transition hover:text-pink-400">
-    <Volume2 size={12} /> Listen
-  </button>
-)}
 {message.role === "ai" && (
   <button type="button" onClick={() => speak(message.content)} className="mt-2 flex items-center gap-1 text-[10px] font-bold text-white/60 transition hover:text-pink-400">
     <Volume2 size={12} /> Listen
@@ -535,12 +531,15 @@ export default function AccountClient({ session }) {
                 <div className="relative flex items-center">
                   <input type="text" value={chatInput} onChange={(event) => setChatInput(event.target.value)} placeholder="Ask Noorix about your routines..." aria-label="Message Noorix" className={`w-full rounded-xl border py-2.5 pl-4 pr-24 text-sm outline-none transition-colors ${isDark ? "border-white/10 bg-white/5 text-white placeholder-white/30 focus:border-white/30" : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-gray-400"}`} />
                   <button type="button" aria-label={isListening ? "Stop listening" : "Voice input"} onClick={toggleVoice} className={`absolute right-11 flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${isDark ? "text-white/60 hover:bg-white/10" : "text-gray-500 hover:bg-gray-100"}`}><Mic size={14} /></button>
-                  <button type="submit" disabled={!chatInput.trim() || isTyping} aria-label="Send message" className={`absolute right-1.5 flex h-8 w-8 items-center justify-center rounded-lg text-white transition-transform active:scale-95 disabled:opacity-40 ${isDark ? "bg-gradient-to-br from-[#ff8fb2] to-[#a78bfa]" : "bg-gradient-to-br from-[#E7D3A8] to-[#C79A44]"}`}>
+                  <button type="submit" disabled={!chatInput.trim() || isTyping} aria-label="Send message" className={`absolute right-1.5 flex h-8 w-8 items-center justify-center rounded-lg text-white transition-transform active:scale-95 disabled:opacity-40 ${isDark ? "bg-gradient-to-br from-[#ff8fb2] to-[#a78bfa]" : "bg-gradient-to-br from-[#a78bfa] to-[#22d3ee]"}`}>
                     {isTyping ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                   </button>
                 </div>
               </form>
             </motion.section>
+
+            {/* Orders & Ritual History */}
+            <AccountOrders session={session} isDark={isDark} />
 
             {/* AI Arsenal */}
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`rounded-3xl border p-6 shadow-xl ${isDark ? "bg-white/5 border-white/10" : "bg-white border-gray-200"}`}>
@@ -577,7 +576,7 @@ export default function AccountClient({ session }) {
                           <span className="text-[10px] font-bold uppercase tracking-wider">Unlock in {feature.tier}</span>
                         </div>
                       )}
-                      <Icon size={22} className={isLocked ? (isDark ? "text-white/40" : "text-gray-400") : (isDark ? "text-[#a78bfa]" : "text-[#C79A44]")} />
+                      <Icon size={22} className={isLocked ? (isDark ? "text-white/40" : "text-gray-400") : (isDark ? "text-[#a78bfa]" : "text-[#22d3ee]")} />
                       <h4 className="mt-3 text-sm font-bold">{feature.name}</h4>
                       <p className={`mt-1 line-clamp-2 text-[11px] ${isDark ? "text-white/60" : "text-gray-500"}`}>{feature.desc}</p>
                     </motion.div>

@@ -1,28 +1,25 @@
-'use client';
+﻿'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useSession } from "next-auth/react";
-import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { Home, MicOff, ShoppingCart } from 'lucide-react';
 import {
-  Sparkles, LogOut, Send, ShoppingBag, ArrowRight, User, Zap, Star, Crown, Loader2,
-  Heart, Calendar, Sun, Moon, Search, Lock, GlassWater, MessageCircle, ScanLine,
-  Dumbbell, Pill, Bed, Beaker, Stethoscope, Camera, Mic, Check, Trophy, Copy, X,
-  ArrowLeft, Share2, Volume2, Shield, ChevronRight, FileText, Activity, Brain, Wind,
-  Languages, Dna, Flower2, ChefHat, Brush, Smile, Music, Palette, Baby, RefreshCw,
-  Scissors, CloudSun, BookOpen, Salad, Clock, AlertTriangle, Target, Coffee, Footprints,
-  Eye, Leaf, Droplets, Thermometer, Apple, Globe
+  Activity, ArrowLeft, ArrowRight, Baby, Beaker, Bed, BookOpen, Brain, Brush, Calendar,
+  Camera, Check, ChefHat, CloudSun, Dna, Dumbbell, FileText, Flower2, GlassWater, Globe,
+  Heart, Home, Languages, MessageCircle, Mic, MicOff, Moon, Music, Palette, Pill, Salad,
+  ScanLine, Scissors, Send, Share2, Shield, ShoppingCart, Smile, Sparkles, Star,
+  Stethoscope, Volume2, X, Zap
 } from 'lucide-react';
 
 import { useStore } from '@/lib/store';
 import { speak } from '@/lib/noorixVoice';
 import { useT } from '@/lib/i18n';
-import { isFeatureAllowed, checkDailyLimit, getRequiredPlan } from '@/lib/noorix-plans';
 import NoorixOrb from './NoorixOrb';
 import NoorixPlans from './NoorixPlans';
 import NoorixFeatureCard from './NoorixFeatureCard';
 import LanguageToggle from '../ui/LanguageToggle';
+import { CONTEXT_CONFIGS } from './contextConfigs';
 
 /* ══════════════════════════════════════════════════════════════
    FEATURE REGISTRY — 14 AI-Powered Health & Beauty Features
@@ -621,6 +618,12 @@ const SUGGESTED_PROMPTS = {
     'Who is Lady of the Day?',
     'Start a heart-to-heart',
   ],
+  apiHub: [
+    'Explore the 20+ free wellness APIs',
+    'How do I authenticate with the API?',
+    'What endpoints are available for hydration?',
+    'View weather and prayer time schemas',
+  ],
   skinIntelligence: [
     'Analyze my skin for acne',
     'Check for dark spots',
@@ -891,405 +894,7 @@ const SUGGESTED_PROMPTS = {
    CONTEXT FORM CONFIGS — Interactive, Pre-filled, Zero Typing
    ══════════════════════════════════════════════════════════════ */
 
-const CONTEXT_CONFIGS = {
-  stressCortisol: {
-    intro: 'Track your stress and cortisol rhythm with a few taps. I will spot burnout before it hits.',
-    fields: [
-      { key: 'stressLevel', label: 'How stressed are you right now?', type: 'tapCards', options: [
-        { value: 'calm', label: 'Calm', desc: 'Feeling clear' },
-        { value: 'tense', label: 'Tense', desc: 'Shoulders tight' },
-        { value: 'anxious', label: 'Anxious', desc: 'Racing thoughts' },
-        { value: 'overwhelmed', label: 'Overwhelmed', desc: 'Too much happening' },
-      ]},
-      { key: 'energy', label: 'Your energy today?', type: 'tags', options: ['High', 'Normal', 'Low', 'Exhausted'] },
-      { key: 'sleepHours', label: 'Hours of sleep last night?', type: 'counter', min: 0, max: 14, defaultValue: 6 },
-    ],
-  },
-  smoothMenopause: {
-    intro: 'Tell me where you are in your journey — I will make it smoother.',
-    fields: [
-      { key: 'stage', label: 'Which stage?', type: 'tapCards', options: [
-        { value: 'peri', label: 'Perimenopause', desc: 'Transitioning' },
-        { value: 'meno', label: 'Menopause', desc: '12 months no cycle' },
-        { value: 'post', label: 'Postmenopause', desc: 'After menopause' },
-      ]},
-      { key: 'symptoms', label: 'What are you feeling?', type: 'tags', multi: true, options: ['Hot flashes', 'Night sweats', 'Mood swings', 'Brain fog', 'Dry skin', 'Sleep trouble', 'Low energy', 'Anxiety'] },
-    ],
-  },
-  brandAmbassador: {
-    intro: 'Let us see if you are a match for the NOORIVA ambassador family.',
-    fields: [
-      { key: 'platform', label: 'Your main platform?', type: 'tapCards', options: [
-        { value: 'instagram', label: 'Instagram', desc: 'Reels & stories' },
-        { value: 'tiktok', label: 'TikTok', desc: 'Short videos' },
-        { value: 'youtube', label: 'YouTube', desc: 'Long-form' },
-      ]},
-      { key: 'followers', label: 'Your follower range?', type: 'tags', options: ['5K–10K', '10K–50K', '50K–100K', '100K+'] },
-      { key: 'content', label: 'Content you love making?', type: 'tags', multi: true, options: ['Skincare', 'Wellness', 'Food', 'Lifestyle', 'Fashion', 'Fitness'] },
-    ],
-  },
-  noorivaClub: {
-    intro: 'Welcome to the girls gang. Pick your vibe and jump in.',
-    fields: [
-      { key: 'vibe', label: 'What are you here for?', type: 'tags', multi: true, options: ['Heart-to-heart', 'Empowerment', 'Glow tips', 'Making friends', 'Lady of the Day'] },
-      { key: 'energy', label: 'Today’s energy?', type: 'tapCards', options: [
-        { value: 'soft', label: 'Soft', desc: 'Need a safe space' },
-        { value: 'bold', label: 'Bold', desc: 'Ready to shine' },
-        { value: 'chatty', label: 'Chatty', desc: 'Let us talk' },
-        { value: 'curious', label: 'Curious', desc: 'Exploring' },
-      ]},
-    ],
-  },
-  freeChat: {
-    intro: 'Ask me anything about health, beauty, skin, nutrition, or wellness. I am here to help you glow.',
-    fields: [],
-  },
-  voiceOutput: {
-    intro: 'I will speak my responses aloud. Tell me what you need.',
-    fields: [],
-  },
-  onboarding: {
-    intro: 'Welcome to Noorix! Let me show you around.',
-    fields: [],
-  },
-  progressPhotos: {
-    intro: 'Upload photos to track your skin progress over time.',
-    fields: [
-      { key: 'timeframe', label: 'When was the first photo taken?', type: 'tags', options: ['1 week ago', '2 weeks ago', '1 month ago', '3 months ago', '6 months ago'] },
-      { key: 'concern', label: 'What are you tracking?', type: 'tags', options: ['Acne clearing', 'Dark spots fading', 'Glow improvement', 'Wrinkle reduction', 'Overall health'] },
-    ],
-  },
-  streaks: {
-    intro: 'View your glow streaks and achievements.',
-    fields: [],
-  },
-  wellnessCalendar: {
-    intro: 'Your monthly wellness overview.',
-    fields: [],
-  },
-  exportReport: {
-    intro: 'Generate a PDF wellness report from your data.',
-    fields: [
-      { key: 'period', label: 'Report period?', type: 'tags', options: ['Last 7 days', 'Last 30 days', 'Last 3 months', 'All time'] },
-    ],
-  },
-  chatSearch: {
-    intro: 'Search through your past Noorix conversations.',
-    fields: [
-      { key: 'query', label: 'What are you looking for?', type: 'tags', options: ['Skin advice', 'Nutrition tips', 'Sleep analysis', 'Product recommendations', 'Supplement stack'] },
-    ],
-  },
-  quickActions: {
-    intro: 'Quick actions for common tasks.',
-    fields: [],
-  },
-  moodJournal: {
-    intro: 'Log your mood and track patterns over time.',
-    fields: [
-      { key: 'mood', label: 'How are you feeling?', type: 'tapCards', options: [
-        { value: 'amazing', label: 'Amazing', desc: 'On top of the world' },
-        { value: 'good', label: 'Good', desc: 'Positive and steady' },
-        { value: 'okay', label: 'Okay', desc: 'Neutral day' },
-        { value: 'low', label: 'Low', desc: 'Feeling down' },
-        { value: 'stressed', label: 'Stressed', desc: 'Overwhelmed' },
-      ]},
-      { key: 'energy', label: 'Energy level?', type: 'tags', options: ['High energy', 'Normal', 'Low energy', 'Exhausted'] },
-      { key: 'gratitude', label: 'One thing you are grateful for?', type: 'tags', options: ['Health', 'Family', 'Work', 'Friends', 'Nature', 'Food', 'Sleep', 'Freedom'] },
-    ],
-  },
-  darkMode: {
-    intro: 'Toggle dark mode for the Noorix interface.',
-    fields: [],
-  },
-  medicalImage: {
-    intro: 'Upload a medical image for advanced AI analysis.',
-    fields: [
-      { key: 'bodyPart', label: 'Body part shown?', type: 'tapCards', options: [
-        { value: 'face', label: 'Face', desc: 'Forehead, cheeks, chin' },
-        { value: 'arm', label: 'Arm', desc: 'Upper or lower arm' },
-        { value: 'leg', label: 'Leg', desc: 'Thigh, shin, foot' },
-        { value: 'torso', label: 'Torso', desc: 'Chest, back, stomach' },
-        { value: 'hand', label: 'Hand', desc: 'Palm, fingers, nails' },
-        { value: 'scalp', label: 'Scalp', desc: 'Hair line, crown' },
-        { value: 'other', label: 'Other', desc: 'Other body part' },
-      ]},
-      { key: 'duration', label: 'How long has this been present?', type: 'tags', options: ['Just appeared', 'Few days', '1 week', '2-4 weeks', 'Months', 'Years'] },
-      { key: 'pain', label: 'Is it painful?', type: 'tags', options: ['No pain', 'Mild', 'Moderate', 'Severe', 'Itchy', 'Burning'] },
-    ],
-  },
-  skinClassification: {
-    intro: 'Upload a skin photo for AI classification.',
-    fields: [
-      { key: 'area', label: 'Skin area?', type: 'tags', options: ['Face', 'Forehead', 'Cheeks', 'Chin', 'Neck', 'Chest', 'Back', 'Arms', 'Legs'] },
-      { key: 'skinType', label: 'Your skin type?', type: 'tapCards', options: [
-        { value: 'oily', label: 'Oily', desc: 'Shiny, large pores' },
-        { value: 'dry', label: 'Dry', desc: 'Tight, flaky' },
-        { value: 'sensitive', label: 'Sensitive', desc: 'Reacts easily' },
-        { value: 'combination', label: 'Combination', desc: 'Mixed' },
-        { value: 'normal', label: 'Normal', desc: 'Balanced' },
-      ]},
-    ],
-  },
-  treatmentPlan: {
-    intro: 'I will create a personalized treatment plan for you.',
-    fields: [
-      { key: 'condition', label: 'What condition?', type: 'tags', options: ['Acne', 'Dark spots', 'Wrinkles', 'Dryness', 'Oiliness', 'Rosacea', 'Eczema', 'Hyperpigmentation', 'Scarring'] },
-      { key: 'severity', label: 'How severe?', type: 'tapCards', options: [
-        { value: 'mild', label: 'Mild', desc: 'Barely noticeable' },
-        { value: 'moderate', label: 'Moderate', desc: 'Clearly visible' },
-        { value: 'severe', label: 'Severe', desc: 'Significant impact' },
-      ]},
-      { key: 'tried', label: 'What have you tried?', type: 'tags', multi: true, options: ['Nothing', 'OTC products', 'Prescription', 'Natural remedies', 'Professional treatment', 'NOORIVA'] },
-    ],
-  },
-  healthRisk: {
-    intro: 'Let me assess your health risks based on your lifestyle.',
-    fields: [
-      { key: 'age', label: 'Your age range?', type: 'tags', options: ['18-24', '25-34', '35-44', '45-54', '55+'] },
-      { key: 'familyHistory', label: 'Family history of?', type: 'tags', multi: true, options: ['Diabetes', 'Heart disease', 'Cancer', 'Skin conditions', 'Autoimmune', 'None', 'Unknown'] },
-      { key: 'lifestyle', label: 'Lifestyle factors?', type: 'tags', multi: true, options: ['Smoking', 'Alcohol', 'Sedentary', 'Stressed', 'Poor sleep', 'Poor diet', 'Active', 'Healthy diet'] },
-    ],
-  },
-  skinAge: {
-    intro: 'Upload a selfie and I will analyze your skin age.',
-    fields: [
-      { key: 'actualAge', label: 'Your actual age?', type: 'tags', options: ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'] },
-      { key: 'concerns', label: 'Main aging concerns?', type: 'tags', multi: true, options: ['Fine lines', 'Wrinkles', 'Sagging', 'Dark spots', 'Dullness', 'Large pores', 'Uneven texture'] },
-    ],
-  },
-  ingredientConflict: {
-    intro: 'Upload product labels and I will check for ingredient conflicts.',
-    fields: [
-      { key: 'products', label: 'How many products to check?', type: 'tags', options: ['2 products', '3 products', '4+ products', 'Full routine'] },
-      { key: 'skinType', label: 'Your skin type?', type: 'tapCards', options: [
-        { value: 'oily', label: 'Oily', desc: 'Shiny, large pores' },
-        { value: 'dry', label: 'Dry', desc: 'Tight, flaky' },
-        { value: 'sensitive', label: 'Sensitive', desc: 'Reacts easily' },
-        { value: 'combination', label: 'Combination', desc: 'Mixed' },
-        { value: 'normal', label: 'Normal', desc: 'Balanced' },
-      ]},
-    ],
-  },
-
-  skinPhoto: {
-    intro: 'Tap what you see — I will analyze the rest from your photo.',
-    fields: [
-      { key: 'issue', label: 'What is the issue?', type: 'tapCards', options: [
-        { value: 'acne', label: 'Acne', desc: 'Pimples, breakouts, cystic' },
-        { value: 'darkspots', label: 'Dark Spots', desc: 'Hyperpigmentation, melasma' },
-        { value: 'dryness', label: 'Dryness', desc: 'Flaky, tight, cracked skin' },
-        { value: 'redness', label: 'Redness', desc: 'Irritation, rosacea, flushing' },
-        { value: 'wrinkles', label: 'Fine Lines', desc: 'Aging, loss of elasticity' },
-        { value: 'rash', label: 'Rash', desc: 'Unknown bumps, hives' },
-        { value: 'other', label: 'Something Else', desc: 'Other concern' },
-      ]},
-      { key: 'area', label: 'Where on the body?', type: 'tags', options: ['Face', 'Forehead', 'Cheeks', 'Chin', 'Neck', 'Arms', 'Legs', 'Back', 'Chest', 'Hands'] },
-      { key: 'duration', label: 'How long have you had this?', type: 'tags', options: ['Just started', 'Few days', '1 week', '2-4 weeks', '1-3 months', 'Months+', 'Years'] },
-    ],
-  },
-  mealPhoto: {
-    intro: 'Snap your meal — I will break down every nutrient for your skin.',
-    fields: [
-      { key: 'mealType', label: 'Which meal is this?', type: 'tapCards', options: [
-        { value: 'breakfast', label: 'Breakfast', desc: 'Morning fuel' },
-        { value: 'lunch', label: 'Lunch', desc: 'Midday refuel' },
-        { value: 'dinner', label: 'Dinner', desc: 'Evening nourishment' },
-        { value: 'snack', label: 'Snack', desc: 'Quick bite' },
-      ]},
-      { key: 'diet', label: 'Any dietary preference?', type: 'tags', options: ['No restrictions', 'Vegetarian', 'Vegan', 'Halal', 'Keto', 'Low-carb', 'Gluten-free'] },
-    ],
-  },
-  supplement: {
-    intro: 'Tell me your goals — I will build your perfect supplement stack.',
-    fields: [
-      { key: 'concerns', label: 'What do you want to improve?', type: 'tapCards', multi: true, options: [
-        { value: 'glow', label: 'Glowing Skin', desc: 'Radiance and brightness' },
-        { value: 'hair', label: 'Hair Growth', desc: 'Thicker, stronger hair' },
-        { value: 'nails', label: 'Stronger Nails', desc: 'Less breakage' },
-        { value: 'energy', label: 'Energy', desc: 'Less fatigue' },
-        { value: 'immunity', label: 'Immunity', desc: 'Stay healthy' },
-        { value: 'antiaging', label: 'Anti-Aging', desc: 'Youthful skin' },
-        { value: 'gut', label: 'Gut Health', desc: 'Digestion and bloating' },
-        { value: 'sleep', label: 'Better Sleep', desc: 'Rest and recovery' },
-      ]},
-      { key: 'age', label: 'Your age range?', type: 'tags', options: ['18-24', '25-34', '35-44', '45-54', '55+'] },
-      { key: 'current', label: 'Current glow routine?', type: 'tags', options: ['Nothing', 'NOORISH GOLD', 'ROSE HALO', 'SAFFRON MIST', 'MANGO BLAZE', 'BERRY BLOOM', 'COCO GLOW', 'ACAI DEW', 'PEARL SHEEN', 'ALOE TIDE', 'Other'] },
-    ],
-  },
-  sleep: {
-    intro: 'Let us fix your sleep — your skin will thank you.',
-    fields: [
-      { key: 'hours', label: 'Hours of sleep last night?', type: 'counter', min: 0, max: 14, defaultValue: 6 },
-      { key: 'quality', label: 'How was your sleep quality?', type: 'tapCards', options: [
-        { value: 'terrible', label: 'Terrible', desc: 'Barely slept' },
-        { value: 'poor', label: 'Poor', desc: 'Tossed and turned' },
-        { value: 'okay', label: 'Okay', desc: 'It was fine' },
-        { value: 'good', label: 'Good', desc: 'Slept well' },
-        { value: 'great', label: 'Amazing', desc: 'Deep and refreshing' },
-      ]},
-      { key: 'issues', label: 'Any sleep issues?', type: 'tags', multi: true, options: ['Cannot fall asleep', 'Wake up at night', 'Wake up tired', 'Snoring', 'Anxiety at night', 'Phone before bed', 'Irregular schedule', 'None'] },
-    ],
-  },
-  stress: {
-    intro: 'Quick mood check — I will connect it to your skin health.',
-    fields: [
-      { key: 'mood', label: 'How are you feeling right now?', type: 'tapCards', options: [
-        { value: 'great', label: 'Great', desc: 'Feeling wonderful' },
-        { value: 'good', label: 'Good', desc: 'Pretty positive' },
-        { value: 'okay', label: 'Okay', desc: 'Neutral day' },
-        { value: 'low', label: 'Low', desc: 'Feeling down' },
-        { value: 'stressed', label: 'Stressed', desc: 'Overwhelmed' },
-        { value: 'anxious', label: 'Anxious', desc: 'Worried or nervous' },
-      ]},
-      { key: 'stressors', label: 'What is stressing you?', type: 'tags', multi: true, options: ['Work', 'Family', 'Health', 'Money', 'Relationships', 'Sleep', 'Deadlines', 'Social media', 'Nothing specific'] },
-      { key: 'coping', label: 'How do you usually cope?', type: 'tags', multi: true, options: ['Exercise', 'Meditation', 'Food', 'Netflix', 'Talking to someone', 'Walking', 'Music', 'Nothing yet'] },
-    ],
-  },
-  fitness: {
-    intro: 'Tell me your workout — I will protect your skin from exercise damage.',
-    fields: [
-      { key: 'workout', label: 'What type of workout?', type: 'tapCards', options: [
-        { value: 'gym', label: 'Gym', desc: 'Weights and machines' },
-        { value: 'running', label: 'Running', desc: 'Cardio and jogging' },
-        { value: 'yoga', label: 'Yoga', desc: 'Flexibility and calm' },
-        { value: 'cycling', label: 'Cycling', desc: 'Indoor or outdoor' },
-        { value: 'swimming', label: 'Swimming', desc: 'Pool or open water' },
-        { value: 'sports', label: 'Sports', desc: 'Team or solo' },
-        { value: 'walking', label: 'Walking', desc: 'Light movement' },
-        { value: 'hiit', label: 'HIIT', desc: 'High intensity intervals' },
-      ]},
-      { key: 'frequency', label: 'How often do you exercise?', type: 'tags', options: ['Daily', '5x per week', '3-4x per week', '1-2x per week', 'Weekends only', 'Rarely'] },
-      { key: 'intensity', label: 'Your typical intensity?', type: 'tags', options: ['Light', 'Moderate', 'Intense', 'Extreme'] },
-      { key: 'skinIssue', label: 'Any skin issues from exercise?', type: 'tags', multi: true, options: ['Sweat acne', 'Chafing', 'Dryness', 'Redness', 'Backne', 'Sunburn', 'None'] },
-    ],
-  },
-  product: {
-    intro: 'Snap the ingredient label — I will decode it for your skin type.',
-    fields: [
-      { key: 'skinType', label: 'Your skin type?', type: 'tapCards', options: [
-        { value: 'oily', label: 'Oily', desc: 'Shiny, large pores' },
-        { value: 'dry', label: 'Dry', desc: 'Tight, flaky' },
-        { value: 'sensitive', label: 'Sensitive', desc: 'Reacts easily' },
-        { value: 'combination', label: 'Combination', desc: 'Oily T-zone, dry cheeks' },
-        { value: 'normal', label: 'Normal', desc: 'Balanced' },
-      ]},
-      { key: 'productType', label: 'What type of product?', type: 'tags', options: ['Cleanser', 'Moisturizer', 'Serum', 'Sunscreen', 'Mask', 'Toner', 'Foundation', 'Other'] },
-    ],
-  },
-  diary: {
-    intro: 'Log your skin today — I will spot patterns over time.',
-    fields: [
-      { key: 'skinToday', label: 'How does your skin look today?', type: 'tapCards', options: [
-        { value: 'glowing', label: 'Glowing', desc: 'Looking great' },
-        { value: 'clear', label: 'Clear', desc: 'No issues' },
-        { value: 'dry', label: 'Dry', desc: 'Needs moisture' },
-        { value: 'oily', label: 'Oily', desc: 'Extra shine' },
-        { value: 'breakout', label: 'Breakout', desc: 'New pimples' },
-        { value: 'dull', label: 'Dull', desc: 'Lacks radiance' },
-        { value: 'irritated', label: 'Irritated', desc: 'Red or itchy' },
-      ]},
-      { key: 'observations', label: 'Notice anything specific?', type: 'tags', multi: true, options: ['New pimples', 'Dry patches', 'Dark circles', 'Redness', 'Smaller pores', 'More glow', 'Fine lines', 'Uneven tone', 'Swelling'] },
-      { key: 'lifestyle', label: 'Recent lifestyle factors?', type: 'tags', multi: true, options: ['Ate well', 'Ate junk food', 'Drank enough water', 'Too much coffee', 'Slept well', 'Slept badly', 'Stressed', 'Relaxed', 'Exercised', 'Stayed indoors'] },
-    ],
-  },
-  hydration: {
-    intro: 'Track your water — your skin is thirsty for hydration.',
-    fields: [
-      { key: 'glasses', label: 'Glasses of water today?', type: 'counter', min: 0, max: 20, defaultValue: 4 },
-      { key: 'skinHydration', label: 'How does your skin feel?', type: 'tapCards', options: [
-        { value: 'plump', label: 'Plump', desc: 'Well hydrated' },
-        { value: 'normal', label: 'Normal', desc: 'Balanced' },
-        { value: 'tight', label: 'Tight', desc: 'Slightly dry' },
-        { value: 'flaky', label: 'Flaky', desc: 'Very dry' },
-        { value: 'oily', label: 'Oily', desc: 'Overproducing oil' },
-      ]},
-      { key: 'symptoms', label: 'Any dehydration signs?', type: 'tags', multi: true, options: ['Dry lips', 'Dark urine', 'Headache', 'Fatigue', 'Dull skin', 'Dry eyes', 'None'] },
-    ],
-  },
-  symptom: {
-    intro: 'Point to where it hurts — I will guide you through triage.',
-    fields: [
-      { key: 'bodyRegion', label: 'Where is the issue?', type: 'tapCards', options: [
-        { value: 'head', label: 'Head', desc: 'Headache, scalp issues' },
-        { value: 'face', label: 'Face', desc: 'Skin, eyes, nose' },
-        { value: 'chest', label: 'Chest', desc: 'Breathing, heart area' },
-        { value: 'stomach', label: 'Stomach', desc: 'Digestion, gut pain' },
-        { value: 'back', label: 'Back', desc: 'Spine, muscles' },
-        { value: 'joints', label: 'Joints', desc: 'Knees, elbows, wrists' },
-        { value: 'skin', label: 'Skin', desc: 'Rash, bumps, patches' },
-        { value: 'general', label: 'General', desc: 'Full body symptoms' },
-      ]},
-      { key: 'symptoms', label: 'What do you feel?', type: 'tags', multi: true, options: ['Pain', 'Itching', 'Burning', 'Swelling', 'Numbness', 'Tingling', 'Stiffness', 'Nausea', 'Dizziness', 'Fatigue', 'Fever'] },
-      { key: 'duration', label: 'How long has this lasted?', type: 'tags', options: ['Just now', 'Few hours', 'Today', 'Few days', '1 week plus', 'Weeks', 'Months', 'Comes and goes'] },
-    ],
-  },
-  hair: {
-    intro: 'Upload a hair photo — I will analyze scalp and strand health.',
-    fields: [
-      { key: 'concern', label: 'What is your hair concern?', type: 'tapCards', options: [
-        { value: 'thinning', label: 'Thinning', desc: 'Less volume and density' },
-        { value: 'falling', label: 'Hair Fall', desc: 'Excessive shedding' },
-        { value: 'dry', label: 'Dry and Brittle', desc: 'Breaks easily' },
-        { value: 'oily', label: 'Oily Scalp', desc: 'Greasy roots' },
-        { value: 'dandruff', label: 'Dandruff', desc: 'Flaky, itchy scalp' },
-        { value: 'slow', label: 'Slow Growth', desc: 'Hair wont grow' },
-        { value: 'damage', label: 'Damage', desc: 'Heat or color damage' },
-      ]},
-      { key: 'hairType', label: 'Your hair type?', type: 'tags', options: ['Straight', 'Wavy', 'Curly', 'Coily', 'Fine', 'Thick', 'Colored', 'Natural'] },
-    ],
-  },
-  ingredient: {
-    intro: 'Snap any ingredient list — I will decode every chemical for you.',
-    fields: [
-      { key: 'productType', label: 'What kind of product?', type: 'tapCards', options: [
-        { value: 'skincare', label: 'Skincare', desc: 'Face and body products' },
-        { value: 'haircare', label: 'Haircare', desc: 'Shampoo and conditioner' },
-        { value: 'food', label: 'Food or Drink', desc: 'Supplement or consumable' },
-        { value: 'makeup', label: 'Makeup', desc: 'Cosmetics and beauty' },
-      ]},
-      { key: 'priority', label: 'What matters most to you?', type: 'tags', options: ['Safety first', 'Maximum effectiveness', 'Natural only', 'Halal check', 'Allergen check', 'Best value'] },
-    ],
-  },
-  sun: {
-    intro: 'Let me protect your skin from UV damage today.',
-    fields: [
-      { key: 'exposure', label: 'How much sun exposure today?', type: 'tapCards', options: [
-        { value: 'none', label: 'Indoors', desc: 'Mostly inside all day' },
-        { value: 'little', label: 'Little', desc: 'Quick errands only' },
-        { value: 'moderate', label: 'Moderate', desc: 'A few hours outside' },
-        { value: 'high', label: 'High', desc: 'Outdoor all day' },
-        { value: 'extreme', label: 'Extreme', desc: 'Beach, pool, or mountains' },
-      ]},
-      { key: 'skinTone', label: 'Your skin tone?', type: 'tapCards', options: [
-        { value: 'fair', label: 'Fair', desc: 'Burns very easily' },
-        { value: 'light', label: 'Light', desc: 'Burns then tans' },
-        { value: 'medium', label: 'Medium', desc: 'Tans well' },
-        { value: 'olive', label: 'Olive', desc: 'Rarely burns' },
-        { value: 'dark', label: 'Dark', desc: 'Very rarely burns' },
-      ]},
-      { key: 'activity', label: 'What will you be doing?', type: 'tags', options: ['Working indoors', 'Commuting', 'Walking outside', 'Beach or pool', 'Sports', 'Hiking', 'Driving', 'Farming'] },
-    ],
-  },
-  freeChat: {
-    intro: 'Ask me anything about health, beauty, skin, nutrition, or wellness. I am here to help you glow.',
-    fields: [],
-  },
-  routine: {
-    intro: 'I will architect your perfect AM and PM skincare ritual.',
-    fields: [
-      { key: 'skinGoal', label: 'Your number one skin goal?', type: 'tapCards', options: [
-        { value: 'glow', label: 'Glow', desc: 'Radiant, luminous skin' },
-        { value: 'clear', label: 'Clear Skin', desc: 'No acne or blemishes' },
-        { value: 'antiaging', label: 'Anti-Aging', desc: 'Youthful, firm look' },
-        { value: 'hydrate', label: 'Hydration', desc: 'Deep moisture boost' },
-        { value: 'tone', label: 'Even Tone', desc: 'Fix discoloration' },
-        { value: 'protect', label: 'Protection', desc: 'Prevent future damage' },
-      ]},
-      { key: 'currentRoutine', label: 'What do you currently use?', type: 'tags', multi: true, options: ['Cleanser', 'Toner', 'Serum', 'Moisturizer', 'Sunscreen', 'Mask', 'Eye cream', 'Nothing at all'] },
-      { key: 'timeAvailable', label: 'How much time for skincare?', type: 'tags', options: ['2 minutes', '5 minutes', '10 minutes', '15 plus minutes', 'I have all day'] },
-    ],
-  },
-};
+// CONTEXT_CONFIGS is imported from ./contextConfigs
 
 /* ══════════════════════════════════════════════════════════════
    HELPERS
@@ -1325,7 +930,25 @@ function formatAIContent(result) {
   if (result.redFlag) {
     sections.push('URGENT: ' + (result.redFlagDetail || 'Seek medical attention immediately.'));
   }
+  if (result.severity) {
+    sections.push('Clinical Severity: ' + String(result.severity).toUpperCase());
+  }
   if (result.message) sections.push(result.message);
+
+  if (result.findings && result.findings.length) {
+    sections.push('\nKey Findings:');
+    for (const f of result.findings) {
+      sections.push('• **' + (f.observation || f) + '**' + (f.confidence ? ' (' + f.confidence + ')' : '') + (f.significance ? ' — ' + f.significance : ''));
+    }
+  }
+
+  if (result.possibleConditions && result.possibleConditions.length) {
+    sections.push('\nPossible conditions:');
+    for (const pc of result.possibleConditions) {
+      var iconPc = pc.likelihood === 'high' ? '🔴' : pc.likelihood === 'moderate' ? '🟡' : '🟢';
+      sections.push(iconPc + ' **' + pc.condition + '** (' + pc.likelihood + ') — ' + pc.description);
+    }
+  }
 
   if (result.triage && result.triage.length) {
     sections.push('\nPossible conditions:');
@@ -1767,6 +1390,18 @@ export default function NoorixChat() {
     setSending(false);
   }, [noorixFeature]);
 
+    const handleSelectTemplate = useCallback((featureId, template) => {
+    if (featureId === 'apiHub') {
+      window.location.href = '/api-hub';
+      return;
+    }
+    setBlocked(null);
+    setNoorixFeature(featureId);
+    if (template?.prompt) {
+      setInput(template.prompt);
+    }
+  }, [setNoorixFeature, setInput]);
+
   var openChat = useCallback(function(featureId) {
     setBlocked(null);
     setNoorixFeature(featureId);
@@ -1782,7 +1417,8 @@ export default function NoorixChat() {
     var summary = buildContextSummary(noorixFeature, contextValues);
     var finalText = messageText || summary || ('Analyze my ' + t('noorix.feature.' + noorixFeature).toLowerCase());
 
-    var userMsg = { role: 'user', content: finalText, image: image ? image.preview : null, timestamp: Date.now() };
+    var imagePayload = image ? image.preview : null;
+    var userMsg = { role: 'user', content: finalText, image: imagePayload, timestamp: Date.now() };
     addNoorixMessage(noorixFeature, userMsg);
     setInput('');
     setImage(null);
@@ -1807,7 +1443,7 @@ export default function NoorixChat() {
     var apiEndpoint = noorixFeature === 'freeChat' ? '/api/noorix/freechat' : '/api/noorix/chat';
     var requestBody = noorixFeature === 'freeChat'
       ? JSON.stringify({ messages: allMessages })
-      : JSON.stringify({ type: noorixFeature, messages: allMessages, data: data });
+      : JSON.stringify({ type: noorixFeature, messages: allMessages, data: data, image: imagePayload });
 
     fetch(apiEndpoint, {
       method: 'POST',
@@ -1968,7 +1604,7 @@ export default function NoorixChat() {
 
       <Link
         href="/"
-        className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/70 border border-white/10 backdrop-blur-xl hover:bg-white transition-all duration-300 group shadow-sm"
+        className="fixed top-20 left-6 z-30 flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/70 border border-white/10 backdrop-blur-xl hover:bg-white transition-all duration-300 group shadow-sm"
       >
         <Home size={16} className="text-white/60 group-hover:text-white transition-colors" />
         <span className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">Home</span>
@@ -2012,7 +1648,7 @@ export default function NoorixChat() {
             className="fixed inset-0 z-50 flex flex-col"
             style={{ background: 'transparent' }}
           >
-            <div className="relative z-10 flex items-center justify-between px-5 py-4 border-b border-white/10 bg-white/70 backdrop-blur-md">
+            <div className="relative z-10 flex items-center justify-between px-5 py-4 border-b border-white/10 bg-[#0c0c16]/85 backdrop-blur-md">
               <div className="flex items-center gap-3">
                 {noorixFeature ? (
                   <button onClick={backNoorix} className="rounded-full bg-noorix-surface p-2 hover:bg-noorix-surface-raised transition-colors">
@@ -2097,7 +1733,7 @@ export default function NoorixChat() {
                     exit={{ opacity: 0, y: -20 }}
                     className="h-full overflow-y-auto no-scrollbar"
                   >
-                    <div className="noorix-landing-root mx-auto max-w-6xl px-4 sm:px-6 py-6 md:py-10 relative">
+                    <div className="noorix-landing-root mx-auto max-w-6xl px-4 sm:px-6 pt-24 pb-6 md:pb-10 relative">
                       <div className="noorix-aurora" aria-hidden="true" />
                       <div className="noorix-aurora noorix-aurora--alt" aria-hidden="true" />
 
@@ -2121,11 +1757,8 @@ export default function NoorixChat() {
                           <NoorixOrb size={58} />
                         </motion.div>
 
-                        <motion.h3
+                        <h3
                           suppressHydrationWarning
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.28 }}
                           className="noorix-greeting display-heading"
                         >
                           {(() => {
@@ -2144,16 +1777,11 @@ export default function NoorixChat() {
                             }
                             return `Burning the midnight oil, ${firstName}? Let me help you prepare for rest.`;
                           })()}
-                        </motion.h3>
+                        </h3>
 
-                        <motion.p
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: 0.42 }}
-                          className="noorix-hero-sub"
-                        >
+                        <p className="noorix-hero-sub">
                           Choose a feature below to begin your personalized experience. Tap, snap, or select — no typing required.
-                        </motion.p>
+                        </p>
 
                         {/* Quick action prompts on landing */}
                         <motion.div
@@ -2170,50 +1798,34 @@ export default function NoorixChat() {
                                 openChat('freeChat');
                                 setTimeout(() => sendMessage(prompt), 100);
                               }}
-                              className="rounded-full border border-white/10 bg-white/60 px-4 py-2 text-xs font-semibold text-white/80 backdrop-blur-md transition-all hover:bg-white hover:border-white/20 hover:scale-105"
+                              className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-white/90 backdrop-blur-md transition-all hover:bg-white/20 hover:border-white/30 hover:scale-105 shadow-sm"
                             >
                               {prompt}
                             </button>
                           ))}
                         </motion.div>
 
-                        <motion.div
-                          initial={{ opacity: 0, y: 12 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.56 }}
-                          className="noorix-stats"
-                        >
+                        <div className="noorix-stats">
                           {[
                             { num: String(FEATURES.length), label: 'AI Features', color: '#ff8fb2' },
                             { num: '24/7', label: 'Always Available', color: '#a78bfa' },
                             { num: '100%', label: 'Privacy First', color: '#67e8f9' },
                             { num: '0', label: 'Data Stored', color: '#5eead4' },
-                          ].map((stat, i) => (
-                            <motion.div
-                              key={stat.label}
-                              initial={{ opacity: 0, scale: 0.85 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              transition={{ delay: 0.64 + i * 0.08 }}
-                              className="noorix-stat-card"
-                            >
+                          ].map((stat) => (
+                            <div key={stat.label} className="noorix-stat-card">
                               <span className="noorix-stat-num" style={{ color: stat.color }}>
                                 {stat.num}
                               </span>
                               <span className="noorix-stat-label">{stat.label}</span>
-                            </motion.div>
+                            </div>
                           ))}
-                        </motion.div>
+                        </div>
 
-                        <motion.div
-                          initial={{ opacity: 0, y: 12 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.78 }}
-                          className="noorix-steps"
-                        >
+                        <div className="noorix-steps">
                           {[
-                            { icon: '🌸', title: 'Snap', desc: 'Upload a photo of skin, meal, or product' },
-                            { icon: '🔮', title: 'Analyze', desc: 'AI processes and identifies patterns' },
-                            { icon: '💫', title: 'Glow', desc: 'Get personalized recommendations' },
+                            { icon: "🌸", title: "Snap", desc: "Upload a photo of skin, meal, or product" },
+                            { icon: "🔮", title: "Analyze", desc: "AI processes and identifies patterns" },
+                            { icon: "💫", title: "Glow", desc: "Get personalized recommendations" },
                           ].map((step, i) => (
                             <div key={step.title} className="noorix-step">
                               <div className="noorix-step-icon">{step.icon}</div>
@@ -2224,14 +1836,9 @@ export default function NoorixChat() {
                               {i < 2 && <span className="noorix-step-arrow">→</span>}
                             </div>
                           ))}
-                        </motion.div>
+                        </div>
 
-                        <motion.div
-                          initial={{ opacity: 0, y: 14 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.92 }}
-                          className="noorix-metrics"
-                        >
+                        <div className="noorix-metrics">
                           <div className="noorix-metric-card">
                             <div className="noorix-metric-icon">✨</div>
                             <div>
@@ -2248,7 +1855,7 @@ export default function NoorixChat() {
                             </div>
                           </div>
 
-                          {noorixPlan === 'lite' && trial && trial.end > Date.now() && (
+                          {noorixPlan === "lite" && trial && trial.end > Date.now() && (
                             <div className="noorix-metric-card noorix-trial-card">
                               <div className="noorix-metric-icon">🎁</div>
                               <div>
@@ -2259,11 +1866,11 @@ export default function NoorixChat() {
                               </div>
                             </div>
                           )}
-                        </motion.div>
+                        </div>
                       </motion.div>
 
                       <div className="noorix-filter-shell">
-                        {['all', 'skin', 'nutrition', 'fitness', 'sleep', 'hub'].map((category) => {
+                        {['all', 'skin', 'wellness', 'nutrition', 'fitness', 'sleep', 'community', 'hub'].map((category) => {
                           const active = filter === category;
                           const count =
                             category === 'all'
@@ -2355,7 +1962,7 @@ export default function NoorixChat() {
                   >
                     <button
   onClick={backNoorix}
-  className="absolute top-4 left-4 z-20 flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-bold text-white shadow-lg backdrop-blur-md transition-all hover:bg-white hover:scale-105"
+  className="absolute top-4 left-4 z-20 flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold text-white shadow-lg backdrop-blur-md transition-all hover:bg-white/20 hover:text-white hover:scale-105"
 >
   <ArrowLeft size={16} />
   Back to Features
@@ -2375,7 +1982,7 @@ export default function NoorixChat() {
                             <NoorixOrb size={36} />
                             <div>
                               <p className="text-sm font-medium text-noorix-text">{t('noorix.feature.' + feature.id)}</p>
-                              <p className="text-xs text-noorix-muted">{contextConfig.intro}</p>
+                              <p className="text-xs text-noorix-muted">{feature?.description || contextConfig?.intro}</p>
                             </div>
                           </div>
 
@@ -2438,8 +2045,11 @@ export default function NoorixChat() {
                           <button
                             onClick={() => sendMessage()}
                             disabled={sending}
-                            className="w-full rounded-full !py-3 text-sm font-bold text-black disabled:opacity-50 transition-all hover:brightness-110"
-                            style={{ background: `linear-gradient(135deg, ${feature.color}, ${feature.colorB})` }}
+                            className="w-full rounded-full !py-3.5 text-sm font-bold text-white shadow-xl disabled:opacity-50 transition-all hover:brightness-110 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                            style={{
+                              background: `linear-gradient(135deg, ${feature.color || '#ff8fb2'}, ${feature.colorB || '#a78bfa'})`,
+                              boxShadow: `0 8px 24px ${feature.color ? feature.color + '45' : 'rgba(255, 143, 178, 0.3)'}`,
+                            }}
                           >
                             {sending ? t('noorix.thinking') : 'Analyze'}
                           </button>
@@ -2516,6 +2126,43 @@ export default function NoorixChat() {
 
                                   <div className="noorix-msg-assistant">
                                     <div className="noorix-msg-body">{renderMarkdown(msg.content)}</div>
+
+                                    {msg.raw?.redFlag && (
+                                      <div className="noorix-urgent-banner">
+                                        ⚠️ <strong>URGENT:</strong> {msg.raw.redFlagDetail || 'Immediate medical consultation recommended.'}
+                                      </div>
+                                    )}
+
+                                    {msg.raw?.findings?.length > 0 && (
+                                      <div className="noorix-data-card">
+                                        <p className="noorix-data-title">Clinical &amp; Vision Findings</p>
+                                        {msg.raw.findings.map((f, fi) => (
+                                          <div key={fi} className="noorix-data-row">
+                                            <span>👁️</span>
+                                            <span>
+                                              <strong>{f.observation || f}</strong> {f.confidence ? `(${f.confidence})` : ''} {f.significance ? `— ${f.significance}` : ''}
+                                            </span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {msg.raw?.possibleConditions?.length > 0 && (
+                                      <div className="noorix-data-card">
+                                        <p className="noorix-data-title">Clinical Differential Triage</p>
+                                        {msg.raw.possibleConditions.map((pc, pci) => {
+                                          const icon = pc.likelihood === 'high' ? '🔴' : pc.likelihood === 'moderate' ? '🟡' : '🟢';
+                                          return (
+                                            <div key={pci} className="noorix-data-row">
+                                              <span>{icon}</span>
+                                              <span>
+                                                <strong>{pc.condition}</strong> ({pc.likelihood}) — {pc.description}
+                                              </span>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
 
                                     {msg.raw?.triage?.length > 0 && (
                                       <div className="noorix-data-card">
@@ -2728,14 +2375,14 @@ export default function NoorixChat() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[55] flex items-center justify-center p-4"
-            style={{ background: 'rgba(250, 247, 242, 0.95)' }}
+            style={{ background: 'rgba(5, 5, 9, 0.85)', backdropFilter: 'blur(16px)' }}
             onClick={function() { setBlocked(null); }}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="rounded-[2rem] border border-white/10 bg-white/90 p-8 max-w-sm w-full text-center shadow-aura"
+              className="rounded-[2rem] border border-white/15 bg-[#12121e]/95 p-8 max-w-sm w-full text-center shadow-2xl backdrop-blur-2xl"
               onClick={function(e) { e.stopPropagation(); }}
             >
               <div className="text-4xl mb-4">
@@ -2769,37 +2416,37 @@ export default function NoorixChat() {
         .noorix-aurora { position: absolute; top: 4%; right: 8%; width: 260px; height: 260px; border-radius: 50%; filter: blur(70px); opacity: 0.35; background: radial-gradient(circle, #ff8fb2 0%, transparent 70%); animation: noorix-aurora-drift 14s ease-in-out infinite alternate; pointer-events: none; }
         .noorix-aurora--alt { top: auto; right: auto; bottom: 10%; left: 5%; background: radial-gradient(circle, #a78bfa 0%, transparent 70%); animation-delay: -7s; opacity: 0.28; }
 
-        .noorix-hero { position: relative; max-width: 720px; margin: 0 auto 36px; text-align: center; border-radius: 34px; padding: 28px 22px 26px; background: linear-gradient(165deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.5)); border: 1px solid rgba(255, 255, 255, 0.75); box-shadow: 0 30px 80px rgba(26, 20, 16, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); }
+        .noorix-hero { position: relative; max-width: 760px; margin: 0 auto 36px; text-align: center; border-radius: 34px; padding: 32px 24px 28px; background: linear-gradient(165deg, rgba(20, 20, 34, 0.82), rgba(12, 12, 22, 0.94)); border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
         .noorix-hero-badge { display: inline-flex; align-items: center; gap: 7px; font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #ff8fb2; background: rgba(255, 143, 178, 0.1); padding: 7px 12px; border-radius: 999px; }
         .noorix-orb-hero { display: flex; justify-content: center; margin: 20px 0 4px; }
-        .noorix-greeting { font-size: clamp(24px, 5vw, 34px); line-height: 1.16; letter-spacing: -0.03em; color: #1a1410; margin-top: 14px; }
-        .noorix-hero-sub { max-width: 520px; margin: 10px auto 0; font-size: 14px; line-height: 1.6; color: rgba(26, 20, 16, 0.55); }
+        .noorix-greeting { font-size: clamp(24px, 5vw, 34px); line-height: 1.2; letter-spacing: -0.03em; color: #ffffff; margin-top: 14px; }
+        .noorix-hero-sub { max-width: 520px; margin: 12px auto 0; font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, 0.7); }
 
         .noorix-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 26px; }
-        .noorix-stat-card { min-width: 108px; padding: 12px 14px; border-radius: 22px; background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(26, 20, 16, 0.07); box-shadow: 0 10px 30px rgba(26, 20, 16, 0.04); }
+        .noorix-stat-card { min-width: 110px; padding: 12px 16px; border-radius: 22px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); }
         .noorix-stat-num { display: block; font-size: 26px; font-weight: 850; letter-spacing: -0.04em; }
-        .noorix-stat-label { display: block; margin-top: 2px; font-size: 10px; font-weight: 750; letter-spacing: 0.11em; text-transform: uppercase; color: rgba(26, 20, 16, 0.4); }
+        .noorix-stat-label { display: block; margin-top: 2px; font-size: 10px; font-weight: 750; letter-spacing: 0.11em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
 
         .noorix-steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 24px; }
         .noorix-step { display: flex; align-items: center; gap: 10px; }
-        .noorix-step-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 14px; font-size: 18px; background: rgba(26, 20, 16, 0.05); }
-        .noorix-step-title { font-size: 13px; font-weight: 800; color: #1a1410; }
-        .noorix-step-desc { font-size: 11px; color: rgba(26, 20, 16, 0.48); max-width: 150px; }
-        .noorix-step-arrow { margin-left: 8px; color: rgba(26, 20, 16, 0.2); font-size: 18px; }
+        .noorix-step-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 14px; font-size: 18px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.12); }
+        .noorix-step-title { font-size: 13px; font-weight: 800; color: #ffffff; }
+        .noorix-step-desc { font-size: 11px; color: rgba(255, 255, 255, 0.65); max-width: 150px; }
+        .noorix-step-arrow { margin-left: 8px; color: rgba(255, 255, 255, 0.35); font-size: 18px; }
 
         .noorix-metrics { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 24px; }
-        .noorix-metric-card { min-width: 160px; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 22px; background: rgba(255, 255, 255, 0.65); border: 1px solid rgba(26, 20, 16, 0.07); text-align: left; }
+        .noorix-metric-card { min-width: 160px; display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 22px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); text-align: left; }
         .noorix-trial-card { border: 1px solid rgba(167, 139, 250, 0.22); background: rgba(167, 139, 250, 0.09); }
         .noorix-metric-icon { font-size: 22px; }
-        .noorix-metric-label { font-size: 10px; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(26, 20, 16, 0.42); }
-        .noorix-metric-value { font-size: 22px; font-weight: 850; letter-spacing: -0.03em; color: #1a1410; }
+        .noorix-metric-label { font-size: 10px; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
+        .noorix-metric-value { font-size: 22px; font-weight: 850; letter-spacing: -0.03em; color: #ffffff; }
 
         .noorix-filter-shell { position: relative; z-index: 5; display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 22px; justify-content: center; }
-        .noorix-filter-pill { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; border: 1px solid rgba(26, 20, 16, 0.1); background: rgba(255, 255, 255, 0.58); color: rgba(26, 20, 16, 0.56); font-size: 12px; font-weight: 750; transition: all 0.3s ease; cursor: pointer; }
-        .noorix-filter-pill:hover { background: rgba(255, 255, 255, 0.85); color: #1a1410; transform: translateY(-1px); }
-        .noorix-filter-pill.is-active { color: #1a1410; background: #ffffff; border-color: rgba(255, 255, 255, 0.8); box-shadow: 0 16px 36px rgba(26, 20, 16, 0.12); }
-        .noorix-filter-count { min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: rgba(26, 20, 16, 0.07); font-size: 10px; font-weight: 850; }
-        .noorix-filter-pill.is-active .noorix-filter-count { background: var(--pill-accent); color: #1a1410; }
+        .noorix-filter-pill { display: inline-flex; align-items: center; gap: 8px; padding: 9px 15px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.06); color: rgba(255, 255, 255, 0.75); font-size: 12px; font-weight: 750; transition: all 0.25s ease; cursor: pointer; }
+        .noorix-filter-pill:hover { background: rgba(255, 255, 255, 0.12); color: #ffffff; transform: translateY(-1px); }
+        .noorix-filter-pill.is-active { color: #ffffff; background: rgba(255, 255, 255, 0.18); border-color: rgba(255, 255, 255, 0.35); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); }
+        .noorix-filter-count { min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: rgba(255, 255, 255, 0.12); font-size: 10px; font-weight: 850; color: rgba(255, 255, 255, 0.9); }
+        .noorix-filter-pill.is-active .noorix-filter-count { background: #ff8fb2; color: #000; }
 
         .noorix-grid { position: relative; z-index: 5; display: grid; grid-template-columns: 1fr; gap: 18px; }
         @media (min-width: 640px) { .noorix-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -2813,69 +2460,70 @@ export default function NoorixChat() {
         .noorix-upgrade-cta { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 850; transition: transform 0.3s ease; }
         .noorix-upgrade-banner:hover .noorix-upgrade-cta { transform: translateX(4px); }
 
-        .noorix-field-label { display: block; margin-bottom: 9px; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(26, 20, 16, 0.48); }
-        .noorix-tap-card { position: relative; border-radius: 18px; border: 1px solid rgba(26, 20, 16, 0.08); background: rgba(255, 255, 255, 0.68); padding: 14px; text-align: left; color: rgba(26, 20, 16, 0.58); transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease; cursor: pointer; }
-        .noorix-tap-card:hover { border-color: rgba(26, 20, 16, 0.16); background: rgba(255, 255, 255, 0.9); }
-        .noorix-tap-card.is-selected { border-color: var(--field-accent); background: linear-gradient(135deg, color-mix(in srgb, var(--field-accent) 16%, transparent), rgba(255, 255, 255, 0.85)); color: #1a1410; box-shadow: 0 14px 30px color-mix(in srgb, var(--field-accent) 16%, transparent); }
-        .noorix-tap-radio { position: absolute; top: 10px; right: 10px; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 999px; border: 1.5px solid rgba(26, 20, 16, 0.2); color: #fff; }
+        .noorix-field-label { display: block; margin-bottom: 9px; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255, 255, 255, 0.85); }
+        .noorix-tap-card { position: relative; border-radius: 18px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.06); padding: 14px; text-align: left; color: rgba(255, 255, 255, 0.75); transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease; cursor: pointer; }
+        .noorix-tap-card:hover { border-color: rgba(255, 255, 255, 0.25); background: rgba(255, 255, 255, 0.1); color: #ffffff; }
+        .noorix-tap-card.is-selected { border-color: var(--field-accent, #ff8fb2); background: linear-gradient(135deg, color-mix(in srgb, var(--field-accent, #ff8fb2) 22%, transparent), rgba(255, 255, 255, 0.12)); color: #ffffff; box-shadow: 0 10px 28px color-mix(in srgb, var(--field-accent, #ff8fb2) 25%, transparent); }
+        .noorix-tap-radio { position: absolute; top: 10px; right: 10px; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 999px; border: 1.5px solid rgba(255, 255, 255, 0.3); color: #fff; }
         .noorix-tap-card.is-selected .noorix-tap-radio { border-color: var(--field-accent); background: var(--field-accent); }
-        .noorix-tap-label { display: block; font-size: 14px; font-weight: 800; }
-        .noorix-tap-desc { display: block; margin-top: 4px; font-size: 11px; color: rgba(26, 20, 16, 0.48); }
+        .noorix-tap-label { display: block; font-size: 14px; font-weight: 800; color: #ffffff; }
+        .noorix-tap-desc { display: block; margin-top: 4px; font-size: 11px; color: rgba(255, 255, 255, 0.6); }
 
-        .noorix-tag { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(26, 20, 16, 0.09); background: rgba(255, 255, 255, 0.64); color: rgba(26, 20, 16, 0.6); font-size: 11px; font-weight: 700; transition: all 0.25s ease; cursor: pointer; }
-        .noorix-tag:hover { border-color: rgba(26, 20, 16, 0.16); color: #1a1410; }
-        .noorix-tag.is-selected { background: var(--tag-accent); border-color: var(--tag-accent); color: #1a1410; box-shadow: 0 10px 24px color-mix(in srgb, var(--tag-accent) 22%, transparent); }
+        .noorix-tag { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.07); color: rgba(255, 255, 255, 0.8); font-size: 11px; font-weight: 700; transition: all 0.25s ease; cursor: pointer; }
+        .noorix-tag:hover { border-color: rgba(255, 255, 255, 0.25); color: #ffffff; background: rgba(255, 255, 255, 0.12); }
+        .noorix-tag.is-selected { background: var(--tag-accent, #ff8fb2); border-color: var(--tag-accent, #ff8fb2); color: #000; box-shadow: 0 8px 20px color-mix(in srgb, var(--tag-accent, #ff8fb2) 30%, transparent); }
 
         .noorix-counter-shell { display: flex; align-items: center; gap: 16px; }
-        .noorix-counter-btn { width: 44px; height: 44px; border-radius: 16px; border: 1px solid rgba(26, 20, 16, 0.09); background: rgba(255, 255, 255, 0.62); color: #1a1410; font-size: 20px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; }
-        .noorix-counter-btn:hover { background: #fff; transform: translateY(-1px); }
+        .noorix-counter-btn { width: 44px; height: 44px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.08); color: #ffffff; font-size: 20px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; }
+        .noorix-counter-btn:hover { background: rgba(255, 255, 255, 0.18); transform: translateY(-1px); }
         .noorix-counter-value { display: flex; align-items: baseline; gap: 6px; }
-        .noorix-counter-value span { font-size: 42px; font-weight: 850; letter-spacing: -0.06em; color: #1a1410; }
-        .noorix-counter-value small { font-size: 12px; color: rgba(26, 20, 16, 0.4); }
+        .noorix-counter-value span { font-size: 42px; font-weight: 850; letter-spacing: -0.06em; color: #ffffff; }
+        .noorix-counter-value small { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
 
         .noorix-msg-row { display: flex; width: 100%; }
         .noorix-msg-row--user { justify-content: flex-end; }
         .noorix-msg-row--assistant { justify-content: flex-start; }
         .noorix-msg-user-wrap { max-width: 80%; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-        .noorix-msg-user { padding: 12px 16px; border-radius: 20px 20px 6px 20px; background: linear-gradient(135deg, #1a1410, #3d332b); color: #fff; font-size: 13.5px; line-height: 1.55; }
-        .noorix-msg-image { width: 150px; height: 150px; border-radius: 18px; overflow: hidden; box-shadow: 0 16px 36px rgba(26, 20, 16, 0.18); }
+        .noorix-msg-user { padding: 12px 16px; border-radius: 20px 20px 6px 20px; background: linear-gradient(135deg, rgba(255, 143, 178, 0.28), rgba(167, 139, 250, 0.28)); border: 1px solid rgba(255, 143, 178, 0.35); color: #fff; font-size: 13.5px; line-height: 1.55; }
+        .noorix-msg-image { width: 150px; height: 150px; border-radius: 18px; overflow: hidden; box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.15); }
         .noorix-msg-image img { width: 100%; height: 100%; object-fit: cover; }
         .noorix-msg-assistant-wrap { max-width: 85%; display: flex; align-items: flex-start; gap: 10px; }
-        .noorix-msg-assistant { flex: 1; min-width: 0; border-radius: 22px 22px 22px 6px; background: linear-gradient(165deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.66)); border: 1px solid rgba(26, 20, 16, 0.08); padding: 14px 16px; box-shadow: 0 18px 44px rgba(26, 20, 16, 0.1); }
-        .noorix-msg-body { font-size: 13.5px; line-height: 1.58; color: rgba(26, 20, 16, 0.8); }
+        .noorix-msg-assistant { flex: 1; min-width: 0; border-radius: 22px 22px 22px 6px; background: linear-gradient(165deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.04)); border: 1px solid rgba(255, 255, 255, 0.12); padding: 16px 18px; box-shadow: 0 18px 44px rgba(0, 0, 0, 0.35); }
+        .noorix-msg-body { font-size: 13.5px; line-height: 1.6; color: rgba(255, 255, 255, 0.92); }
+        .noorix-urgent-banner { margin-top: 10px; padding: 10px 14px; border-radius: 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); font-size: 12px; color: #fca5a5; font-weight: 600; }
 
-        .noorix-data-card { margin-top: 12px; padding: 12px; border-radius: 16px; background: rgba(26, 20, 16, 0.04); border: 1px solid rgba(26, 20, 16, 0.06); }
-        .noorix-data-title { font-size: 10px; font-weight: 850; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(26, 20, 16, 0.4); margin-bottom: 8px; }
-        .noorix-data-row { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: rgba(26, 20, 16, 0.72); }
+        .noorix-data-card { margin-top: 12px; padding: 14px; border-radius: 16px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .noorix-data-title { font-size: 10px; font-weight: 850; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); margin-bottom: 8px; }
+        .noorix-data-row { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: rgba(255, 255, 255, 0.85); }
         .noorix-macro-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
-        .noorix-macro-grid p { font-size: 16px; font-weight: 850; color: #1a1410; }
-        .noorix-macro-grid span { font-size: 9px; color: rgba(26, 20, 16, 0.42); text-transform: capitalize; }
-        .noorix-skin-score { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(26, 20, 16, 0.07); text-align: center; }
-        .noorix-skin-score p { font-size: 10px; color: rgba(26, 20, 16, 0.42); }
-        .noorix-skin-score span { font-size: 24px; font-weight: 850; }
+        .noorix-macro-grid p { font-size: 16px; font-weight: 850; color: #ffffff; }
+        .noorix-macro-grid span { font-size: 9px; color: rgba(255, 255, 255, 0.55); text-transform: capitalize; }
+        .noorix-skin-score { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.12); text-align: center; }
+        .noorix-skin-score p { font-size: 10px; color: rgba(255, 255, 255, 0.55); }
+        .noorix-skin-score span { font-size: 24px; font-weight: 850; color: #ffffff; }
 
         .noorix-msg-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-        .noorix-action-chip { display: inline-flex; align-items: center; gap: 5px; padding: 6px 9px; border-radius: 999px; background: rgba(26, 20, 16, 0.05); border: 1px solid rgba(26, 20, 16, 0.06); color: rgba(26, 20, 16, 0.58); font-size: 10px; font-weight: 750; transition: all 0.25s ease; cursor: pointer; }
-        .noorix-action-chip:hover { background: rgba(26, 20, 16, 0.09); color: #1a1410; }
-        .noorix-action-chip--accent { background: rgba(255, 143, 178, 0.12); border-color: rgba(255, 143, 178, 0.2); color: #d6336c; }
-        .noorix-action-chip--accent:hover { background: rgba(255, 143, 178, 0.2); color: #a61e4d; }
-        .noorix-disclaimer { margin-top: 10px; font-size: 10px; font-style: italic; color: rgba(26, 20, 16, 0.34); }
+        .noorix-action-chip { display: inline-flex; align-items: center; gap: 5px; padding: 6px 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.12); color: rgba(255, 255, 255, 0.8); font-size: 10px; font-weight: 750; transition: all 0.25s ease; cursor: pointer; }
+        .noorix-action-chip:hover { background: rgba(255, 255, 255, 0.15); color: #ffffff; }
+        .noorix-action-chip--accent { background: rgba(255, 143, 178, 0.18); border-color: rgba(255, 143, 178, 0.35); color: #ff8fb2; }
+        .noorix-action-chip--accent:hover { background: rgba(255, 143, 178, 0.3); color: #fda4af; }
+        .noorix-disclaimer { margin-top: 10px; font-size: 10px; font-style: italic; color: rgba(255, 255, 255, 0.45); }
 
-        .noorix-composer { border-top: 1px solid rgba(26, 20, 16, 0.07); background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); padding: 12px 16px; }
+        .noorix-composer { border-top: 1px solid rgba(255, 255, 255, 0.1); background: rgba(10, 10, 18, 0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); padding: 12px 16px; }
         .noorix-composer-inner { max-width: 640px; margin: 0 auto; display: flex; align-items: flex-end; gap: 8px; }
-        .noorix-composer-btn { flex-shrink: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 14px; border: 1px solid rgba(26, 20, 16, 0.08); background: rgba(255, 255, 255, 0.7); color: rgba(26, 20, 16, 0.56); cursor: pointer; transition: all 0.25s ease; }
-        .noorix-composer-btn:hover { background: #fff; color: #1a1410; transform: translateY(-1px); }
+        .noorix-composer-btn { flex-shrink: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.07); color: rgba(255, 255, 255, 0.8); cursor: pointer; transition: all 0.25s ease; }
+        .noorix-composer-btn:hover { background: rgba(255, 255, 255, 0.2); color: #ffffff; transform: translateY(-1px); }
         .noorix-composer-btn.is-recording { background: #ef4444; border-color: #ef4444; color: #fff; animation: noorix-pulse 1.2s ease infinite; }
         .noorix-composer-preview { position: relative; flex-shrink: 0; width: 44px; height: 44px; border-radius: 14px; overflow: hidden; }
         .noorix-composer-preview img { width: 100%; height: 100%; object-fit: cover; }
         .noorix-composer-preview button { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.48); color: #fff; font-size: 12px; border: none; cursor: pointer; }
         .noorix-composer-field { position: relative; flex: 1; }
-        .noorix-composer-field input { width: 100%; height: 44px; padding: 0 16px; border-radius: 16px; border: 1px solid rgba(26, 20, 16, 0.09); background: rgba(255, 255, 255, 0.78); color: #1a1410; font-size: 13px; outline: none; transition: all 0.25s ease; }
-        .noorix-composer-field input::placeholder { color: rgba(26, 20, 16, 0.32); }
-        .noorix-composer-field input:focus { border-color: rgba(255, 143, 178, 0.65); background: #fff; box-shadow: 0 0 0 4px rgba(255, 143, 178, 0.1); }
+        .noorix-composer-field input { width: 100%; height: 44px; padding: 0 16px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.06); color: #ffffff; font-size: 13px; outline: none; transition: all 0.25s ease; }
+        .noorix-composer-field input::placeholder { color: rgba(255, 255, 255, 0.45); }
+        .noorix-composer-field input:focus { border-color: rgba(255, 143, 178, 0.8); background: rgba(255, 255, 255, 0.12); box-shadow: 0 0 0 4px rgba(255, 143, 178, 0.15); }
         .noorix-composer-field input:disabled { opacity: 0.55; }
         .noorix-composer-status { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: 800; color: #ef4444; pointer-events: none; }
-        .noorix-send-btn { flex-shrink: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 16px; border: none; background: #1a1410; color: #fff; cursor: pointer; transition: all 0.25s ease; }
+        .noorix-send-btn { flex-shrink: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 16px; border: none; background: linear-gradient(135deg, #ff8fb2, #a78bfa); color: #ffffff; font-weight: bold; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 4px 16px rgba(255, 143, 178, 0.35); }
         .noorix-send-btn:hover:not(:disabled) { background: #ff8fb2; transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 30px rgba(255, 143, 178, 0.28); }
         .noorix-send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 

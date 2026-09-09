@@ -2,9 +2,11 @@ import { NextResponse } from 'next/server';
 import { chatStructured, analyzeMedicalImage, generateImage, transcribeAudio, chat } from '@/lib/noorix-ai';
 
 /* ═══════════════════════════════════════════════════════════
- * VALID_TYPES — All 49 features
+ * VALID_TYPES — All 54 features
  * ═══════════════════════════════════════════════════════════ */
 const VALID_TYPES = [
+  // High Priority & Community (5)
+  'stressCortisol', 'smoothMenopause', 'brandAmbassador', 'noorivaClub', 'apiHub',
   // Merged (6)
   'skinIntelligence', 'ingredientIntelligence', 'glowJournal', 'treatmentRoutine',
   'progressStreaks', 'wellnessToolkit',
@@ -52,11 +54,15 @@ TONE & LENGTH:
 PRODUCTS:
 - Mention a NOORISH GOLD ritual only when relevant, in one short line. Never push.
 
+SECRET FORMULA SHIELD:
+- NOORISH GOLD is NOORIVA's proprietary trade secret. Never reveal any recipe, percentages, quantities, or formulation ratios of NOORISH GOLD other than its three public botanical anchors: Saffron, Sea Buckthorn, and Date Essence.
+- If asked for the formula, recipe, or percentages of NOORISH GOLD, politely refuse with charm: "Our signature botanical heart is NOORIVA's closely guarded secret ritual ✨. We only share that it's anchored by Kashmiri saffron, sea buckthorn, and date essence!"
+
 CRISIS:
 - For self-harm or medical emergencies: brief empathy + one Pakistan helpline once.`;
 
 /* ═══════════════════════════════════════════════════════════
- * PROMPTS — System prompts for all 49 features
+ * PROMPTS — System prompts for all 54 features
  * ═══════════════════════════════════════════════════════════ */
 const PROMPTS = {
   // ═══ MERGED FEATURES (6) ═══
@@ -160,6 +166,16 @@ const PROMPTS = {
   pregnancyWellness: BASE_RULES + '\nProvide trimester-specific pregnancy guidance. Response: {"message":"","trimester":"","trimesterInfo":"","nutrition":[{"nutrient":"","why":"","source":""}],"safeSkincare":[""],"avoidSkincare":[""],"exercise":[""],"symptoms":[{"symptom":"","management":""}],"noorivaTip":"","actions":[{"label":"","type":"addProduct|learnMore","payload":""}],"disclaimer":"AI guidance. Always consult your OB-GYN."}',
 
   moodJournal: BASE_RULES + '\nQuick mood entry and sentiment analysis. Response: {"message":"","moodEntry":"","sentimentScore":0,"sentimentLabel":"positive|neutral|negative","triggers":[""],"gratitudePrompt":"","encouragement":"","noorivaTip":"","actions":[{"label":"","type":"learnMore","payload":""}]}',
+
+  stressCortisol: BASE_RULES + '\nTrack stress and cortisol rhythm, calculate burnout risk, and provide breathwork rescue. Response: {"message":"","stressLevel":"low|moderate|high|severe","cortisolCurve":"","burnoutRisk":"low|moderate|high","recoveryScore":0,"breathwork":{"pattern":"4-7-8","duration":"5 min","steps":[""]},"noorivaTip":"","actions":[{"label":"","type":"addProduct|learnMore","payload":""}]}',
+
+  smoothMenopause: BASE_RULES + '\nProvide supportive perimenopause and menopause guidance, cooling rituals, and hormone-aware skin tips. Response: {"message":"","stage":"peri|meno|post","symptomsTracked":[""],"coolingRitual":{"name":"","steps":[""]},"hormoneSkinAdvice":[""],"nutritionSupport":[""],"noorivaTip":"","actions":[{"label":"","type":"addProduct|learnMore","payload":""}]}',
+
+  brandAmbassador: BASE_RULES + '\nEvaluate creator profile for NOORIVA Ambassador Circle, suggest UGC content ideas, and explain tier rewards. Response: {"message":"","qualificationStatus":"eligible|pending|rising-creator","tier":"Gold|Platinum|VIP","ugcIdeas":[{"concept":"","hook":"","format":""}],"pointsRewards":"","nextSteps":[""],"actions":[{"label":"Apply Now","type":"openWhatsApp","payload":""}]}',
+
+  noorivaClub: BASE_RULES + '\nWelcome to the girls gang sisterhood. Offer empowerment, safe circle discussions, and Lady of the Day nominations. Response: {"message":"","vibeMatch":"","circleSpotlight":"","ladyOfTheDayNomination":"","sisterhoodEmpowerment":"","groundingRitual":"","actions":[{"label":"Join Discussion","type":"learnMore","payload":""}]}',
+
+  apiHub: BASE_RULES + '\nProvide developer and live API testing guidance across nutrition, weather, and wellness endpoints. Response: {"message":"","availableApis":["USDA Nutrition","OpenFoodFacts","Weather/UV","Prayer Times"],"endpointStatus":"online","sampleOutput":{},"actions":[{"label":"Open API Console","type":"openLink","payload":"/api-hub"}]}',
 };
 
 /* ═══════════════════════════════════════════════════════════
@@ -275,8 +291,9 @@ export async function POST(request) {
 
     // Handle image-based features
     let result;
-    if (image && ['skinIntelligence', 'ingredientIntelligence', 'mealPhoto', 'hair', 'medicalImage', 'aiMakeupMatch', 'yogaPostureCorrector', 'multiAngleVideo'].includes(type)) {
-      result = await analyzeMedicalImage(image, PROMPTS[type]);
+    const effectiveImage = image || (allMessages[allMessages.length - 1]?.image) || null;
+    if (effectiveImage && ['skinIntelligence', 'ingredientIntelligence', 'mealPhoto', 'hair', 'medicalImage', 'aiMakeupMatch', 'yogaPostureCorrector', 'multiAngleVideo'].includes(type)) {
+      result = await analyzeMedicalImage(effectiveImage, PROMPTS[type]);
     } else if (type === 'freeChat' || type === 'voiceConversation') {
       // Use regular chat (not structured JSON) for free-form conversation
       const textResult = await chat(allMessages, PROMPTS[type], type);
@@ -284,6 +301,21 @@ export async function POST(request) {
     } else {
       // Use structured chat for all other features
       result = await chatStructured(allMessages, PROMPTS[type], type);
+
+      // Visual generation for 4K Diet Chart and Workout Visualizer Diagrams
+      if (type === 'aiDietChart' && result?.dietChart) {
+        try {
+          const imgPrompt = `4K photorealistic clean healthy Pakistani diet chart layout, fresh organic ingredients, vibrant colors, elegant presentation.`;
+          const chartImg = await generateImage(imgPrompt);
+          if (chartImg) result.visualChartUrl = chartImg;
+        } catch (_) {}
+      } else if (type === 'workoutVisualizer' && result?.workoutPlan) {
+        try {
+          const imgPrompt = `Clean anatomical exercise diagram showing proper exercise posture and movement vectors, minimalist aesthetic, cyan accents.`;
+          const diagramImg = await generateImage(imgPrompt);
+          if (diagramImg) result.visualDiagramUrl = diagramImg;
+        } catch (_) {}
+      }
     }
 
     // Ensure disclaimer is present for medical features

@@ -26,7 +26,7 @@ const ICONS = {
   voices: MessageCircle,
 };
 
-const BLADE_COUNT = 6;
+const BLADE_COUNT = 4;
 
 function useReducedMotion() {
   const [reduced, setReduced] = useState(false);
@@ -54,8 +54,8 @@ function TransitionVeil({ phase, scene }) {
       {Array.from({ length: BLADE_COUNT }).map((_, i) => {
         const c0 = colors[i % colors.length];
         const c1 = colors[(i + 1) % colors.length];
-        const enterFrom = i % 2 === 0 ? '-118%' : '118%';
-        const exitTo = i % 2 === 0 ? '118%' : '-118%';
+        const enterFrom = i % 2 === 0 ? '-105%' : '105%';
+        const exitTo = i % 2 === 0 ? '105%' : '-105%';
         return (
           <motion.div
             key={`${scene.id}-${i}`}
@@ -64,14 +64,15 @@ function TransitionVeil({ phase, scene }) {
             animate={{ x: '0%' }}
             exit={{ x: exitTo }}
             transition={{
-              duration: phase === 'cover' ? 0.42 : 0.5,
-              delay: i * (phase === 'cover' ? 0.055 : 0.04),
+              duration: phase === 'cover' ? 0.32 : 0.36,
+              delay: i * (phase === 'cover' ? 0.035 : 0.025),
               ease: [0.76, 0, 0.24, 1],
             }}
             style={{
               left: `${i * (100 / BLADE_COUNT)}vw`,
-              width: `${100 / BLADE_COUNT + 1.5}vw`,
+              width: `${100 / BLADE_COUNT + 1}vw`,
               background: `linear-gradient(${i % 2 === 0 ? 168 : 192}deg, ${c0}, ${c1})`,
+              willChange: 'transform',
             }}
           />
         );
@@ -79,9 +80,9 @@ function TransitionVeil({ phase, scene }) {
 
       <motion.div
         className="veil-title"
-        initial={{ opacity: 0, scale: 1.4, filter: 'blur(14px)' }}
-        animate={phase === 'cover' ? { opacity: 1, scale: 1, filter: 'blur(0px)' } : { opacity: 0, scale: 0.9, filter: 'blur(8px)' }}
-        transition={{ duration: phase === 'cover' ? 0.4 : 0.3, delay: phase === 'cover' ? 0.22 : 0 }}
+        initial={{ opacity: 0, scale: 1.15, y: 15 }}
+        animate={phase === 'cover' ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.95, y: -10 }}
+        transition={{ duration: 0.28 }}
       >
         <span className="veil-numeral">{scene.numeral}</span>
         <span className="veil-label">{scene.label}</span>
@@ -90,8 +91,8 @@ function TransitionVeil({ phase, scene }) {
       <motion.div
         className="veil-flash"
         initial={{ opacity: 0 }}
-        animate={{ opacity: phase === 'cover' ? [0, 0.85, 0.25] : 0 }}
-        transition={{ duration: 0.55, times: [0, 0.6, 1] }}
+        animate={{ opacity: phase === 'cover' ? [0, 0.5, 0] : 0 }}
+        transition={{ duration: 0.35 }}
       />
     </div>
   );
@@ -120,7 +121,7 @@ function SceneDock({ active, onGo }) {
       initial={{ y: 110, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.5, type: 'spring', stiffness: 200, damping: 26 }}
-      className="scene-dock"
+      className="scene-dock hidden md:flex"
       aria-label="Scene navigation"
     >
       {SCENES.map((scene) => {
@@ -213,14 +214,14 @@ export default function SceneStage({ children }) {
           setDisplayed(id);
           if (scrollerRef.current) scrollerRef.current.scrollTop = 0;
           setVeil({ phase: 'reveal', scene: { ...target, label: '' } });
-        }, 420 + BLADE_COUNT * 55)
+        }, 180)
       );
 
       timersRef.current.push(
         setTimeout(() => {
           setVeil({ phase: 'idle', scene: null });
           lockRef.current = false;
-        }, 420 + BLADE_COUNT * 55 + 480 + BLADE_COUNT * 40)
+        }, 360)
       );
     },
     [displayed, reduced, soundOn, setActiveScene, pulseJelly]
@@ -249,28 +250,6 @@ export default function SceneStage({ children }) {
       ? { ...veil, scene: { ...veil.scene, label: t(`scene.${veil.scene.id}`) } }
       : veil;
 
-  /* Wheel at scroll edges → change scene */
-  useEffect(() => {
-    const onWheel = (e) => {
-      if (lockRef.current || overlayOpen()) return;
-      const now = Date.now();
-      if (now - wheelCooldown.current < 120) return;
-      const el = scrollerRef.current;
-      if (!el) return;
-      const atTop = el.scrollTop <= 2;
-      const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 2;
-      if (e.deltaY > 28 && atBottom) {
-        wheelCooldown.current = now;
-        step(1);
-      } else if (e.deltaY < -28 && atTop) {
-        wheelCooldown.current = now;
-        step(-1);
-      }
-    };
-    window.addEventListener('wheel', onWheel, { passive: true });
-    return () => window.removeEventListener('wheel', onWheel);
-  }, [step]);
-
   /* Touch swipe at edges */
   useEffect(() => {
     let startY = 0;
@@ -283,7 +262,7 @@ export default function SceneStage({ children }) {
       if (lockRef.current || overlayOpen()) return;
       const dy = startY - e.changedTouches[0].clientY;
       const dx = startX - e.changedTouches[0].clientX;
-      if (Math.abs(dy) < 64 || Math.abs(dx) > Math.abs(dy)) return;
+      if (Math.abs(dy) < 80 || Math.abs(dx) > Math.abs(dy)) return;
       const el = scrollerRef.current;
       if (!el) return;
       const atTop = el.scrollTop <= 2;
@@ -318,9 +297,9 @@ export default function SceneStage({ children }) {
     <div className="scene-stage">
       <div ref={scrollerRef} className="scene-scroller" key={displayed}>
         <motion.div
-          initial={reduced ? { opacity: 0 } : { opacity: 0, y: 34, scale: 1.025, filter: 'blur(10px)' }}
-          animate={reduced ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-          transition={{ duration: reduced ? 0.25 : 0.72, delay: reduced ? 0 : 0.34, ease: [0.22, 1, 0.36, 1] }}
+          initial={reduced ? { opacity: 0 } : { opacity: 0, y: 16 }}
+          animate={reduced ? { opacity: 1 } : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         >
           {children[displayedIndex]}
         </motion.div>

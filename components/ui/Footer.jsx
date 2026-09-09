@@ -27,7 +27,8 @@ const shopLinks = [
 const exploreLinks = [
   { label: 'Meet Noorix', href: '/noorix/chat' },
   { label: 'NOORIVA Club', href: '/club' },
-  { label: 'Our Story', href: '/story' },
+  { label: 'Our Origin', href: '/story' },
+  { label: 'Botanicals', href: '/ingredients' },
   { label: 'Weather Glow', href: '/weather' },
   { label: 'Glow Quiz', href: '/quiz' },
   { label: 'Ritual of the Day', href: '/ritual-of-the-day' },
@@ -77,7 +78,7 @@ export default function Footer() {
           onClick={() => setOpen((value) => !value)}
           className="flex items-center gap-2 rounded-t-2xl bg-ink/90 px-6 py-2 text-white shadow-lg backdrop-blur-md"
         >
-          <Sparkles size={14} className="text-[#C79A44]" />
+          <Sparkles size={14} className="text-[#22d3ee]" />
           <span className="text-xs font-bold uppercase tracking-wider">NOORIVA</span>
           <ChevronUp
             size={14}
@@ -97,7 +98,7 @@ export default function Footer() {
               {/* Brand + socials */}
               <div>
                 <Link href="/" className="flex items-center gap-2">
-                  <Sparkles size={20} className="text-[#C79A44]" />
+                  <Sparkles size={20} className="text-[#22d3ee]" />
                   <span className="text-lg font-bold text-ink">NOORIVA</span>
                 </Link>
                 <p className="mt-3 max-w-xs text-xs leading-relaxed text-ink/50">
@@ -171,7 +172,7 @@ export default function Footer() {
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               {trustBadges.map((badge) => (
                 <span key={badge.label} className="inline-flex items-center gap-1.5 rounded-full border border-ink/10 bg-white/50 px-3 py-1.5 text-[11px] font-semibold text-ink/70">
-                  <badge.icon size={13} className="text-[#C79A44]" />
+                  <badge.icon size={13} className="text-[#22d3ee]" />
                   {badge.label}
                 </span>
               ))}

@@ -8,5 +8,5 @@
       <stop offset="100%" stop-color="#8B6914"/>
     </linearGradient>
   </defs>
-  <text x="400" y="130" text-anchor="middle" font-family="'Space Grotesk', Arial, sans-serif" font-size="100" font-weight="900" letter-spacing="6" fill="url(#goldGrad)">NOORIVA</text>
+  <text x="400" y="130" text-anchor="middle" font-family="'Space Grotesk', system-ui, -apple-system, sans-serif" font-size="100" font-weight="900" letter-spacing="8" fill="url(#goldGrad)">NOORIVA</text>
 </svg>

@@ -29,10 +29,19 @@ const jsonLd = {
   url: 'https://nooriva.co/ingredients',
 };
 
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nooriva.co' },
+    { '@type': 'ListItem', position: 2, name: 'Botanicals', item: 'https://nooriva.co/ingredients' },
+  ],
+};
 export default function IngredientsPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <IngredientStory />
     </>
   );

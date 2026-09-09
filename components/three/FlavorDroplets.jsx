@@ -39,7 +39,7 @@ function Droplet({ flavor, index, total }) {
         document.body.style.cursor = 'auto';
       }}
     >
-      <icosahedronGeometry args={[0.28, 16]} />
+      <icosahedronGeometry args={[0.28, 2]} />
       <meshPhysicalMaterial
         color={flavor.color}
         roughness={0.15}

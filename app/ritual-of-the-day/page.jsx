@@ -28,10 +28,19 @@ const jsonLd = {
     'Daily botanical skin-food ritual matched to nature’s rhythm.',
   url: 'https://nooriva.co/ritual-of-the-day',
 };
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nooriva.co' },
+    { '@type': 'ListItem', position: 2, name: 'Ritual of the Day', item: 'https://nooriva.co/ritual-of-the-day' },
+  ],
+};
 
 export default function RitualOfDayPage() {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <RitualOfDay />
     </>

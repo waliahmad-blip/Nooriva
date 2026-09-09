@@ -36,3 +36,4 @@ export default function AnimatedLogo({ size = 'small', className = '' }) {
     />
   );
 }
+

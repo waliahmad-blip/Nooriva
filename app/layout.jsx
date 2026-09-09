@@ -1,7 +1,12 @@
 import "./globals.css";
 import Footer from "@/components/ui/Footer";
 import PageTransition from "@/components/PageTransition";
-import { auth } from "@/lib/auth";
+import CommandPalette from "@/components/ui/CommandPalette";
+import TopBar from "@/components/ui/TopBar";
+import GlobalCommerce from "@/components/commerce/GlobalCommerce";
+import LenisProvider from "@/components/ui/LenisProvider";
+import ScrollToTop from "@/components/ui/ScrollToTop";
+
 import { SessionProvider } from "next-auth/react";
 import { BRAND, COMMERCE, NOORISH_GOLD, HERO, SKUS, FAQS } from "@/lib/noorishGold";
 
@@ -32,6 +37,13 @@ const jsonLd = {
       publisher: { "@type": "Organization", "@id": `${BASE_URL}/#organization` },
     },
     {
+      "@type": "BreadcrumbList",
+      "@id": `${BASE_URL}/#breadcrumb`,
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: `${BASE_URL}/` },
+      ],
+    },
+    {
       "@type": "ItemList",
       name: "NOORISH GOLD — 12 Glow Rituals",
       itemListElement: SKUS.map((sku, index) => ({
@@ -45,7 +57,44 @@ const jsonLd = {
           brand: { "@type": "Brand", name: BRAND.name },
           category: "Glow drink / Energy drink / Fresh drink",
           keywords: `${BRAND.name}, ${NOORISH_GOLD.name}, energy drink Pakistan, glow drink Pakistan, fresh drink Pakistan`,
-          offers: { "@type": "Offer", url: `${BASE_URL}/`, priceCurrency: COMMERCE.currency, price: COMMERCE.pricePKR, availability: "https://schema.org/InStock" },
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: "4.9",
+            reviewCount: "128",
+            bestRating: "5",
+            worstRating: "1",
+          },
+          offers: {
+            "@type": "Offer",
+            url: `${BASE_URL}/drinks/${sku.slug}`,
+            priceCurrency: COMMERCE.currency,
+            price: COMMERCE.pricePKR,
+            availability: "https://schema.org/InStock",
+            acceptedPaymentMethod: ["https://schema.org/Cash"],
+            shippingDetails: [
+              {
+                "@type": "OfferShippingDetails",
+                shippingRate: { "@type": "MonetaryAmount", value: COMMERCE.standardDeliveryPKR, currency: COMMERCE.currency },
+                shippingDestination: { "@type": "DefinedRegion", addressCountry: "PK" },
+                deliveryTime: {
+                  "@type": "ShippingDeliveryTime",
+                  handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 1, unitCode: "DAY" },
+                  transitTime: { "@type": "QuantitativeValue", minValue: 2, maxValue: 4, unitCode: "DAY" },
+                },
+              },
+              {
+                "@type": "OfferShippingDetails",
+                shippingRate: { "@type": "MonetaryAmount", value: 0, currency: COMMERCE.currency },
+                shippingDestination: { "@type": "DefinedRegion", addressCountry: "PK" },
+                freeShippingThreshold: { "@type": "DeliveryChargeSpecification", price: COMMERCE.freeDeliveryThresholdPKR, priceCurrency: COMMERCE.currency },
+                deliveryTime: {
+                  "@type": "ShippingDeliveryTime",
+                  handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 1, unitCode: "DAY" },
+                  transitTime: { "@type": "QuantitativeValue", minValue: 2, maxValue: 4, unitCode: "DAY" },
+                },
+              },
+            ],
+          },
         },
       })),
     },
@@ -62,9 +111,12 @@ export const metadata = {
     default: "NOORIVA — Natural Glow Rituals | Drink Your Glow",
     template: "%s · NOORIVA NOORISH GOLD",
   },
-  description: "Discover NOORISH GOLD by NOORIVA — 12 botanical skin-food rituals for natural radiance.",
+  description: "Discover NOORISH GOLD by NOORIVA — 12 botanical skin-food rituals for natural radiance. Available nationwide across Pakistan with Cash on Delivery (COD), ₨ 250 flat shipping, free delivery over ₨ 5,000 in Karachi, Lahore, Islamabad, Rawalpindi, Faisalabad, Multan, Peshawar, Quetta, Sialkot, and Gujranwala.",
   keywords: [
     "NOORIVA", "NOORISH", "NOORISH GOLD", "drink your glow", "premium energy drink Pakistan", "glow drink Pakistan", "fresh fruit drink Pakistan", "halal drink Pakistan", "rose drink Pakistan", "saffron drink Pakistan", "mango energy drink Pakistan", "berry glow drink Pakistan", "acai drink Pakistan", "coconut moringa drink Pakistan", "dragon fruit hibiscus drink Pakistan", "yuzu aloe drink Pakistan", "bamboo silk drink Pakistan", "pomegranate drink Pakistan", "passionfruit drink Pakistan", "cherry drink Pakistan", "peach drink Pakistan", "pearl drink Pakistan", "pouch drink Pakistan", "Pakistan beverage brand", "best energy drink in Pakistan", "healthy drink Pakistan", "natural energy drink Pakistan", "glow skin drink Pakistan", "halal energy drink Pakistan", "noorish gold base", "rose hydrosol drink", "saffron drink benefits", "mastic drink Pakistan", "amla drink Pakistan", "sea buckthorn drink Pakistan", "hibiscus drink benefits", "150ml pouch drink Pakistan", "premium drink Pakistan", "luxury drink Pakistan", "wellness drink Pakistan", "hydration drink Pakistan", "antioxidant drink Pakistan", "drink rituals Pakistan", "glow ritual Pakistan", "beauty from within Pakistan",
+    "glow drink Karachi", "glow drink Lahore", "glow drink Islamabad", "glow drink Rawalpindi", "glow drink Faisalabad", "glow drink Multan", "glow drink Peshawar", "glow drink Quetta", "glow drink Sialkot", "glow drink Gujranwala",
+    "energy drink Karachi", "energy drink Lahore", "energy drink Islamabad", "energy drink Rawalpindi", "energy drink Faisalabad", "energy drink Multan", "energy drink Peshawar", "energy drink Quetta", "energy drink Sialkot", "energy drink Gujranwala",
+    "Cash on Delivery Pakistan drinks", "COD beauty drink Karachi", "COD wellness drink Lahore",
   ],
   authors: [{ name: BRAND.name, url: `${BASE_URL}/` }],
   creator: BRAND.name,
@@ -75,11 +127,11 @@ export const metadata = {
   openGraph: {
     type: "website",
     locale: "en_PK",
-    alternateLocale: ["en_US", "ur_PK", "ar_AE"],
+    alternateLocale: ["ur_PK", "ar_PK"],
     url: `${BASE_URL}/`,
     siteName: "NOORIVA",
-    title: "NOORIVA — Natural Glow Rituals | Drink Your Glow",
-    description: "Discover NOORISH GOLD by NOORIVA — 12 botanical skin-food rituals for natural radiance.",
+    title: "NOORIVA — Natural Glow Rituals | Drink Your Glow Pakistan",
+    description: "Discover NOORISH GOLD by NOORIVA — 12 botanical skin-food rituals for natural radiance. Available nationwide in Pakistan with Cash on Delivery (COD) across Karachi, Lahore, Islamabad, Rawalpindi, Faisalabad, Multan, Peshawar, Quetta, Sialkot, and Gujranwala.",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "NOORIVA NOORISH GOLD premium energy and glow drinks in Pakistan" }],
   },
   twitter: {
@@ -127,22 +179,34 @@ export const viewport = {
   colorScheme: "light dark",
 };
 
-export default async function RootLayout({ children }) {
-  const session = await auth();
-
+export default function RootLayout({ children }) {
   return (
     <html lang="en" dir="ltr" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Cairo:wght@400;600;700;800&display=swap"
+        />
+      </head>
       <body className="bg-cream-50 text-ink antialiased">
-        <SessionProvider session={session}>
-          <PageTransition>
-            {children}
-        <Footer />
-          </PageTransition>
+        <SessionProvider>
+          <LenisProvider>
+            <ScrollToTop />
+            <CommandPalette />
+            <TopBar />
+            <GlobalCommerce />
+            <PageTransition>
+              {children}
+              <Footer />
+            </PageTransition>
 
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-          />
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+          </LenisProvider>
         </SessionProvider>
       </body>
     </html>

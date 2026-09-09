@@ -1,7 +1,10 @@
-'use client';
+﻿'use client';
 import BackToHome from "@/components/ui/BackToHome";
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
+
+const LiquidMetamorphosisDroplet = dynamic(() => import('@/components/three/LiquidMetamorphosisDroplet'), { ssr: false });
 import Link from 'next/link';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
@@ -13,6 +16,7 @@ import {
   RefreshCw,
   ShoppingBag,
 } from 'lucide-react';
+import { useStore } from '@/lib/store';
 import ScrollToTop from '@/components/ui/ScrollToTop';
 
 const QUESTIONS = [
@@ -55,6 +59,7 @@ const RESULTS = {
 };
 
 export default function GlowQuizPage() {
+  const addToCart = useStore((s) => s.addToCart);
   const reduced = useReducedMotion();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -93,8 +98,8 @@ export default function GlowQuizPage() {
   }
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#ffffff] text-ink">
-      <BackToHome className="fixed top-6 left-6 z-50" />
+    <div className="relative min-h-screen w-full overflow-x-clip bg-[#ffffff] text-ink pb-36">
+      <BackToHome className="fixed top-20 left-4 sm:left-6 z-30" />
       <div className="relative z-20 mx-auto w-full max-w-6xl px-4 pt-4 md:px-8">
       </div>
       {/* Aurora accents */}
@@ -110,7 +115,7 @@ export default function GlowQuizPage() {
         }}
       />
 
-      <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-16">
+      <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 pt-24 pb-16 overflow-hidden">
         <div className="w-full max-w-xl">
           {/* Header */}
           <div className="text-center">
@@ -136,6 +141,12 @@ export default function GlowQuizPage() {
             </motion.h1>
           </div>
 
+          
+          {/* 3D Liquid Metamorphosis Droplet */}
+          <div className="mx-auto mt-4 max-w-sm">
+            <LiquidMetamorphosisDroplet step={done ? 3 : step} />
+          </div>
+  
           {/* Progress dots */}
           <div className="mt-8 flex items-center gap-2">
             {QUESTIONS.map((_, i) => (
@@ -157,9 +168,9 @@ export default function GlowQuizPage() {
             {!done ? (
               <motion.div
                 key={step}
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -30 }}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
                 transition={{ duration: 0.25 }}
                 className="mt-10"
               >
@@ -231,11 +242,19 @@ export default function GlowQuizPage() {
                 <p className="mt-2 text-lg italic text-ink/60">{result.note}</p>
 
                 <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                  <button
+                    type="button"
+                    onClick={() => addToCart(result.slug)}
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#ff8fb2] to-[#a78bfa] px-7 py-3.5 text-sm font-bold text-ink shadow-lg transition hover:scale-105 active:scale-95"
+                  >
+                    <ShoppingBag size={16} /> Add to Bag · ₨ 2,450
+                  </button>
+
                   <Link
                     href={`/drinks/${result.slug}`}
-                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#ff8fb2] to-[#a78bfa] px-7 py-3.5 text-sm font-bold text-ink transition hover:scale-105"
+                    className="inline-flex items-center gap-2 rounded-full border border-ink/15 bg-white/70 px-6 py-3.5 text-sm font-bold text-ink backdrop-blur-md transition hover:bg-white hover:scale-105"
                   >
-                    <ShoppingBag size={16} /> Add to Bag
+                    View Ritual <ArrowRight size={14} />
                   </Link>
 
                   <button

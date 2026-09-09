@@ -113,19 +113,34 @@ export default function BagDrawer() {
                 </button>
               </div>
 
-              {/* Free delivery progress */}
-              <div className="mt-4">
-                <div className="h-2 overflow-hidden rounded-full bg-ink/10">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-noor-rose via-noor-gold to-noor-violet transition-all"
-                    style={{ width: `${progress}%` }}
+              {/* Gamified Liquid-Fill Free Shipping Bar */}
+              <div className="mt-4 rounded-2xl border border-ink/10 bg-white/70 p-3.5 shadow-sm">
+                <div className="flex items-center justify-between text-xs font-bold mb-2">
+                  <span className="flex items-center gap-1.5 text-ink">
+                    <span>🚚</span>
+                    <span>
+                      {subtotal >= FREE_DELIVERY_THRESHOLD
+                        ? "Free Delivery Activated Across Pakistan! ✨"
+                        : `Add ₨ ${(FREE_DELIVERY_THRESHOLD - subtotal).toLocaleString()} for Free Delivery`}
+                    </span>
+                  </span>
+                  <span className="text-[#22d3ee]">{progress}%</span>
+                </div>
+                <div className="relative h-2.5 overflow-hidden rounded-full bg-ink/10">
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{
+                      background:
+                        subtotal >= FREE_DELIVERY_THRESHOLD
+                          ? "linear-gradient(90deg, #10b981, #5eead4, #22d3ee)"
+                          : "linear-gradient(90deg, #ff8fb2, #ffd7a1, #a78bfa)",
+                      width: `${progress}%`,
+                    }}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
                   />
                 </div>
-                <p className="mt-2 text-xs text-ink/55">
-                  {subtotal >= FREE_DELIVERY_THRESHOLD
-                    ? t("bag.freeDeliveryUnlocked")
-                    : t("bag.freeDelivery")}
-                </p>
               </div>
 
               {/* Items */}

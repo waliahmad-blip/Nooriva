@@ -1,7 +1,10 @@
-'use client';
+﻿'use client';
 import BackToHome from "@/components/ui/BackToHome";
 
 import { useMemo, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
+
+const GemstoneFluidPouch = dynamic(() => import('@/components/three/GemstoneFluidPouch'), { ssr: false });
 import Link from 'next/link';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import {
@@ -16,6 +19,7 @@ import {
   Check,
   Calendar,
 } from 'lucide-react';
+import { useStore } from '@/lib/store';
 import ScrollToTop from '@/components/ui/ScrollToTop';
 
 const RITUALS = [
@@ -38,7 +42,7 @@ const RITUALS = [
     story: 'Clean botanical energy for that 1 PM spark — bright mango, a whisper of ginger, and nature’s own fire.',
   },
   {
-    name: 'SAFFRON MIST', slug: 'saffron-mist', color: '#E7D3A8', colorB: '#C79A44',
+    name: 'SAFFRON MIST', slug: 'saffron-mist', color: '#a78bfa', colorB: '#22d3ee',
     time: 'Night · 11:00 PM', note: 'Repair in gold', mood: 'Luxurious, repairing, still',
     botanicals: ['Saffron threads', 'Golden milk', 'Midnight calm'],
     story: 'While the world sleeps, nature repairs. Saffron gold and botanical calm for deep, restorative rest.',
@@ -96,6 +100,7 @@ const RITUALS = [
 const DAY_INDEX = new Date().getDate() % RITUALS.length;
 
 export default function RitualOfDay() {
+  const addToCart = useStore((s) => s.addToCart);
   const reduced = useReducedMotion();
   const ritual = RITUALS[DAY_INDEX];
   const [copied, setCopied] = useState(false);
@@ -138,8 +143,8 @@ export default function RitualOfDay() {
   }
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#ffffff] text-ink">
-      <BackToHome className="fixed top-6 left-6 z-50" />
+    <div className="relative min-h-screen w-full overflow-x-clip bg-[#ffffff] text-ink pb-36">
+      <BackToHome className="fixed top-20 left-4 sm:left-6 z-30" />
       <div className="relative z-20 mx-auto w-full max-w-6xl px-4 pt-4 md:px-8">
       </div>
       {/* Golden aurora */}
@@ -148,20 +153,20 @@ export default function RitualOfDay() {
         className="pointer-events-none fixed inset-0 opacity-55"
         style={{
           background: `
-            radial-gradient(circle at 20% 15%, rgba(199,154,68,0.22), transparent 40%),
-            radial-gradient(circle at 80% 25%, rgba(231,211,168,0.16), transparent 42%),
+            radial-gradient(circle at 20% 15%, rgba(34, 211, 238,0.22), transparent 40%),
+            radial-gradient(circle at 80% 25%, rgba(167, 139, 250,0.16), transparent 42%),
             radial-gradient(circle at 50% 90%, rgba(251,191,36,0.14), transparent 45%)
           `,
         }}
       />
 
-      <main className="relative z-10 mx-auto max-w-6xl px-4 py-12 md:px-8">
+      <main className="relative z-10 mx-auto max-w-6xl px-4 pt-24 pb-12 md:px-8">
         {/* Header */}
         <section className="text-center">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-ink/5 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-[#E7D3A8] backdrop-blur-md"
+            className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-ink/5 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-[#a78bfa] backdrop-blur-md"
           >
             <Calendar size={14} />
             {dateLabel}
@@ -174,7 +179,7 @@ export default function RitualOfDay() {
             className="display-heading mt-5 text-5xl leading-[0.95] md:text-7xl"
           >
             Ritual of
-            <span className="block bg-gradient-to-r from-[#E7D3A8] via-[#C79A44] to-[#fbbf24] bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-[#a78bfa] via-[#22d3ee] to-[#fbbf24] bg-clip-text text-transparent">
               the Day
             </span>
           </motion.h1>
@@ -184,40 +189,18 @@ export default function RitualOfDay() {
         <section ref={ref} className="mx-auto mt-14 max-w-4xl">
           <div className="glass relative overflow-hidden rounded-[2.5rem] p-8 md:p-14">
             <div className="flex flex-col items-center gap-10 md:flex-row md:gap-14">
-              {/* Pouch */}
-              <motion.div
-                style={{ rotate, scale }}
-                className="relative flex shrink-0 items-center justify-center"
-              >
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
-                  className="relative h-64 w-44"
-                >
-                  <div
-                    className="absolute inset-0 rounded-[38%]"
-                    style={{
-                      background: `linear-gradient(160deg, ${ritual.color}, ${ritual.colorB} 55%, #ffffff15)`,
-                      boxShadow: `0 40px 100px ${ritual.color}55`,
-                    }}
-                  />
-                  <div
-                    className="absolute inset-x-5 top-8 h-[16%] rounded-full"
-                    style={{ background: 'linear-gradient(180deg, #ffffff88, transparent)' }}
-                  />
-                  <span className="absolute inset-x-0 bottom-6 text-center text-xs font-black tracking-[0.3em] text-ink">
-                    NOORIVA
-                  </span>
-                  <span className="absolute inset-x-0 top-24 text-center text-sm font-extrabold text-ink">
-                    {ritual.name}
-                  </span>
-                </motion.div>
-              </motion.div>
+              {/* 3D Gemstone Fluid Pouch Stage */}
+              <div className="relative w-full max-w-xs shrink-0 mx-auto">
+                <GemstoneFluidPouch
+                  colorA={ritual.color}
+                  colorB={ritual.colorB}
+                  frameColor="#ffffff"
+                />
+              </div>
 
               {/* Details */}
               <div className="max-w-md text-center md:text-left">
-                <p className="text-xs font-black uppercase tracking-[0.3em] text-[#E7D3A8]">
+                <p className="text-xs font-black uppercase tracking-[0.3em] text-[#a78bfa]">
                   {ritual.time}
                 </p>
                 <h2 className="mt-2 text-4xl font-extrabold">{ritual.name}</h2>
@@ -239,11 +222,19 @@ export default function RitualOfDay() {
 
                 {/* CTA */}
                 <div className="mt-8 flex flex-wrap justify-center gap-3 md:justify-start">
+                  <button
+                    type="button"
+                    onClick={() => addToCart(ritual.slug)}
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#a78bfa] to-[#22d3ee] px-6 py-3 text-sm font-bold text-ink shadow-lg transition hover:scale-105 active:scale-95"
+                  >
+                    <ShoppingBag size={16} /> Add to Bag · ₨ 2,450
+                  </button>
+
                   <Link
                     href={`/drinks/${ritual.slug}`}
-                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#E7D3A8] to-[#C79A44] px-6 py-3 text-sm font-bold text-ink transition hover:scale-105"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-ink/15 bg-white/70 px-5 py-3 text-sm font-bold text-ink backdrop-blur-md transition hover:bg-white hover:scale-105"
                   >
-                    <ShoppingBag size={16} /> Add to Bag
+                    View Ritual <ArrowRight size={14} />
                   </Link>
 
                   <button

@@ -2,9 +2,10 @@
 
 import { useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
-import { ArrowRight, Check, Star } from 'lucide-react';
+import { ArrowRight, Sparkles, Camera, Zap } from 'lucide-react';
+import { FEATURE_TEMPLATES } from './featureTemplates';
 
-export default function NoorixFeatureCard({ feature, index, title, onClick }) {
+export default function NoorixFeatureCard({ feature, index, title, onClick, onSelectTemplate }) {
   const cardRef = useRef(null);
   const rotateX = useMotionValue(0);
   const rotateY = useMotionValue(0);
@@ -12,6 +13,7 @@ export default function NoorixFeatureCard({ feature, index, title, onClick }) {
   const springY = useSpring(rotateY, { stiffness: 220, damping: 18, mass: 0.6 });
   const accent = feature.color || '#ff8fb2';
   const Icon = feature.icon;
+  const templates = FEATURE_TEMPLATES[feature.id] || [];
 
   function handleMouseMove(e) {
     const rect = cardRef.current?.getBoundingClientRect();
@@ -35,139 +37,154 @@ export default function NoorixFeatureCard({ feature, index, title, onClick }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24, scale: 0.94 }}
+      initial={{ opacity: 0, y: 20, scale: 0.96 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.55, delay: (index % 6) * 0.06, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, margin: '-30px' }}
+      transition={{ duration: 0.45, delay: (index % 6) * 0.05, ease: [0.22, 1, 0.36, 1] }}
       className="nfc-root"
     >
-      <motion.button
+      <motion.div
         ref={cardRef}
-        type="button"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         onClick={onClick}
-        whileTap={{ scale: 0.97 }}
+        whileTap={{ scale: 0.98 }}
         style={{
           rotateX: springX,
           rotateY: springY,
           transformStyle: 'preserve-3d',
           '--nfc-accent': accent,
         }}
-        className="nfc-card"
+        className="nfc-card group"
       >
         <span className="nfc-border" aria-hidden="true" />
         <span className="nfc-spotlight" aria-hidden="true" />
-        <span className="nfc-shine" aria-hidden="true" />
 
-        <span className="nfc-content" style={{ transform: 'translateZ(28px)' }}>
-          <span className="nfc-topline">
-            <span className="nfc-index">{String(index + 1).padStart(2, '0')}</span>
-            {feature.priority === 'high' && (
-              <span className="nfc-featured" style={{ color: '#ef4444', background: 'rgba(239,68,68,0.12)' }}>
-                🔥 High Priority
-              </span>
-            )}
-            {feature.featured && (
-              <span className="nfc-featured">
-                <Star size={10} fill="currentColor" />
-                Featured
-              </span>
-            )}
-          </span>
-
-          <span className="nfc-icon-wrap">
-            <span className="nfc-icon-ring" />
-            <Icon size={21} strokeWidth={1.7} className="nfc-icon" />
-          </span>
-
-          <span className="nfc-title-row">
-            <span className="nfc-tagline">{feature.tagline}</span>
-            <h3 className="nfc-title">{title}</h3>
-          </span>
-
-          <p className="nfc-desc">{feature.description}</p>
-
-          <span className="nfc-highlights">
-            {feature.highlights?.slice(0, 3).map((highlight) => (
-              <span key={highlight} className="nfc-highlight">
-                <Check size={10} strokeWidth={2.6} />
-                {highlight}
-              </span>
-            ))}
-          </span>
-
-          <span className="nfc-footer">
-            <span className="nfc-cta">Analyze now</span>
-            <span className="nfc-arrow">
-              <ArrowRight size={16} />
+        <div className="nfc-content" style={{ transform: 'translateZ(24px)' }}>
+          <div className="flex items-center justify-between gap-2">
+            <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-white/40">
+              #{String(index + 1).padStart(2, '0')}
             </span>
-          </span>
-        </span>
-      </motion.button>
+
+            <div className="flex flex-wrap items-center gap-1.5">
+              {feature.priority === 'high' && (
+                <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-red-400 bg-red-500/15 border border-red-500/30">
+                  🔥 High Priority
+                </span>
+              )}
+              {feature.needsImage ? (
+                <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-cyan-300 bg-cyan-500/15 border border-cyan-500/30">
+                  <Camera size={10} /> Photo / Video
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-purple-300 bg-purple-500/15 border border-purple-500/30">
+                  <Zap size={10} /> Quick Intake
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3 mt-1">
+            <div
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border shadow-lg transition-transform duration-300 group-hover:scale-105"
+              style={{
+                background: `radial-gradient(circle at 30% 30%, ${accent}33, #0a0a14)`,
+                borderColor: `${accent}55`,
+                boxShadow: `0 8px 24px -4px ${accent}40`,
+              }}
+            >
+              <Icon size={20} style={{ color: accent }} />
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <span className="font-mono text-[9px] font-extrabold tracking-[0.2em] uppercase" style={{ color: accent }}>
+                {feature.tagline}
+              </span>
+              <h3 className="font-serif text-base font-bold text-white tracking-wide truncate mt-0.5">
+                {title}
+              </h3>
+            </div>
+          </div>
+
+          <p className="text-xs leading-relaxed text-white/70 font-normal line-clamp-2 mt-0.5">
+            {feature.description}
+          </p>
+
+          {templates.length > 0 && (
+            <div className="mt-auto pt-2 border-t border-white/10">
+              <span className="block font-mono text-[8px] font-bold tracking-[0.2em] text-white/40 uppercase mb-1.5">
+                ✦ STARTER TEMPLATES
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {templates.slice(0, 2).map((tpl) => (
+                  <button
+                    key={tpl.id}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onSelectTemplate) {
+                        onSelectTemplate(feature.id, tpl);
+                      } else if (onClick) {
+                        onClick();
+                      }
+                    }}
+                    className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[9px] font-medium text-white/80 transition hover:border-cyan-400/60 hover:bg-cyan-500/15 hover:text-cyan-200"
+                  >
+                    <Sparkles size={9} style={{ color: accent }} />
+                    <span className="truncate max-w-[130px]">{tpl.title}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between pt-2 border-t border-white/10 mt-1">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-white/70 group-hover:text-white transition-colors">
+              Launch Diagnostic
+            </span>
+            <span
+              className="flex h-7 w-7 items-center justify-center rounded-full text-black transition-all duration-300 group-hover:scale-110"
+              style={{ backgroundColor: accent }}
+            >
+              <ArrowRight size={14} strokeWidth={2.5} />
+            </span>
+          </div>
+        </div>
+      </motion.div>
 
       <style>{`
         .nfc-root { perspective: 1400px; height: 100%; }
         .nfc-card {
-          position: relative; width: 100%; height: 100%; min-height: 300px;
-          border: none; border-radius: 28px; background: transparent; cursor: pointer;
-          text-align: left; transform-style: preserve-3d; will-change: transform;
-          outline: none; transition: box-shadow 0.5s ease;
+          position: relative; width: 100%; height: 100%; min-height: 290px;
+          border-radius: 24px; cursor: pointer; text-align: left;
+          transform-style: preserve-3d; will-change: transform; outline: none;
+          transition: box-shadow 0.4s ease, transform 0.4s ease;
         }
-        .nfc-card:hover { box-shadow: 0 30px 90px rgba(26, 20, 16, 0.18), 0 20px 50px rgba(26, 20, 16, 0.08); }
+        .nfc-card:hover {
+          box-shadow: 0 20px 60px -10px var(--nfc-accent), 0 0 30px rgba(0, 0, 0, 0.8);
+        }
         .nfc-border {
           position: absolute; inset: 0; border-radius: inherit; padding: 1.5px;
-          background: linear-gradient(140deg, rgba(255,255,255,0.85), rgba(255,255,255,0.1) 25%, var(--nfc-accent) 48%, rgba(255,255,255,0.1) 72%, rgba(255,255,255,0.7));
-          background-size: 260% 260%;
+          background: linear-gradient(135deg, rgba(255,255,255,0.4), var(--nfc-accent) 45%, rgba(255,255,255,0.1) 80%);
           -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
           -webkit-mask-composite: xor;
           mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
           mask-composite: exclude;
-          animation: nfc-border-flow 7s ease infinite;
-          pointer-events: none; z-index: 0;
-          transition: filter 0.5s ease, opacity 0.5s ease;
+          pointer-events: none; z-index: 1; transition: opacity 0.4s ease;
         }
-        .nfc-card:hover .nfc-border { filter: saturate(1.75) brightness(1.35); }
+        .nfc-card:hover .nfc-border { opacity: 1; filter: brightness(1.3); }
         .nfc-spotlight {
           position: absolute; inset: 0; border-radius: inherit;
-          background: radial-gradient(520px circle at var(--nfc-x, 50%) var(--nfc-y, 50%), color-mix(in srgb, var(--nfc-accent) 22%, transparent), transparent 46%);
-          opacity: 0; pointer-events: none; z-index: 1; transition: opacity 0.45s ease;
+          background: radial-gradient(400px circle at var(--nfc-x, 50%) var(--nfc-y, 50%), color-mix(in srgb, var(--nfc-accent) 25%, transparent), transparent 60%);
+          opacity: 0; pointer-events: none; z-index: 2; transition: opacity 0.3s ease;
         }
         .nfc-card:hover .nfc-spotlight { opacity: 1; }
-        .nfc-shine {
-          position: absolute; top: -130%; left: -120%; width: 60%; height: 340%;
-          background: linear-gradient(105deg, transparent, rgba(255,255,255,0.75), transparent);
-          transform: rotate(15deg); z-index: 4; pointer-events: none; opacity: 0;
-          transition: opacity 0.35s ease, transform 1s cubic-bezier(0.22,1,0.36,1);
-        }
-        .nfc-card:hover .nfc-shine { opacity: 0.5; transform: translateX(280%) rotate(15deg); }
         .nfc-content {
-          position: relative; z-index: 3; display: flex; flex-direction: column; gap: 14px; height: 100%;
-          border-radius: inherit; padding: 22px;
-          background: linear-gradient(165deg, rgba(255,255,255,0.92), rgba(255,255,255,0.7));
-          backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); overflow: hidden;
+          position: relative; z-index: 3; display: flex; flex-direction: column; gap: 10px; height: 100%;
+          border-radius: inherit; padding: 18px;
+          background: linear-gradient(165deg, rgba(16, 16, 26, 0.88), rgba(8, 8, 14, 0.94));
+          backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); overflow: hidden;
         }
-        .nfc-topline, .nfc-title-row, .nfc-highlights, .nfc-footer { display: flex; align-items: center; }
-        .nfc-topline { justify-content: space-between; }
-        .nfc-index { font-size: 11px; letter-spacing: 0.16em; font-weight: 800; color: rgba(26,20,16,0.38); text-transform: uppercase; }
-        .nfc-featured { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #d97706; background: rgba(251,191,36,0.14); padding: 4px 8px; border-radius: 999px; }
-        .nfc-icon-wrap { position: relative; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 17px; background: linear-gradient(140deg, color-mix(in srgb, var(--nfc-accent) 24%, transparent), color-mix(in srgb, var(--nfc-accent) 7%, #ffffff)); box-shadow: 0 14px 34px color-mix(in srgb, var(--nfc-accent) 26%, transparent), inset 0 1px 0 rgba(255,255,255,0.55); }
-        .nfc-icon-ring { position: absolute; inset: -6px; border-radius: 21px; border: 1px solid color-mix(in srgb, var(--nfc-accent) 32%, transparent); animation: nfc-ring-pulse 3s ease infinite; }
-        .nfc-icon { color: color-mix(in srgb, var(--nfc-accent) 86%, #1a1410); }
-        .nfc-title-row { flex-direction: column; align-items: flex-start; gap: 5px; }
-        .nfc-tagline { font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--nfc-accent); }
-        .nfc-title { font-size: 21px; line-height: 1.2; font-weight: 800; color: #1a1410; letter-spacing: -0.02em; }
-        .nfc-desc { font-size: 13.5px; line-height: 1.55; color: rgba(26,20,16,0.58); font-weight: 500; }
-        .nfc-highlights { flex-wrap: wrap; gap: 6px; margin-top: auto; }
-        .nfc-highlight { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 650; color: rgba(26,20,16,0.72); background: rgba(26,20,16,0.04); border: 1px solid rgba(26,20,16,0.06); padding: 5px 8px; border-radius: 999px; }
-        .nfc-highlight svg { color: var(--nfc-accent); }
-        .nfc-footer { justify-content: space-between; padding-top: 6px; border-top: 1px solid rgba(26,20,16,0.06); }
-        .nfc-cta { font-size: 13px; font-weight: 800; color: #1a1410; transition: color 0.3s ease; }
-        .nfc-card:hover .nfc-cta { color: var(--nfc-accent); }
-        .nfc-arrow { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 999px; background: #1a1410; color: #fff; transition: transform 0.35s ease, background 0.35s ease; }
-        .nfc-card:hover .nfc-arrow { background: var(--nfc-accent); transform: translateX(4px); }
-        @keyframes nfc-border-flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes nfc-ring-pulse { 0%,100% { opacity: 0.28; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.06); } }
       `}</style>
     </motion.div>
   );

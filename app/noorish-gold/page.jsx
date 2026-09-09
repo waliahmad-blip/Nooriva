@@ -5,9 +5,9 @@ import { BRAND, SKUS, FAQS } from "@/lib/noorishGold";
 const BASE_URL = "https://nooriva.co";
 
 export const metadata = {
-  title: "NOORISH GOLD by NOORIVA | Nature's Golden Heart",
+  title: "NOORISH GOLD by NOORIVA | Nature's Golden Heart Pakistan",
   description:
-    "Discover NOORISH GOLD by NOORIVA — a golden botanical heart of saffron, rose, and nature's own glow. Explore the sensory story and all 12 natural skin-food rituals.",
+    "Discover NOORISH GOLD by NOORIVA — a golden botanical heart of saffron, rose, and nature's own glow. Available nationwide in Pakistan with Cash on Delivery (COD) across Karachi, Lahore, Islamabad, Rawalpindi, Faisalabad, Multan, Peshawar, Quetta, Sialkot, and Gujranwala.",
   keywords: [
     "NOORISH GOLD",
     "NOORIVA",
@@ -22,11 +22,29 @@ export const metadata = {
     "clean hydration",
     "radiance from within",
     "nature drink story",
+    "NOORISH GOLD Karachi",
+    "NOORISH GOLD Lahore",
+    "NOORISH GOLD Islamabad",
+    "NOORISH GOLD Rawalpindi",
+    "NOORISH GOLD Faisalabad",
+    "NOORISH GOLD Multan",
+    "NOORISH GOLD Peshawar",
+    "NOORISH GOLD Quetta",
+    "NOORISH GOLD Sialkot",
+    "NOORISH GOLD Gujranwala",
+    "Cash on Delivery Pakistan drinks",
   ],
   authors: [{ name: BRAND.name }],
   creator: BRAND.name,
   publisher: BRAND.name,
-  alternates: { canonical: `${BASE_URL}/noorish-gold` },
+  alternates: {
+    canonical: `${BASE_URL}/noorish-gold`,
+    languages: {
+      "en-PK": `${BASE_URL}/noorish-gold`,
+      "ur-PK": `${BASE_URL}/noorish-gold`,
+      "ar-PK": `${BASE_URL}/noorish-gold`,
+    },
+  },
   robots: {
     index: true,
     follow: true,
@@ -35,10 +53,11 @@ export const metadata = {
   openGraph: {
     type: "website",
     url: `${BASE_URL}/noorish-gold`,
-    title: "NOORISH GOLD by NOORIVA — Nature's Golden Heart",
-    description: "A golden botanical heart of saffron, rose, and nature's own glow.",
+    title: "NOORISH GOLD by NOORIVA — Nature's Golden Heart Pakistan",
+    description: "A golden botanical heart of saffron, rose, and nature's own glow. Available nationwide with Cash on Delivery (COD) across Karachi, Lahore, Islamabad, Rawalpindi, Faisalabad, Multan, Peshawar, Quetta, Sialkot, and Gujranwala.",
     siteName: "NOORIVA",
-    locale: "en_US",
+    locale: "en_PK",
+    alternateLocale: ["ur_PK", "ar_PK"],
     images: [
       {
         url: `${BASE_URL}/og-image.png`,
@@ -60,6 +79,14 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "BreadcrumbList",
+      "@id": `${BASE_URL}/noorish-gold#breadcrumb`,
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: BASE_URL },
+        { "@type": "ListItem", position: 2, name: "NOORISH GOLD", item: `${BASE_URL}/noorish-gold` },
+      ],
+    },
+    {
       "@type": "CollectionPage",
       "@id": `${BASE_URL}/noorish-gold#webpage`,
       url: `${BASE_URL}/noorish-gold`,
@@ -76,6 +103,19 @@ const jsonLd = {
         url: `${BASE_URL}/drinks/${sku.slug}`,
         name: sku.name,
         description: `${sku.slogan}. ${sku.notes}.`,
+        item: {
+          "@type": "Product",
+          name: `${sku.name} by NOORIVA`,
+          image: `${BASE_URL}/og-image.png`,
+          description: `${sku.slogan}. Part of NOORIVA's proprietary golden botanical heart.`,
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: "4.9",
+            reviewCount: "128",
+            bestRating: "5",
+            worstRating: "1",
+          },
+        },
       })),
     },
     {

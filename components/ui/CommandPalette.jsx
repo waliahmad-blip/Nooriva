@@ -1,18 +1,22 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, Sparkles, Home, MessageCircle, User, Zap, ChefHat, Moon,
   CloudSun, ScanLine, Heart, Pill, Bed, Dumbbell, GlassWater, Stethoscope,
-  Languages, Shield, ClipboardList
+  Languages, Shield, ClipboardList, Crown, Users, Leaf
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const NAV_ACTIONS = [
   { id: "home", name: "Home", group: "Navigate", icon: Home, href: "/" },
+  { id: "gold", name: "NOORISH GOLD", group: "Navigate", icon: Crown, href: "/noorish-gold" },
+  { id: "story", name: "Our Origin", group: "Navigate", icon: Sparkles, href: "/story" },
+  { id: "club", name: "Club", group: "Navigate", icon: Users, href: "/club" },
+  { id: "ingredients", name: "Botanicals", group: "Navigate", icon: Leaf, href: "/ingredients" },
+  { id: "chat", name: "Noorix AI", group: "Navigate", icon: MessageCircle, href: "/noorix/chat" },
   { id: "account", name: "Personal Dashboard", group: "Navigate", icon: User, href: "/account" },
-  { id: "chat", name: "Noorix Chat", group: "Navigate", icon: MessageCircle, href: "/noorix/chat" },
   { id: "hub", name: "AI API Hub", group: "Navigate", icon: Zap, href: "/api-hub" },
 ];
 

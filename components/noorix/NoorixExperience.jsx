@@ -259,7 +259,7 @@ export default function NoorixExperience() {
           transition={{ delay: 0.85, duration: 0.6 }}
           className="mt-3 max-w-md text-sm leading-relaxed text-white/55"
         >
-          49 powerful AI features. Skin analysis, nutrition coaching, sleep
+          54 powerful AI features. Skin analysis, nutrition coaching, sleep
           optimization, and more. No typing required.
         </motion.p>
 

@@ -114,6 +114,13 @@ export default function CheckoutOverlay() {
       setFinalTotal(total);
       setStage(3);
       clearCart();
+
+      // Persist order in local storage for guest/account history sync
+      try {
+        const stored = JSON.parse(localStorage.getItem("nooriva-recent-orders") || "[]");
+        const updated = [data.orderId, ...stored.filter((id) => id !== data.orderId)].slice(0, 20);
+        localStorage.setItem("nooriva-recent-orders", JSON.stringify(updated));
+      } catch (_) {}
     } catch (e) {
       setError(t("checkout.required"));
     } finally {

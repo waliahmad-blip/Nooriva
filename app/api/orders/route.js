@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { auth } from "@/lib/auth";
 
 /**
  * NOORIVA order pipeline (production-grade, zero hard dependency):
@@ -34,6 +35,28 @@ async function saveToSupabase(order) {
   }
 }
 
+async function fetchFromSupabase() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_KEY;
+  if (!url || !key) return [];
+  try {
+    const res = await fetch(`${url.replace(/\/$/, "")}/rest/v1/orders?select=*&order=created_at.desc`, {
+      method: "GET",
+      headers: {
+        apikey: key,
+        Authorization: `Bearer ${key}`,
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+}
+
 async function saveToSheets(order) {
   const hook = process.env.GOOGLE_SHEETS_WEBHOOK;
   if (!hook) return false;
@@ -49,20 +72,26 @@ async function saveToSheets(order) {
   }
 }
 
+function getLocalOrders() {
+  try {
+    const dir = path.join(process.cwd(), "data");
+    const file = path.join(dir, "orders.json");
+    if (!fs.existsSync(file)) return [];
+    const content = fs.readFileSync(file, "utf-8");
+    const list = JSON.parse(content);
+    return Array.isArray(list) ? list : [];
+  } catch {
+    return [];
+  }
+}
+
 function saveToLocalFile(order) {
   try {
     const dir = path.join(process.cwd(), "data");
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     const file = path.join(dir, "orders.json");
-    let list = [];
-    if (fs.existsSync(file)) {
-      try {
-        list = JSON.parse(fs.readFileSync(file, "utf-8"));
-      } catch {
-        list = [];
-      }
-    }
-    list.push(order);
+    let list = getLocalOrders();
+    list = [order, ...list.filter((o) => o?.order_id !== order.order_id)].slice(0, 500);
     fs.writeFileSync(file, JSON.stringify(list, null, 2), "utf-8");
     return true;
   } catch {
@@ -70,8 +99,69 @@ function saveToLocalFile(order) {
   }
 }
 
+export async function GET(request) {
+  try {
+    let session = null;
+    try {
+      session = await auth();
+    } catch (_) {}
+
+    const { searchParams } = new URL(request.url);
+    const queryEmail = searchParams.get("email");
+    const queryPhone = searchParams.get("phone");
+    const queryOrderId = searchParams.get("orderId");
+    const queryIds = searchParams.get("ids");
+
+    const localOrders = getLocalOrders();
+    const remoteOrders = await fetchFromSupabase();
+
+    const orderMap = new Map();
+    for (const ord of [...remoteOrders, ...localOrders]) {
+      if (ord && ord.order_id) {
+        orderMap.set(ord.order_id, ord);
+      }
+    }
+    const allOrders = Array.from(orderMap.values());
+
+    const sessionUserId = session?.user?.id;
+    const sessionEmail = session?.user?.email?.toLowerCase();
+    const sessionPhone = session?.user?.phone;
+
+    let matched = allOrders;
+
+    if (sessionUserId || sessionEmail || sessionPhone || queryEmail || queryPhone || queryOrderId || queryIds) {
+      const allowedIds = queryIds ? queryIds.split(",").map((s) => s.trim().toUpperCase()) : [];
+
+      matched = allOrders.filter((ord) => {
+        if (queryOrderId && ord.order_id?.toUpperCase() === queryOrderId.toUpperCase()) return true;
+        if (allowedIds.length > 0 && allowedIds.includes(ord.order_id?.toUpperCase())) return true;
+        if (sessionUserId && ord.user_id === sessionUserId) return true;
+        if (sessionEmail && ord.user_email?.toLowerCase() === sessionEmail) return true;
+        if (queryEmail && ord.user_email?.toLowerCase() === queryEmail.toLowerCase()) return true;
+        if (sessionPhone && ord.phone === sessionPhone) return true;
+        if (queryPhone && ord.phone === queryPhone) return true;
+        return false;
+      });
+    }
+
+    matched.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+
+    return NextResponse.json({
+      ok: true,
+      orders: matched,
+    });
+  } catch (error) {
+    return NextResponse.json({ ok: false, error: "Failed to fetch orders" }, { status: 500 });
+  }
+}
+
 export async function POST(request) {
   try {
+    let session = null;
+    try {
+      session = await auth();
+    } catch (_) {}
+
     const body = await request.json();
     const { form, items, subtotal, delivery, total, payment, language, eta } = body;
 
@@ -102,6 +192,9 @@ export async function POST(request) {
     const order = {
       order_id: orderId,
       created_at: new Date().toISOString(),
+      user_id: session?.user?.id || null,
+      user_email: session?.user?.email || (form.email ? String(form.email).slice(0, 120) : null),
+      status: "Processing",
       name: String(form.name).slice(0, 120),
       phone: String(form.phone).slice(0, 24),
       address: String(form.address).slice(0, 400),
@@ -127,6 +220,7 @@ export async function POST(request) {
       ok: true,
       orderId,
       eta: order.eta,
+      order,
     });
   } catch (error) {
     return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 500 });

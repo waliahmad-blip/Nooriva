@@ -1,5 +1,11 @@
-'use client';
+﻿'use client';
+import BackToHome from "@/components/ui/BackToHome";
+import ScrollToTop from "@/components/ui/ScrollToTop";
+
 import { useState, useMemo } from "react";
+import dynamic from "next/dynamic";
+
+const QuantumBotanicalMatrix = dynamic(() => import("@/components/three/QuantumBotanicalMatrix"), { ssr: false });
 import Link from "next/link";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import { ChevronDown, ArrowRight, Sparkles, Crown } from "lucide-react";
@@ -14,7 +20,7 @@ import {
   FAQS,
 } from "@/lib/noorishGold";
 
-const GOLD_COLORS = ["#E7D3A8", "#C79A44", "#8E6B3F", "#F3E9D8", "#D9B7A8"];
+const CYBER_COLORS = ["#a78bfa", "#22d3ee", "#ff8fb2", "#5eead4", "#e2e8f0"];
 const orderMessage = encodeURIComponent("Hi NOORIVA! I want to learn more about NOORISH GOLD and order it in Pakistan.");
 const orderUrl = `https://wa.me/${COMMERCE.whatsappNumber}?text=${orderMessage}`;
 
@@ -24,45 +30,54 @@ function ScrollProgress() {
   return (
     <motion.div
       className="fixed top-0 left-0 right-0 z-50 h-[3px] origin-left"
-      style={{ scaleX, background: "linear-gradient(90deg, #E7D3A8, #C79A44, #8E6B3F, #E7D3A8)" }}
+      style={{ scaleX, background: "linear-gradient(90deg, #a78bfa, #22d3ee, #ff8fb2, #5eead4)" }}
     />
   );
 }
 
 function AuroraField() {
-  const blobs = useMemo(
-    () => GOLD_COLORS.slice(0, 4).map((color, i) => ({
-      color, startX: i % 2 === 0 ? -15 : 15, startY: i * 8 - 5,
-      duration: 14 + i * 4, delay: i * 1.5,
-    })), []
-  );
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-      {blobs.map((b, i) => (
-        <motion.div key={i} className="absolute rounded-full opacity-20 blur-[60px]"
-          style={{ background: `radial-gradient(circle, ${b.color} 0%, transparent 70%)`, width: "55vmax", height: "55vmax" }}
-          initial={{ x: `${b.startX}vw`, y: `${b.startY}vh` }}
-          animate={{ x: [`${b.startX}vw`, `${b.startX * -0.5}vw`, `${b.startX}vw`], y: [`${b.startY}vh`, `${b.startY + 8}vh`, `${b.startY}vh`] }}
-          transition={{ duration: b.duration, repeat: Infinity, delay: b.delay, ease: "easeInOut" }}
-        />
-      ))}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "radial-gradient(circle at 50% 15%, rgba(34, 211, 238, 0.05) 0%, transparent 65%)",
+        }}
+      />
     </div>
   );
 }
 
-function FloatingParticles({ colors = GOLD_COLORS }) {
-  const particles = useMemo(() => Array.from({ length: 14 }).map((_, i) => ({
-    id: i, color: colors[i % colors.length], size: 3 + Math.random() * 7,
-    left: Math.random() * 100, top: Math.random() * 100, drift: (Math.random() - 0.5) * 40,
-    duration: 6 + Math.random() * 8, delay: Math.random() * 4,
-  })), [colors]);
+function FloatingParticles() {
+  const particles = useMemo(() => [
+    { id: 1, left: 20, top: 25, size: 2 },
+    { id: 2, left: 80, top: 35, size: 2.5 },
+    { id: 3, left: 35, top: 70, size: 2 },
+    { id: 4, left: 65, top: 80, size: 2 },
+  ], []);
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
       {particles.map((p) => (
-        <motion.div key={p.id} className="absolute rounded-full"
-          style={{ background: p.color, width: p.size, height: p.size, left: `${p.left}%`, top: `${p.top}%`, filter: "blur(1px)" }}
-          animate={{ y: [0, -30 - Math.random() * 60, 0], x: [0, p.drift, 0], opacity: [0, 0.5, 0] }}
-          transition={{ duration: p.duration, repeat: Infinity, delay: p.delay, ease: "easeInOut" }}
+        <motion.div
+          key={p.id}
+          className="absolute rounded-full bg-cyan-400"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: `${p.left}%`,
+            top: `${p.top}%`,
+            filter: "blur(0.5px)",
+          }}
+          animate={{
+            y: [0, -10, 0],
+            opacity: [0.15, 0.4, 0.15],
+          }}
+          transition={{
+            duration: 8 + p.id * 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
         />
       ))}
     </div>
@@ -122,14 +137,16 @@ function FaqItem({ faq, index }) {
 
 export default function NoorishGoldShowcase() {
   return (
-    <main className="relative min-h-screen overflow-hidden">
+    <main className="relative min-h-screen overflow-x-clip pb-36">
+      <BackToHome className="fixed top-20 left-4 sm:left-6 z-30" />
+      <ScrollToTop />
       <ScrollProgress />
       <AuroraField />
 
       <section className="section-shell relative flex min-h-[90vh] items-center justify-center py-24">
         <FloatingParticles />
         <motion.div variants={staggerContainer} initial="hidden" animate="show" className="glass relative z-10 overflow-hidden rounded-[2.5rem] border border-ink/10 bg-white/75 p-8 shadow-lg backdrop-blur-xl md:p-14">
-          <motion.div className="pointer-events-none absolute inset-0 rounded-[2.5rem] opacity-50" style={{ background: "linear-gradient(135deg, #E7D3A815, #C79A4415, transparent)" }} animate={{ opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} />
+          <motion.div className="pointer-events-none absolute inset-0 rounded-[2.5rem] opacity-50" style={{ background: "linear-gradient(135deg, #a78bfa15, #22d3ee15, transparent)" }} animate={{ opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} />
           <div className="relative mx-auto max-w-4xl text-center">
             <motion.div variants={revealUp} className="mb-5 flex flex-wrap justify-center gap-2">
               {HERO.badges.map((badge) => (
@@ -149,7 +166,19 @@ export default function NoorishGoldShowcase() {
               <Link href="/#flavours" className="btn-secondary">View 12 Rituals</Link>
               <Link href="/ingredients" className="btn-secondary">Botanical Story</Link>
             </motion.div>
-            <motion.div variants={revealUp} className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            
+            {/* 3D Quantum Botanical Matrix with 7 Orbiting Nodes */}
+            <div className="mt-10 rounded-[2.5rem] border border-cyan-400/20 bg-gradient-to-b from-cyan-500/5 to-purple-500/5 p-4 shadow-xl backdrop-blur-md">
+              <div className="mb-2 text-center text-[10px] font-mono tracking-widest text-cyan-600 uppercase">
+                ✦ 3D QUANTUM BOTANICAL MATRIX // 7 INTERACTIVE ORBITING NODES ✦
+              </div>
+              <QuantumBotanicalMatrix />
+              <div className="text-center text-[10px] font-mono text-ink/40">
+                HOVER OVER ANY BIO-NODE TO INSPECT BIOCHEMICAL PATHWAY
+              </div>
+            </div>
+  
+<motion.div variants={revealUp} className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {[{ label: "Nature", value: "100% Botanical" }, { label: "Heart", value: "One Golden Base" }, { label: "Ritual", value: "Precious 150ml" }, { label: "Feel", value: "Deep Amber Glow" }].map((item) => (
                 <div key={item.label} className="rounded-[1.75rem] border border-ink/10 bg-white/80 p-5 text-left">
                   <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-ink/40">{item.label}</div>
@@ -169,7 +198,7 @@ export default function NoorishGoldShowcase() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {PILLARS.map((p, i) => (
             <motion.div key={p.title} initial={{ opacity: 0, y: 40, scale: 0.95 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, margin: "-40px" }} transition={{ duration: 0.5, delay: i * 0.08 }} className="glass h-full rounded-[2rem] border border-ink/10 bg-white/75 p-7 backdrop-blur-md transition hover:-translate-y-1 hover:shadow-lg">
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#E7D3A8] to-[#C79A44] text-white"><Crown size={18} /></div>
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#a78bfa] to-[#22d3ee] text-white"><Crown size={18} /></div>
               <h3 className="text-lg font-semibold text-ink">{p.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-ink/65">{p.description}</p>
             </motion.div>
@@ -183,10 +212,10 @@ export default function NoorishGoldShowcase() {
           <p className="mt-4 text-sm leading-relaxed text-ink/60 md:text-base">We don&apos;t share the recipe — we share the feeling. Six botanicals, one golden heart, and a ritual that feels like nature itself.</p>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="glass rounded-[2.5rem] border border-ink/10 bg-white/75 p-8 text-center shadow-sm backdrop-blur md:p-12">
-          <Sparkles className="mx-auto text-[#C79A44]" size={28} />
+          <Sparkles className="mx-auto text-[#22d3ee]" size={28} />
           <h3 className="display-heading mt-4 text-3xl md:text-4xl">One Golden Heart</h3>
           <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-ink/60 md:text-base">Every NOORIVA ritual is built on the same golden botanical heart — a signature blend that gives each pouch its unmistakable warmth, body, and glow. The exact recipe stays ours. The feeling is yours.</p>
-          <Link href="/ingredients" className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#5eead4] to-[#E7D3A8] px-7 py-3.5 text-sm font-bold text-ink transition hover:scale-105">
+          <Link href="/ingredients" className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#5eead4] to-[#a78bfa] px-7 py-3.5 text-sm font-bold text-ink transition hover:scale-105">
             Explore the Botanical Story <ArrowRight size={16} />
           </Link>
         </motion.div>
@@ -215,6 +244,49 @@ export default function NoorishGoldShowcase() {
       
 
       
+
+      {/* ═══ BIOTECH EXTRACTION & THERMAL STABILITY HUD ═══ */}
+      <section className="section-shell mt-20">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mx-auto mb-10 max-w-3xl text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white/70 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#22d3ee] backdrop-blur-md">
+            <Sparkles size={14} /> Industrial Telemetry
+          </div>
+          <h2 className="display-heading text-4xl md:text-5xl mt-4">Thermal & Cellular Architecture</h2>
+          <p className="mt-4 text-sm leading-relaxed text-ink/60 md:text-base">
+            Engineered for high-temperature shelf stability without degrading heat-sensitive botanicals.
+          </p>
+        </motion.div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="glass rounded-[2rem] p-6 text-center border border-ink/10 bg-white/75 shadow-sm">
+            <span className="text-3xl">🔥</span>
+            <div className="mt-3 text-2xl font-black text-ink">80–85°C</div>
+            <p className="text-xs font-bold uppercase tracking-wider text-[#22d3ee] mt-1">Hot-Fill Compatible</p>
+            <p className="text-xs text-ink/60 mt-2">Short-duration pasteurization protects saffron crocin and rose volatiles.</p>
+          </div>
+
+          <div className="glass rounded-[2rem] p-6 text-center border border-ink/10 bg-white/75 shadow-sm">
+            <span className="text-3xl">💧</span>
+            <div className="mt-3 text-2xl font-black text-ink">0% Sediment</div>
+            <p className="text-xs font-bold uppercase tracking-wider text-[#22d3ee] mt-1">100% Water-Soluble</p>
+            <p className="text-xs text-ink/60 mt-2">Clarified amla and date syrup prevent gritty sludge at pouch bottom.</p>
+          </div>
+
+          <div className="glass rounded-[2rem] p-6 text-center border border-ink/10 bg-white/75 shadow-sm">
+            <span className="text-3xl">⏳</span>
+            <div className="mt-3 text-2xl font-black text-ink">12 Months</div>
+            <p className="text-xs font-bold uppercase tracking-wider text-[#22d3ee] mt-1">Ambient Stability</p>
+            <p className="text-xs text-ink/60 mt-2">Zero refrigeration required before opening; multi-layer light barrier.</p>
+          </div>
+
+          <div className="glass rounded-[2rem] p-6 text-center border border-ink/10 bg-white/75 shadow-sm">
+            <span className="text-3xl">🌿</span>
+            <div className="mt-3 text-2xl font-black text-ink">Golden Ratio</div>
+            <p className="text-xs font-bold uppercase tracking-wider text-[#a78bfa] mt-1">Signature Core</p>
+            <p className="text-xs text-ink/60 mt-2">Added at Phase C to every 150ml pouch for the signature brand undertone.</p>
+          </div>
+        </div>
+      </section>
 
       <section id="rituals" className="section-shell mt-20">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mx-auto mb-10 max-w-3xl text-center">

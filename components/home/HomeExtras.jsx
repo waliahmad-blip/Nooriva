@@ -25,7 +25,7 @@ const RITUALS = [
   { name: 'ROSE HALO', slug: 'rose-halo', color: '#ff8fb2', time: 'Morning', note: 'Wake up luminous' },
   { name: 'PEACH DUSK', slug: 'peach-dusk', color: '#fbbf24', time: 'Evening', note: 'Sleep beautiful' },
   { name: 'MANGO BLAZE', slug: 'mango-blaze', color: '#f59e0b', time: 'Midday', note: 'Burn bright' },
-  { name: 'SAFFRON MIST', slug: 'saffron-mist', color: '#E7D3A8', time: 'Night', note: 'Repair in gold' },
+  { name: 'SAFFRON MIST', slug: 'saffron-mist', color: '#a78bfa', time: 'Night', note: 'Repair in gold' },
   { name: 'BERRY BLOOM', slug: 'berry-bloom', color: '#f472b6', time: '3PM', note: 'Still glowing' },
   { name: 'COCO GLOW', slug: 'coco-glow', color: '#5eead4', time: 'Recovery', note: 'Reset your light' },
   { name: 'CHERRY VEIL', slug: 'cherry-veil', color: '#dc2626', time: 'Night', note: 'Drift into glow' },
@@ -109,12 +109,12 @@ export function RitualOfDay() {
       >
         <GlowPouch color={ritual.color} size={150} />
         <div className="max-w-xl text-center md:text-left">
-          <p className="text-xs font-black uppercase tracking-[0.3em] text-[#C79A44]">{ritual.time}</p>
+          <p className="text-xs font-black uppercase tracking-[0.3em] text-[#22d3ee]">{ritual.time}</p>
           <h3 className="mt-2 text-4xl font-extrabold">{ritual.name}</h3>
           <p className="mt-3 text-lg italic text-ink/70">{ritual.note}</p>
           <Link
             href={`/drinks/${ritual.slug}`}
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#C79A44] px-6 py-3 text-sm font-bold text-ink transition hover:brightness-110"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#22d3ee] px-6 py-3 text-sm font-bold text-ink transition hover:brightness-110"
           >
             Add today&apos;s ritual <ArrowRight size={16} />
           </Link>
@@ -134,7 +134,7 @@ export function QuizTeaser() {
         transition={{ duration: 0.7 }}
         className="glass rounded-[2.5rem] p-8 text-center md:p-12"
       >
-        <Sparkles className="mx-auto text-[#C79A44]" size={32} />
+        <Sparkles className="mx-auto text-[#22d3ee]" size={32} />
         <h2 className="display-heading mt-4 text-3xl md:text-4xl">Not sure where to begin?</h2>
         <p className="mx-auto mt-3 max-w-xl text-ink/65">
           Let nature decide. Three little questions about your goal, taste, and pace — and
@@ -199,7 +199,7 @@ export function WeatherStrip() {
     <section className="section-shell py-12">
       <div className="glass rounded-[2rem] p-6">
         <div className="flex items-center gap-2">
-          <CloudSun size={20} className="text-[#C79A44]" />
+          <CloudSun size={20} className="text-[#22d3ee]" />
           <h3 className="text-lg font-bold">Weather Glow</h3>
         </div>
         {weather ? (
@@ -322,7 +322,7 @@ export function AmbassadorIngredientsCTAs() {
         className="group flex items-center justify-between rounded-[2rem] border border-ink/10 bg-white/60 p-6 backdrop-blur-md transition hover:scale-[1.01]"
       >
         <div>
-          <Crown size={20} className="text-[#C79A44]" />
+          <Crown size={20} className="text-[#22d3ee]" />
           <h3 className="mt-2 text-xl font-bold">Ambassador Hub</h3>
           <p className="text-sm text-ink/60">Grow with NOORIVA, earn rewards.</p>
         </div>
@@ -335,8 +335,8 @@ export function AmbassadorIngredientsCTAs() {
       >
         <div>
           <Leaf size={20} className="text-[#5eead4]" />
-          <h3 className="mt-2 text-xl font-bold">Inside Nature&apos;s Golden Heart</h3>
-          <p className="text-sm text-ink/60">The botanical story, not the recipe.</p>
+          <h3 className="mt-2 text-xl font-bold">The Botanical Heart</h3>
+          <p className="text-sm text-ink/60">Six botanicals, one golden heart — the feeling, not the recipe.</p>
         </div>
         <ArrowRight className="text-ink/40 transition group-hover:translate-x-1" size={20} />
       </Link>

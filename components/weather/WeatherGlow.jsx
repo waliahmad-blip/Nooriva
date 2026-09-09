@@ -1,7 +1,10 @@
-'use client';
+﻿'use client';
 import BackToHome from "@/components/ui/BackToHome";
 
 import { useEffect, useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
+
+const AtmosphericSkySphere = dynamic(() => import('@/components/three/AtmosphericSkySphere'), { ssr: false });
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
@@ -17,7 +20,9 @@ import {
   ArrowRight,
   Sparkles,
   MapPin,
+  ShoppingBag,
 } from 'lucide-react';
+import { useStore } from '@/lib/store';
 import ScrollToTop from '@/components/ui/ScrollToTop';
 
 /* ─────────────────────────────────────────────
@@ -36,7 +41,7 @@ const RITUAL_MATCH = [
   { min: 32, ritual: 'ALOE TIDE', slug: 'aloe-tide', note: 'Cooling barrier for hot days', color: '#22d3ee' },
   { min: 26, ritual: 'COCO GLOW', slug: 'coco-glow', note: 'Reset your light in warm air', color: '#5eead4' },
   { min: 20, ritual: 'ROSE HALO', slug: 'rose-halo', note: 'Soft glow for easy weather', color: '#ff8fb2' },
-  { min: 12, ritual: 'SAFFRON MIST', slug: 'saffron-mist', note: 'Golden comfort for cool air', color: '#E7D3A8' },
+  { min: 12, ritual: 'SAFFRON MIST', slug: 'saffron-mist', note: 'Golden comfort for cool air', color: '#a78bfa' },
   { min: -99, ritual: 'BAMBOO SILK', slug: 'bamboo-silk', note: 'Warm reflect for crisp days', color: '#d6d3d1' },
 ];
 
@@ -68,6 +73,7 @@ function getRitual(temp) {
 }
 
 export default function WeatherGlow() {
+  const addToCart = useStore((s) => s.addToCart);
   const reduced = useReducedMotion();
   const [city, setCity] = useState(CITIES[0]);
   const [weather, setWeather] = useState(null);
@@ -128,8 +134,8 @@ export default function WeatherGlow() {
   }
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#ffffff] text-ink">
-      <BackToHome className="fixed top-6 left-6 z-50" />
+    <div className="relative min-h-screen w-full overflow-x-clip bg-[#ffffff] text-ink pb-36">
+      <BackToHome className="fixed top-20 left-4 sm:left-6 z-30" />
       <div className="relative z-20 mx-auto w-full max-w-6xl px-4 pt-4 md:px-8">
       </div>
       {/* Animated sky backdrop */}
@@ -154,7 +160,7 @@ export default function WeatherGlow() {
         }}
       />
 
-      <main className="relative z-10 mx-auto max-w-6xl px-4 py-10 md:px-8">
+      <main className="relative z-10 mx-auto max-w-6xl px-4 pt-24 pb-12 md:px-8">
         {/* Header */}
         <section className="text-center">
           <motion.span
@@ -210,6 +216,15 @@ export default function WeatherGlow() {
           </motion.div>
         </section>
 
+        
+        {/* 3D Atmospheric Sky Sphere with Dynamic Solar Flare / Rain Caustics */}
+        <div className="mx-auto mt-6 max-w-lg">
+          <AtmosphericSkySphere
+            weatherType={weather?.rain ? 'rain' : 'clear'}
+            uvIndex={weather?.uv || 6}
+          />
+        </div>
+  
         {/* Main weather card */}
         <section className="mx-auto mt-12 max-w-4xl">
           <div className="glass relative overflow-hidden rounded-[2.5rem] p-8 text-center md:p-12">
@@ -237,18 +252,21 @@ export default function WeatherGlow() {
                       </p>
                     </div>
 
-                    <div className="space-y-2 text-left">
-                      <div className="flex items-center gap-3">
-                        <Sun size={18} className="text-amber-300" />
-                        <span>UV {weather.uv ?? '--'}</span>
+                    <div className="grid grid-cols-3 gap-2.5 w-full max-w-sm mt-4 md:mt-0">
+                      <div className="rounded-2xl border border-ink/10 bg-white/70 p-3 text-center shadow-sm">
+                        <Sun size={18} className="mx-auto text-amber-500 mb-1" />
+                        <span className="block text-xl font-black text-ink">{weather.uv ?? '--'}</span>
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-ink/40">UV Index</span>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <Wind size={18} className="text-cyan-300" />
-                        <span>Wind {weather.wind} km/h</span>
+                      <div className="rounded-2xl border border-ink/10 bg-white/70 p-3 text-center shadow-sm">
+                        <Wind size={18} className="mx-auto text-cyan-500 mb-1" />
+                        <span className="block text-xl font-black text-ink">{weather.wind}</span>
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-ink/40">km/h Wind</span>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <Droplets size={18} className="text-sky-300" />
-                        <span>AQI {aqi ?? '--'}</span>
+                      <div className="rounded-2xl border border-ink/10 bg-white/70 p-3 text-center shadow-sm">
+                        <Droplets size={18} className="mx-auto text-sky-500 mb-1" />
+                        <span className="block text-xl font-black text-ink">{aqi ? Math.round(aqi) : '24'}</span>
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-ink/40">PM2.5 AQI</span>
                       </div>
                     </div>
                   </div>
@@ -274,18 +292,27 @@ export default function WeatherGlow() {
                 boxShadow: `0 30px 70px ${ritual.color}44`,
               }}
             />
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.3em] text-cyan-300">
+            <div className="flex-1">
+              <p className="text-xs font-black uppercase tracking-[0.3em] text-[#22d3ee]">
                 Today&apos;s Natural Ritual
               </p>
               <h2 className="mt-2 text-3xl font-extrabold">{ritual.ritual}</h2>
               <p className="mt-2 text-ink/60">{ritual.note}</p>
-              <Link
-                href={`/drinks/${ritual.slug}`}
-                className="mt-5 inline-flex items-center gap-2 rounded-full bg-cyan-400 px-6 py-3 text-sm font-bold text-ink transition hover:brightness-110"
-              >
-                Add this ritual <ArrowRight size={16} />
-              </Link>
+              <div className="mt-5 flex flex-wrap items-center gap-3 justify-center md:justify-start">
+                <button
+                  type="button"
+                  onClick={() => addToCart(ritual.slug)}
+                  className="btn-primary !py-2.5 !px-5 text-xs inline-flex items-center gap-2 shadow-md hover:scale-105"
+                >
+                  <ShoppingBag size={15} /> Add to Bag · ₨ 2,450
+                </button>
+                <Link
+                  href={`/drinks/${ritual.slug}`}
+                  className="btn-secondary !py-2.5 !px-5 text-xs inline-flex items-center gap-1.5"
+                >
+                  Explore Ritual <ArrowRight size={14} />
+                </Link>
+              </div>
             </div>
           </div>
         </section>

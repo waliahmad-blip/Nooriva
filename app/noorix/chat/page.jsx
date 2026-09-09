@@ -6,7 +6,7 @@ import { BRAND } from "@/lib/noorishGold";
    ═══════════════════════════════════════════════════════════ */
 
 const NoorixChat = dynamic(
-  () => import("@/components/noorix/NoorixChat").then((mod) => mod.default),
+  () => import("@/components/noorix/NoorixChat"),
   {
     ssr: false,
     loading: () => <NoorixChatLoadingScreen />,
@@ -15,7 +15,7 @@ const NoorixChat = dynamic(
 
 function NoorixChatLoadingScreen() {
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-[#0a0a0f] text-white">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#0a0a0f] text-white">
       <div className="relative flex h-24 w-24 items-center justify-center">
         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-cyan-400 opacity-40 blur-2xl animate-pulse" />
         <div className="relative h-12 w-12 rounded-full border-2 border-white/20 border-t-white/80 animate-spin" />

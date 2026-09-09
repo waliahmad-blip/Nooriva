@@ -7,7 +7,6 @@ import JellyOrb from './JellyOrb';
 import FlavorDroplets from './FlavorDroplets';
 import NoorDust from './NoorDust';
 import FlavorInjection from './FlavorInjection';
-import FloatingBubbles from '@/components/ui/FloatingBubbles';
 import useIsMobile from '@/hooks/useIsMobile';
 
 /* ── Feature detection ── */
@@ -74,42 +73,40 @@ function CameraDrift({ isMobile }) {
 export default function ScrollScene() {
   const isMobile = useIsMobile();
   const [mode, setMode] = useState('3d');
+  const glRef = useRef(null);
 
   useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    const saveData = !!(conn && conn.saveData);
-    const lowPower = !!(conn && (conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g'));
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-    // iOS is the main source of WebGL context loss; force 2D there.
-    // Android and desktop keep 3D.
-    if (!webglSupported() || reduced || saveData || lowPower || isIOS) {
+    if (!webglSupported()) {
       setMode('2d');
     }
+    return () => {
+      if (glRef.current) {
+        try {
+          const lose = glRef.current.getExtension('WEBGL_lose_context');
+          if (lose) lose.loseContext();
+          glRef.current.dispose();
+        } catch (e) {}
+      }
+    };
   }, []);
 
   // 2D-only fallback
   if (mode === '2d') {
     return (
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <FloatingBubbles />
-      </div>
+      <div className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-b from-[#FAF7F2] via-[#FFF5EC] to-[#FAF7F2]" />
     );
   }
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0">
-      <FloatingBubbles />
-
       <Canvas
         camera={{ position: [0, 0, 7], fov: 40 }}
-        dpr={isMobile ? [1, 1.5] : [1, 2]}
-        gl={{ antialias: !isMobile, alpha: true }}
+        dpr={isMobile ? [1, 1.25] : [1, 1.5]}
+        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         onCreated={({ gl }) => {
+          glRef.current = gl;
           gl.domElement.addEventListener('webglcontextlost', (e) => {
             e.preventDefault();
-            setMode('2d');
           }, false);
         }}
       >
@@ -130,10 +127,11 @@ export default function ScrollScene() {
         {!isMobile && (
           <ContactShadows
             position={[0, -3, 0]}
-            opacity={0.2}
+            opacity={0.18}
             scale={14}
-            blur={2.8}
+            blur={2}
             far={4}
+            frames={1}
             color="#1A1410"
           />
         )}

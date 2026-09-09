@@ -12,6 +12,11 @@ export const metadata = {
   publisher: "NOORIVA",
   alternates: {
     canonical: `https://nooriva.co/${config.slug}`,
+    languages: {
+      "en-PK": `https://nooriva.co/${config.slug}`,
+      "ur-PK": `https://nooriva.co/${config.slug}`,
+      "ar-PK": `https://nooriva.co/${config.slug}`,
+    },
   },
   robots: {
     index: true,
@@ -24,6 +29,7 @@ export const metadata = {
     description: config.description,
     siteName: "NOORIVA",
     locale: "en_PK",
+    alternateLocale: ["ur_PK", "ar_PK"],
     images: [
       {
         url: "https://nooriva.co/og-image.png",

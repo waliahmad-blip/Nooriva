@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
@@ -21,7 +21,7 @@ const ORIGIN = [
   },
   {
     phase: 'Sixty Days Later',
-    text: 'NOORIVA rolled off the line in Lahore — blush pink, 150 grams, and powerhouse-packed with 5,000 mg of collagen, L-Carnitine, 2,000 mg of Glutathione, Zinc, Magnesium, a full B-Complex dose, and ancient Ayurvedic secrets of ageless beauty, with zero excuses.',
+    text: 'NOORIVA rolled off the line in Lahore — jewel-toned, 150ml, and powerhouse-packed with bio-fermented collagen peptides, reduced Glutathione, Zinc Bisglycinate, Magnesium, a full B-Complex active matrix, and the signature NOORISH GOLD core, with zero excuses.',
   },
   {
     phase: 'The Homecoming',
@@ -40,9 +40,9 @@ export default function OriginStory() {
   const reduced = useReducedMotion();
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#ffffff] text-ink">
+    <div className="relative min-h-screen w-full overflow-x-clip bg-[#ffffff] text-ink pb-36">
       <div className="relative z-20 mx-auto w-full max-w-7xl px-4 pt-4 md:px-8">
-        <BackToHome className="fixed top-6 left-6 z-50" />
+        <BackToHome className="fixed top-20 left-4 sm:left-6 z-30" />
       </div>
 
       {/* Soft aurora */}
@@ -51,7 +51,7 @@ export default function OriginStory() {
         className="pointer-events-none fixed inset-0 opacity-50"
         style={{
           background: `
-            radial-gradient(circle at 10% 10%, rgba(199,154,68,0.14), transparent 38%),
+            radial-gradient(circle at 10% 10%, rgba(34, 211, 238,0.14), transparent 38%),
             radial-gradient(circle at 90% 15%, rgba(255,143,178,0.12), transparent 40%),
             radial-gradient(circle at 50% 90%, rgba(167,139,250,0.10), transparent 45%)
           `,
@@ -62,7 +62,7 @@ export default function OriginStory() {
         <motion.span
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white/70 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-[#C79A44] backdrop-blur-md"
+          className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white/70 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-[#22d3ee] backdrop-blur-md"
         >
           <Sparkles size={14} />
           Our Origin Story
@@ -75,7 +75,7 @@ export default function OriginStory() {
           className="display-heading mt-6 text-5xl leading-[0.95] md:text-7xl"
         >
           The light found on
-          <span className="block bg-gradient-to-r from-[#C79A44] via-[#E7D3A8] to-[#e05297] bg-clip-text text-transparent">
+          <span className="block bg-gradient-to-r from-[#22d3ee] via-[#a78bfa] to-[#e05297] bg-clip-text text-transparent">
             an island shelf.
           </span>
         </motion.h1>
@@ -98,9 +98,9 @@ export default function OriginStory() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ delay: i * 0.05, duration: 0.6 }}
-              className="relative border-l-2 border-[#E7D3A8] pl-6 md:pl-8"
+              className="relative border-l-2 border-[#a78bfa] pl-6 md:pl-8"
             >
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-[#C79A44]">
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-[#22d3ee]">
                 {chapter.phase}
               </span>
               <h2 className="display-heading mt-2 text-2xl text-ink md:text-3xl">
@@ -122,7 +122,7 @@ export default function OriginStory() {
         >
           {PILLARS.map((pillar) => (
             <div key={pillar.label} className="glass rounded-[2rem] p-6">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E7D3A8]/20 text-[#C79A44]">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#a78bfa]/20 text-[#22d3ee]">
                 <pillar.icon size={20} />
               </span>
               <h3 className="mt-3 text-lg font-bold text-ink">{pillar.label}</h3>

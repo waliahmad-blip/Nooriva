@@ -46,7 +46,7 @@ const FEATURE_HINTS = [
 ];
 
 const STATS = [
-  { value: '49+', label: 'AI features' },
+  { value: '54', label: 'AI features' },
   { value: '3', label: 'Languages' },
   { value: '0', label: 'Typing required' },
 ];
@@ -184,10 +184,10 @@ export default function NoorixEntrance() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.15, duration: 0.55 }}
-              className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#E7D3A8]/20 bg-[#E7D3A8]/5 px-4 py-1.5 backdrop-blur-md"
+              className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#a78bfa]/20 bg-[#a78bfa]/5 px-4 py-1.5 backdrop-blur-md"
             >
-              <Sparkles size={14} className="text-[#E7D3A8]" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#E7D3A8]/75">
+              <Sparkles size={14} className="text-[#a78bfa]" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#a78bfa]/75">
                 Meet Noorix
               </span>
             </motion.div>
@@ -212,7 +212,7 @@ export default function NoorixEntrance() {
               className="mt-5 max-w-lg text-sm leading-relaxed text-white/55 md:text-base"
             >
               Skin analysis, nutrition coaching, sleep optimization, and more.
-              <span className="font-semibold text-[#E7D3A8]"> No typing required.</span>{' '}
+              <span className="font-semibold text-[#a78bfa]"> No typing required.</span>{' '}
               Crafted for Pakistan, fluent in Urdu, Arabic, and English.
             </motion.p>
 
@@ -227,9 +227,9 @@ export default function NoorixEntrance() {
               {FEATURE_HINTS.map(({ icon: Icon, label }) => (
                 <li
                   key={label}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-2 text-xs font-medium text-white/65 backdrop-blur-md transition-colors hover:border-[#E7D3A8]/30 hover:text-white/90"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-2 text-xs font-medium text-white/65 backdrop-blur-md transition-colors hover:border-[#a78bfa]/30 hover:text-white/90"
                 >
-                  <Icon size={13} className="text-[#C79A44]" aria-hidden="true" />
+                  <Icon size={13} className="text-[#22d3ee]" aria-hidden="true" />
                   {label}
                 </li>
               ))}
@@ -245,7 +245,7 @@ export default function NoorixEntrance() {
             >
               <Link
                 href="/noorix"
-                className="noorix-cta group inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-[#E7D3A8] via-[#D7B36A] to-[#C79A44] px-7 py-3.5 text-sm font-extrabold text-[#1a1a2e] shadow-[0_10px_35px_rgba(231,211,168,0.22)] transition-all duration-300 hover:shadow-[0_16px_45px_rgba(231,211,168,0.35)] hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E7D3A8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#16213e] active:scale-[0.98]"
+                className="noorix-cta group inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-[#a78bfa] via-[#D7B36A] to-[#22d3ee] px-7 py-3.5 text-sm font-extrabold text-[#1a1a2e] shadow-[0_10px_35px_rgba(167, 139, 250,0.22)] transition-all duration-300 hover:shadow-[0_16px_45px_rgba(167, 139, 250,0.35)] hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a78bfa] focus-visible:ring-offset-2 focus-visible:ring-offset-[#16213e] active:scale-[0.98]"
               >
                 <Sparkles size={16} aria-hidden="true" />
                 Meet Noorix
@@ -286,34 +286,34 @@ export default function NoorixEntrance() {
                 x: orbX,
                 y: orbY,
                 background:
-                  'radial-gradient(circle at 50% 50%, rgba(231,211,168,0.16) 0%, rgba(231,211,168,0.06) 45%, transparent 72%)',
+                  'radial-gradient(circle at 50% 50%, rgba(167, 139, 250,0.16) 0%, rgba(167, 139, 250,0.06) 45%, transparent 72%)',
               }}
             >
               {/* Soft ambient halo */}
               <div
                 className="absolute inset-0 rounded-full"
                 style={{
-                  border: '1px solid rgba(231,211,168,0.18)',
+                  border: '1px solid rgba(167, 139, 250,0.18)',
                   boxShadow:
-                    'inset 0 0 60px rgba(231,211,168,0.08), 0 0 90px rgba(199,154,68,0.12)',
+                    'inset 0 0 60px rgba(167, 139, 250,0.08), 0 0 90px rgba(34, 211, 238,0.12)',
                 }}
                 aria-hidden="true"
               />
 
               {/* Rotating outer ring */}
               <motion.div
-                className="absolute inset-0 rounded-full border border-[#E7D3A8]/15"
+                className="absolute inset-0 rounded-full border border-[#a78bfa]/15"
                 style={{ transformOrigin: 'center' }}
                 animate={{ rotate: prefersReducedMotion ? 0 : 360 }}
                 transition={ringTransition}
                 aria-hidden="true"
               >
-                <span className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#E7D3A8] shadow-[0_0_14px_4px_rgba(231,211,168,0.5)]" />
+                <span className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#a78bfa] shadow-[0_0_14px_4px_rgba(167, 139, 250,0.5)]" />
               </motion.div>
 
               {/* Counter-rotating dashed ring */}
               <motion.div
-                className="absolute inset-3 rounded-full border border-dashed border-[#E7D3A8]/10"
+                className="absolute inset-3 rounded-full border border-dashed border-[#a78bfa]/10"
                 animate={{ rotate: prefersReducedMotion ? 0 : -360 }}
                 transition={{ ...ringTransition, duration: 34 }}
                 aria-hidden="true"
@@ -327,7 +327,7 @@ export default function NoorixEntrance() {
                 height={300}
                 loading="eager"
                 decoding="async"
-                className="relative z-10 max-h-52 object-contain drop-shadow-[0_0_24px_rgba(231,211,168,0.28)] brightness-105 md:max-h-72"
+                className="relative z-10 max-h-52 object-contain drop-shadow-[0_0_24px_rgba(167, 139, 250,0.28)] brightness-105 md:max-h-72"
                 style={{ x: figureX, y: figureY }}
                 animate={{ y: prefersReducedMotion ? 0 : [0, -9, 0] }}
                 transition={floatTransition}
@@ -335,7 +335,7 @@ export default function NoorixEntrance() {
 
               {/* Focus glow under figure */}
               <div
-                className="absolute bottom-2 h-3 w-24 rounded-full bg-[#C79A44]/25 blur-md"
+                className="absolute bottom-2 h-3 w-24 rounded-full bg-[#22d3ee]/25 blur-md"
                 style={{ animation: prefersReducedMotion ? 'none' : 'pulse 4s ease-in-out infinite' }}
                 aria-hidden="true"
               />
@@ -349,7 +349,7 @@ export default function NoorixEntrance() {
 
         <style jsx>{`
           .noorix-entrance-card {
-            border: 1px solid rgba(231, 211, 168, 0.14);
+            border: 1px solid rgba(167, 139, 250, 0.14);
             box-shadow:
               0 40px 120px rgba(10, 10, 20, 0.55),
               0 20px 50px rgba(10, 10, 20, 0.4),
@@ -361,7 +361,7 @@ export default function NoorixEntrance() {
             position: absolute;
             inset: 0;
             background:
-              radial-gradient(circle at 20% 15%, rgba(199, 154, 68, 0.22), transparent 40%),
+              radial-gradient(circle at 20% 15%, rgba(34, 211, 238, 0.22), transparent 40%),
               radial-gradient(circle at 85% 75%, rgba(15, 52, 96, 0.55), transparent 50%),
               linear-gradient(135deg, #1a1a2e 0%, #16213e 48%, #0f3460 100%);
           }
@@ -372,12 +372,12 @@ export default function NoorixEntrance() {
             background: conic-gradient(
               from 180deg at 50% 50%,
               transparent 0deg,
-              rgba(231, 211, 168, 0.14) 38deg,
-              rgba(199, 154, 68, 0.1) 74deg,
+              rgba(167, 139, 250, 0.14) 38deg,
+              rgba(34, 211, 238, 0.1) 74deg,
               transparent 122deg,
               rgba(103, 232, 249, 0.08) 185deg,
               transparent 240deg,
-              rgba(231, 211, 168, 0.12) 310deg,
+              rgba(167, 139, 250, 0.12) 310deg,
               transparent 360deg
             );
             filter: blur(36px);
@@ -390,7 +390,7 @@ export default function NoorixEntrance() {
             width: 440px;
             height: 440px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(231, 211, 168, 0.12) 0%, transparent 62%);
+            background: radial-gradient(circle, rgba(167, 139, 250, 0.12) 0%, transparent 62%);
             pointer-events: none;
             will-change: transform;
           }
@@ -410,21 +410,21 @@ export default function NoorixEntrance() {
           }
 
           .noorix-particle.is-gold {
-            background: #e7d3a8;
-            box-shadow: 0 0 8px rgba(231, 211, 168, 0.55);
+            background: #a78bfa;
+            box-shadow: 0 0 8px rgba(167, 139, 250, 0.55);
           }
 
           .noorix-particle.is-soft {
-            background: #c79a44;
-            box-shadow: 0 0 6px rgba(199, 154, 68, 0.4);
+            background: #22d3ee;
+            box-shadow: 0 0 6px rgba(34, 211, 238, 0.4);
           }
 
           .noorix-grid-overlay {
             position: absolute;
             inset: 0;
             background-image:
-              linear-gradient(rgba(231, 211, 168, 0.05) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(231, 211, 168, 0.05) 1px, transparent 1px);
+              linear-gradient(rgba(167, 139, 250, 0.05) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(167, 139, 250, 0.05) 1px, transparent 1px);
             background-size: 46px 46px;
             mask-image: radial-gradient(circle at 50% 50%, black 0%, transparent 75%);
             -webkit-mask-image: radial-gradient(circle at 50% 50%, black 0%, transparent 75%);
@@ -441,7 +441,7 @@ export default function NoorixEntrance() {
               105deg,
               transparent,
               rgba(255, 255, 255, 0.055),
-              rgba(231, 211, 168, 0.1),
+              rgba(167, 139, 250, 0.1),
               transparent
             );
             transform: rotate(12deg);
@@ -449,7 +449,7 @@ export default function NoorixEntrance() {
           }
 
           .noorix-gradient-text {
-            background: linear-gradient(100deg, #f5e7c6 0%, #e7d3a8 35%, #c79a44 70%, #e7d3a8 100%);
+            background: linear-gradient(100deg, #f5e7c6 0%, #a78bfa 35%, #22d3ee 70%, #a78bfa 100%);
             background-size: 200% auto;
             background-clip: text;
             -webkit-background-clip: text;
@@ -461,7 +461,7 @@ export default function NoorixEntrance() {
             position: absolute;
             width: 110px;
             height: 110px;
-            border: 1px solid rgba(231, 211, 168, 0.12);
+            border: 1px solid rgba(167, 139, 250, 0.12);
             border-radius: 24px;
             pointer-events: none;
           }

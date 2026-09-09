@@ -1,7 +1,10 @@
-'use client';
+﻿'use client';
 import BackToHome from "@/components/ui/BackToHome";
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
+
+const MetallicVipPass = dynamic(() => import('@/components/three/MetallicVipPass'), { ssr: false });
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
@@ -47,24 +50,74 @@ function RewardsMeter() {
   const reduced = useReducedMotion();
   const progress = 68;
 
+  const tiers = [
+    { name: "Glow Scout", points: "0 pts", reached: true },
+    { name: "Ritual Creator", points: "5,000 pts", reached: true },
+    { name: "Golden Luminary", points: "10,000 pts", reached: false, current: true },
+    { name: "Brand Icon", points: "25,000 pts", reached: false },
+  ];
+
   return (
-    <div className="glass rounded-[2rem] p-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold">Your Rewards Meter</h3>
-        <span className="text-sm font-bold text-[#C79A44]">{progress}%</span>
+    <div className="space-y-6">
+      {/* 3D Holographic VIP Creator Pass */}
+      <motion.div
+        whileHover={{ y: -6, rotateX: 4, rotateY: -4 }}
+        transition={{ duration: 0.3 }}
+        className="mx-auto max-w-md rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl"
+        style={{
+          background: 'linear-gradient(135deg, #1A1410, #3A2A1E 50%, #22d3ee 100%)',
+          border: '1px solid rgba(167, 139, 250,0.3)',
+        }}
+      >
+        <div className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-20 blur-2xl bg-[#a78bfa] pointer-events-none" />
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-black tracking-[0.3em] uppercase text-[#a78bfa]">NOORIVA VIP AMBASSADOR</span>
+          <Crown size={20} className="text-[#a78bfa]" />
+        </div>
+        <div className="my-8">
+          <p className="text-xs uppercase tracking-wider text-white/50">Creator Pass Tier</p>
+          <p className="display-heading text-3xl text-white font-serif mt-1">Golden Luminary</p>
+        </div>
+        <div className="flex items-end justify-between pt-4 border-t border-white/10 text-xs">
+          <div>
+            <p className="text-white/40 text-[10px] uppercase tracking-wider">Member ID</p>
+            <p className="font-mono text-[#a78bfa] font-bold">NV-CREATOR-2026</p>
+          </div>
+          <span className="rounded-full bg-white/15 px-3 py-1 font-bold text-white text-[11px]">Active Level 3</span>
+        </div>
+      </motion.div>
+
+      {/* Rewards meter */}
+      <div className="glass rounded-[2rem] p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-bold">Creator XP & Rewards Meter</h3>
+            <p className="text-xs text-ink/50 mt-0.5">Tier 3: Golden Luminary Status</p>
+          </div>
+          <span className="text-sm font-bold text-[#22d3ee]">{progress}%</span>
+        </div>
+
+        <div className="mt-4 h-3.5 overflow-hidden rounded-full bg-ink/10 relative">
+          <motion.div
+            className="h-full rounded-full bg-gradient-to-r from-[#22d3ee] via-[#a78bfa] to-[#f472b6]"
+            initial={{ width: 0 }}
+            whileInView={{ width: `${progress}%` }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
+          />
+        </div>
+
+        <div className="mt-4 grid grid-cols-4 gap-2 text-center">
+          {tiers.map((t) => (
+            <div key={t.name} className="min-w-0">
+              <span className={`block text-[11px] font-bold truncate ${t.current ? 'text-[#22d3ee]' : t.reached ? 'text-ink' : 'text-ink/40'}`}>
+                {t.name}
+              </span>
+              <span className="text-[10px] text-ink/40">{t.points}</span>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="mt-4 h-3 overflow-hidden rounded-full bg-ink/10">
-        <motion.div
-          className="h-full rounded-full bg-gradient-to-r from-[#C79A44] to-[#E7D3A8]"
-          initial={{ width: 0 }}
-          whileInView={{ width: `${progress}%` }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.2, ease: 'easeOut' }}
-        />
-      </div>
-      <p className="mt-3 text-sm text-ink/60">
-        You&apos;re {100 - progress}% away from your next reward tier.
-      </p>
     </div>
   );
 }
@@ -74,8 +127,8 @@ export default function AmbassadorHub() {
   const [applied, setApplied] = useState(false);
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#ffffff] text-ink">
-      <BackToHome className="fixed top-6 left-6 z-50" />
+    <div className="relative min-h-screen w-full overflow-x-clip bg-[#ffffff] text-ink pb-36">
+      <BackToHome className="fixed top-20 left-4 sm:left-6 z-30" />
       <div className="relative z-20 mx-auto w-full max-w-6xl px-4 pt-4 md:px-8">
       </div>
       {/* Aurora accents */}
@@ -86,18 +139,18 @@ export default function AmbassadorHub() {
           background: `
             radial-gradient(circle at 15% 15%, rgba(124,58,237,0.20), transparent 40%),
             radial-gradient(circle at 85% 20%, rgba(244,114,182,0.16), transparent 42%),
-            radial-gradient(circle at 50% 90%, rgba(199,154,68,0.14), transparent 45%)
+            radial-gradient(circle at 50% 90%, rgba(34, 211, 238,0.14), transparent 45%)
           `,
         }}
       />
 
-      <main className="relative z-10 mx-auto max-w-6xl px-4 py-12 md:px-8">
+      <main className="relative z-10 mx-auto max-w-6xl px-4 pt-24 pb-12 md:px-8">
         {/* Hero */}
         <section className="text-center">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-ink/5 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-[#C79A44] backdrop-blur-md"
+            className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-ink/5 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-[#22d3ee] backdrop-blur-md"
           >
             <Crown size={14} />
             Ambassador Hub
@@ -110,7 +163,7 @@ export default function AmbassadorHub() {
             className="display-heading mt-5 text-5xl leading-[0.95] md:text-7xl"
           >
             Grow with
-            <span className="block bg-gradient-to-r from-[#C79A44] via-[#E7D3A8] to-[#f472b6] bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-[#22d3ee] via-[#a78bfa] to-[#f472b6] bg-clip-text text-transparent">
               NOORIVA.
             </span>
           </motion.h1>
@@ -136,7 +189,7 @@ export default function AmbassadorHub() {
                 setApplied(true);
                 setTimeout(() => setApplied(false), 2200);
               }}
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#C79A44] to-[#E7D3A8] px-7 py-3.5 text-sm font-bold text-ink transition hover:scale-105"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#22d3ee] to-[#a78bfa] px-7 py-3.5 text-sm font-bold text-ink transition hover:scale-105"
             >
               {applied ? <Check size={16} /> : <Crown size={16} />}
               {applied ? 'Application Sent!' : 'Apply to Join'}
@@ -178,7 +231,7 @@ export default function AmbassadorHub() {
                 transition={{ delay: i * 0.08 }}
                 className="glass rounded-[2rem] p-6"
               >
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#ffffff]/15 text-[#C79A44]">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#ffffff]/15 text-[#22d3ee]">
                   <perk.icon size={20} />
                 </span>
                 <h3 className="mt-3 text-lg font-bold">{perk.title}</h3>
@@ -211,7 +264,7 @@ export default function AmbassadorHub() {
                     <p className="text-xs text-ink/50">{ambassador.handle}</p>
                   </div>
                   <PlatformIcon size={18} className="text-ink/40" />
-                  <span className="rounded-full bg-[#ffffff]/15 px-4 py-1.5 text-sm font-bold text-[#C79A44]">
+                  <span className="rounded-full bg-[#ffffff]/15 px-4 py-1.5 text-sm font-bold text-[#22d3ee]">
                     {ambassador.points.toLocaleString()} pts
                   </span>
                 </motion.div>
@@ -223,15 +276,15 @@ export default function AmbassadorHub() {
         {/* Share CTA */}
         <section className="mx-auto mt-16 max-w-4xl pb-16 text-center">
           <div className="glass rounded-[2.5rem] p-8 md:p-12">
-            <Share2 size={28} className="mx-auto text-[#C79A44]" />
+            <Share2 size={28} className="mx-auto text-[#22d3ee]" />
             <h2 className="display-heading mt-4 text-3xl md:text-4xl">Share the natural glow</h2>
             <p className="mx-auto mt-3 max-w-xl text-ink/60">
-              Post your ritual, tag <span className="font-bold text-[#C79A44]">#DrinkYourNaturalGlow</span>,
+              Post your ritual, tag <span className="font-bold text-[#22d3ee]">#DrinkYourNaturalGlow</span>,
               and let the garden grow.
             </p>
             <Link
               href="/noorish-gold"
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#C79A44] to-[#E7D3A8] px-7 py-3.5 text-sm font-bold text-ink transition hover:scale-105"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#22d3ee] to-[#a78bfa] px-7 py-3.5 text-sm font-bold text-ink transition hover:scale-105"
             >
               Explore Rituals <ArrowRight size={16} />
             </Link>

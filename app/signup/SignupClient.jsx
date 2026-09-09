@@ -1,5 +1,5 @@
 'use client'
-import BackToHome from "@/components/ui/BackToHome";;
+import BackToHome from "@/components/ui/BackToHome";
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
@@ -95,7 +95,7 @@ export default function SignupClient() {
   if (!mounted) return null;
 
   return (
-      <div className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0f] text-white flex items-center justify-center">
+      <div className="relative min-h-screen w-full overflow-x-clip bg-[#0a0a0f] text-white flex items-center justify-center py-12">
         <BackToHome />
 
       <motion.div

@@ -1,13 +1,20 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SECRET
-);
+function getSupabase() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET;
+  if (!url || !key) return null;
+  return createClient(url, key);
+}
 
 export async function POST(request) {
   try {
+    const supabase = getSupabase();
+    if (!supabase) {
+      return NextResponse.json({ error: "Auth service is not configured." }, { status: 503 });
+    }
+
     const { phone } = await request.json();
     if (!phone) return NextResponse.json({ error: "Phone required." }, { status: 400 });
 

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
@@ -22,7 +22,7 @@ const ROUTE_PALETTES = {
   '/noorix/chat': ['#ff5e99', '#a78bfa', '#22d3ee', '#5eead4', '#fbbf24', '#f472b6'],
   '/api-hub': ['#06b6d4', '#8b5cf6', '#f97316', '#22d3ee', '#a78bfa', '#fbbf24'],
 
-  // 🌿 Nature / Organic / Skin-food themed pages
+  // ≡ƒî┐ Nature / Organic / Skin-food themed pages
   '/club': ['#f472b6', '#ff8fb2', '#fbcfe8', '#c084fc', '#fff1f2', '#7c3aed'],
   '/weather': ['#67e8f9', '#22d3ee', '#86efac', '#fef08a', '#38bdf8', '#0ea5e9'],
   '/quiz': ['#ff8fb2', '#a78bfa', '#ffd7a1', '#f472b6', '#67e8f9', '#ffffff'],
@@ -32,8 +32,8 @@ const ROUTE_PALETTES = {
 };
 
 const ROUTE_NAMES = {
-  '/story': 'Our Story',
-  '/': 'Home',
+  '/story': 'Our Origin',
+  '/': 'NOORIVA',
   '/noorish-gold': 'NOORISH GOLD',
   '/glow-drinks': 'Glow Drinks',
   '/energy-drinks': 'Energy Drinks',
@@ -41,15 +41,15 @@ const ROUTE_NAMES = {
   '/login': 'Login',
   '/signup': 'Sign Up',
   '/account': 'Account',
-  '/noorix': 'Noorix',
-  '/noorix/chat': 'Noorix Chat',
+  '/noorix': 'Noorix AI',
+  '/noorix/chat': 'Noorix AI',
   '/api-hub': 'API Hub',
-  '/club': 'NOORIVA Club',
+  '/club': 'Club',
   '/weather': 'Weather Glow',
   '/quiz': 'Find Your Ritual',
   '/ritual-of-the-day': 'Ritual of the Day',
   '/ambassador': 'Ambassador Hub',
-  '/ingredients': "Nature's Golden Heart",
+  '/ingredients': 'Botanicals',
 };
 
 const ROUTE_TAGLINES = {
@@ -130,25 +130,24 @@ export default function PageTransition({ children }) {
       {transition && (
         <div
           aria-hidden="true"
-          className="fixed inset-0 z-[9999]"
-          style={{ pointerEvents: 'all' }}
+          className="fixed inset-0 z-[9999] pointer-events-none"
         >
           <style>{`
             @keyframes bladeEnterLeft {
-              from { transform: translateX(-118%); }
-              to { transform: translateX(0%); }
+              from { transform: translate3d(-118%, 0, 0); }
+              to { transform: translate3d(0%, 0, 0); }
             }
             @keyframes bladeExitRight {
-              from { transform: translateX(0%); }
-              to { transform: translateX(118%); }
+              from { transform: translate3d(0%, 0, 0); }
+              to { transform: translate3d(118%, 0, 0); }
             }
             @keyframes bladeEnterRight {
-              from { transform: translateX(118%); }
-              to { transform: translateX(0%); }
+              from { transform: translate3d(118%, 0, 0); }
+              to { transform: translate3d(0%, 0, 0); }
             }
             @keyframes bladeExitLeft {
-              from { transform: translateX(0%); }
-              to { transform: translateX(-118%); }
+              from { transform: translate3d(0%, 0, 0); }
+              to { transform: translate3d(-118%, 0, 0); }
             }
             @keyframes titlePulse {
               0% { opacity: 0; transform: scale(1.4); filter: blur(14px); }
@@ -180,8 +179,8 @@ export default function PageTransition({ children }) {
                   width: `${100 / BLADE_COUNT + 1.5}vw`,
                   background: `linear-gradient(${fromLeft ? 168 : 192}deg, ${c0}, ${c1})`,
                   animation: fromLeft
-                    ? `bladeEnterLeft ${COVER_MS}ms forwards, bladeExitRight ${REVEAL_MS}ms ${COVER_MS}ms forwards`
-                    : `bladeEnterRight ${COVER_MS}ms forwards, bladeExitLeft ${REVEAL_MS}ms ${COVER_MS}ms forwards`,
+                    ? `bladeEnterLeft ${COVER_MS}ms cubic-bezier(0.77, 0, 0.175, 1) forwards, bladeExitRight ${REVEAL_MS}ms cubic-bezier(0.77, 0, 0.175, 1) ${COVER_MS}ms forwards`
+                    : `bladeEnterRight ${COVER_MS}ms cubic-bezier(0.77, 0, 0.175, 1) forwards, bladeExitLeft ${REVEAL_MS}ms cubic-bezier(0.77, 0, 0.175, 1) ${COVER_MS}ms forwards`,
                   willChange: 'transform',
                 }}
               />

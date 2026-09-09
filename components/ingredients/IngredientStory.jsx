@@ -1,7 +1,10 @@
-'use client';
+﻿'use client';
 import BackToHome from "@/components/ui/BackToHome";
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
+
+const BotanicalConstellation = dynamic(() => import('@/components/three/BotanicalConstellation'), { ssr: false });
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
@@ -22,7 +25,7 @@ const BOTANICALS = [
     id: 'saffron',
     name: 'Saffron',
     emoji: '🌼',
-    color: '#E7D3A8',
+    color: '#a78bfa',
     mood: 'Golden warmth',
     story: 'Hand-harvested threads that carry the sun’s golden hour into every ritual.',
     benefit: 'A luxurious, golden finish that feels like nature’s own glow.',
@@ -87,8 +90,8 @@ export default function IngredientStory() {
   const selected = BOTANICALS.find((b) => b.id === active) || BOTANICALS[0];
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#ffffff] text-ink">
-      <BackToHome className="fixed top-6 left-6 z-50" />
+    <div className="relative min-h-screen w-full overflow-x-clip bg-[#ffffff] text-ink pb-36">
+      <BackToHome className="fixed top-20 left-4 sm:left-6 z-30" />
       <div className="relative z-20 mx-auto w-full max-w-6xl px-4 pt-4 md:px-8">
       </div>
       {/* Nature aurora */}
@@ -99,12 +102,12 @@ export default function IngredientStory() {
           background: `
             radial-gradient(circle at 15% 15%, rgba(94,234,212,0.18), transparent 40%),
             radial-gradient(circle at 85% 20%, rgba(255,143,178,0.14), transparent 42%),
-            radial-gradient(circle at 50% 90%, rgba(231,211,168,0.14), transparent 45%)
+            radial-gradient(circle at 50% 90%, rgba(167, 139, 250,0.14), transparent 45%)
           `,
         }}
       />
 
-      <main className="relative z-10 mx-auto max-w-6xl px-4 py-12 md:px-8">
+      <main className="relative z-10 mx-auto max-w-6xl px-4 pt-24 pb-12 md:px-8">
         {/* Hero */}
         <section className="text-center">
           <motion.span
@@ -123,7 +126,7 @@ export default function IngredientStory() {
             className="display-heading mt-5 text-5xl leading-[0.95] md:text-7xl"
           >
             Inside
-            <span className="block bg-gradient-to-r from-[#5eead4] via-[#E7D3A8] to-[#ff8fb2] bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-[#5eead4] via-[#a78bfa] to-[#ff8fb2] bg-clip-text text-transparent">
               nature&apos;s glow.
             </span>
           </motion.h1>
@@ -139,6 +142,20 @@ export default function IngredientStory() {
           </motion.p>
         </section>
 
+        
+        {/* 3D Botanical Constellation with 6 Floating Translucent Bio-Cells */}
+        <section className="mt-8 mb-4">
+          <div className="rounded-[2.5rem] border border-cyan-400/20 bg-gradient-to-b from-white/40 to-white/10 p-4 shadow-xl backdrop-blur-xl">
+            <div className="mb-2 text-center text-[10px] font-mono tracking-widest text-cyan-600 uppercase">
+              ✦ 3D BOTANICAL CONSTELLATION // 6 BIO-CELLULAR PATHWAYS ✦
+            </div>
+            <BotanicalConstellation />
+            <div className="text-center text-[10px] font-mono text-ink/40">
+              HOVER OVER ANY BIO-CELL TO REVEAL TRANSCRIPTION PHASES
+            </div>
+          </div>
+        </section>
+  
         {/* Interactive botanical cards */}
         <section className="mt-14">
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
@@ -213,7 +230,7 @@ export default function IngredientStory() {
         {/* Golden base positioning — no formula */}
         <section className="mt-16">
           <div className="glass rounded-[2.5rem] p-8 text-center md:p-12">
-            <Sparkles size={28} className="mx-auto text-[#E7D3A8]" />
+            <Sparkles size={28} className="mx-auto text-[#a78bfa]" />
             <h2 className="display-heading mt-4 text-3xl md:text-4xl">One Golden Heart</h2>
             <p className="mx-auto mt-3 max-w-xl text-ink/60">
               Every NOORIVA ritual is built on the same golden botanical heart —
@@ -238,7 +255,7 @@ export default function IngredientStory() {
           <p className="text-ink/60">Ready to taste nature&apos;s golden heart?</p>
           <Link
             href="/noorish-gold"
-            className="mt-5 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#5eead4] to-[#E7D3A8] px-7 py-3.5 text-sm font-bold text-ink transition hover:scale-105"
+            className="mt-5 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#5eead4] to-[#a78bfa] px-7 py-3.5 text-sm font-bold text-ink transition hover:scale-105"
           >
             Explore the Rituals <ArrowRight size={16} />
           </Link>

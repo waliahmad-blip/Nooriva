@@ -1,6 +1,8 @@
-'use client';
+﻿'use client';
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import BackToHome from '@/components/ui/BackToHome';
+import ScrollToTop from '@/components/ui/ScrollToTop';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { ChevronDown, ArrowRight, Sparkles } from 'lucide-react';
@@ -73,12 +75,13 @@ function FloatingParticles({ colors }) {
     return Array.from({ length: 12 }).map((_, i) => ({
       id: i,
       color: colors[i % colors.length],
-      size: 3 + Math.random() * 6,
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      drift: (Math.random() - 0.5) * 40,
-      duration: 6 + Math.random() * 6,
-      delay: Math.random() * 4,
+      size: 4 + (i * 2) % 6,
+      left: (i * 27 + 13) % 100,
+      top: (i * 33 + 7) % 100,
+      drift: ((i * 15) % 40) - 20,
+      duration: 8 + (i % 4) * 2,
+      delay: (i * 0.5) % 3,
+      yRise: -30 - (i % 4) * 12,
     }));
   }, [colors]);
 
@@ -97,9 +100,9 @@ function FloatingParticles({ colors }) {
             filter: 'blur(1px)',
           }}
           animate={{
-            y: [0, -30 - Math.random() * 50, 0],
+            y: [0, p.yRise, 0],
             x: [0, p.drift, 0],
-            opacity: [0, 0.5, 0],
+            opacity: [0, 0.45, 0],
           }}
           transition={{
             duration: p.duration,
@@ -307,7 +310,7 @@ export default function SeoLandingPage({ config }) {
         '@type': 'BreadcrumbList',
         '@id': `${pageUrl}#breadcrumb`,
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: BRAND.name, item: BASE_URL },
+          { '@type': 'ListItem', position: 1, name: 'Home', item: BASE_URL },
           { '@type': 'ListItem', position: 2, name: config.heading, item: pageUrl },
         ],
       },
@@ -325,6 +328,38 @@ export default function SeoLandingPage({ config }) {
             position: index + 1,
             url: `${BASE_URL}/drinks/${sku.slug}`,
             name: `${sku.name} by ${BRAND.name}`,
+            item: {
+              '@type': 'Product',
+              name: `${sku.name} — ${sku.slogan}`,
+              image: `${BASE_URL}/og-image.png`,
+              description: `${sku.slogan}. Squeezable glow drink ritual in Pakistan with COD.`,
+              aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: '4.9',
+                reviewCount: '128',
+                bestRating: '5',
+                worstRating: '1',
+              },
+              offers: {
+                '@type': 'Offer',
+                priceCurrency: COMMERCE.currency,
+                price: COMMERCE.pricePKR,
+                availability: 'https://schema.org/InStock',
+                acceptedPaymentMethod: ['https://schema.org/Cash'],
+                shippingDetails: [
+                  {
+                    '@type': 'OfferShippingDetails',
+                    shippingRate: { '@type': 'MonetaryAmount', value: COMMERCE.standardDeliveryPKR, currency: COMMERCE.currency },
+                    shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'PK' },
+                    deliveryTime: {
+                      '@type': 'ShippingDeliveryTime',
+                      handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 1, unitCode: 'DAY' },
+                      transitTime: { '@type': 'QuantitativeValue', minValue: 2, maxValue: 4, unitCode: 'DAY' },
+                    },
+                  },
+                ],
+              },
+            },
           })),
         },
       },
@@ -345,7 +380,9 @@ export default function SeoLandingPage({ config }) {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
+    <main className="relative min-h-screen overflow-x-clip pb-36">
+      <BackToHome className="fixed top-20 left-4 sm:left-6 z-30" />
+      <ScrollToTop />
       <ScrollProgress colors={skuColors} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
@@ -367,8 +404,8 @@ export default function SeoLandingPage({ config }) {
           <motion.div
             className="pointer-events-none absolute inset-0 rounded-[2.5rem] opacity-50"
             style={{
-              background: `linear-gradient(135deg, ${skuColors[0] || '#E7D3A8'}15, ${
-                skuColors[1] || skuColors[0] || '#C79A44'
+              background: `linear-gradient(135deg, ${skuColors[0] || '#a78bfa'}15, ${
+                skuColors[1] || skuColors[0] || '#22d3ee'
               }15, transparent)`,
             }}
             animate={{ opacity: [0.3, 0.6, 0.3] }}

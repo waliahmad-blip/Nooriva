@@ -1,5 +1,5 @@
 'use client'
-import BackToHome from "@/components/ui/BackToHome";;
+import BackToHome from "@/components/ui/BackToHome";
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -72,14 +72,17 @@ export default function LoginClient() {
       setError('Please enter your phone number.');
       return;
     }
-    if (!supabase) {
-      setError('Authentication service is not configured.');
-      return;
-    }
     setIsSubmitting(true);
     try {
-      const { error: otpError } = await supabase.auth.signInWithOtp({ phone, options: { shouldCreateUser: true } });
-      if (otpError) throw otpError;
+      const res = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Failed to send OTP.');
+      }
       setOtpSent(true);
     } catch (err) {
       setError(err.message || 'Failed to send OTP.');
@@ -93,16 +96,11 @@ export default function LoginClient() {
     setError('');
     setIsSubmitting(true);
     try {
-      const { data, error: otpError } = await supabase.auth.verifyOtp({ phone, token: otp, type: 'sms' });
-      if (otpError) throw otpError;
-
-      if (data.session) {
-        const res = await signIn('phone-otp', { phone, otp, redirect: false });
-        if (res?.ok) {
-          router.push('/account');
-        } else {
-          setError('Failed to create session.');
-        }
+      const res = await signIn('phone-otp', { phone, otp, redirect: false });
+      if (res?.ok) {
+        router.push('/account');
+      } else {
+        setError('Invalid OTP code. Please check and try again.');
       }
     } catch (err) {
       setError(err.message || 'Failed to verify OTP.');

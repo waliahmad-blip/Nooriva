@@ -91,12 +91,20 @@ export function Hero() {
         transition={{ delay: 0.3 }}
         className="mt-8 flex flex-wrap items-center justify-center gap-3"
       >
-        <button onClick={() => setActiveScene("flavours")} className="btn-primary">{t("hero.cta.shop")}</button>
-                <button onClick={() => setActiveScene("rituals")} className="btn-secondary">{t("hero.cta.ritual")}</button>
-                <Link href="/noorish-gold" className="btn-secondary">NOORISH GOLD</Link>
-                <Link href="/glow-drinks" className="btn-secondary">Glow Drinks</Link>
-                <Link href="/energy-drinks" className="btn-secondary">Energy Drinks</Link>
-              </motion.div>
+        <button
+          type="button"
+          onClick={() => setActiveScene("flavours")}
+          className="btn-primary shadow-lg hover:scale-105 transition-all"
+        >
+          {t("hero.cta.shop")}
+        </button>
+        <Link
+          href="/noorish-gold"
+          className="btn-secondary backdrop-blur-md hover:scale-105 transition-all"
+        >
+          Explore NOORISH GOLD
+        </Link>
+      </motion.div>
 
       <motion.div
         variants={fadeUp}
@@ -396,7 +404,7 @@ export function ReferralSection() {
   const openWhatsApp = () => {
     // Centralized WhatsApp number from lib/data.js WHATSAPP_NUMBER constant.
     const text = encodeURIComponent('Refer the Glow — Share NOORISH GOLD rituals with a friend');
-    window.open(`https://${WHATSAPP_NUMBER}?text=${text}`, '_blank');
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, '_blank');
   };
 
   return (

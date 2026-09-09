@@ -1,6 +1,9 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+
+const CelestialLotusTorus = dynamic(() => import('@/components/three/CelestialLotusTorus'), { ssr: false });
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -61,7 +64,7 @@ const UGC_POSTS = [
   { id: 1, platform: 'instagram', user: '@areej.glows', ritual: 'ROSE HALO', note: 'morning glow 🌸', color: '#ff8fb2', likes: 1284 },
   { id: 2, platform: 'tiktok', user: '@bilal.drinks', ritual: 'MANGO BLAZE', note: 'clean energy ⚡', color: '#fbbf24', likes: 2031 },
   { id: 3, platform: 'instagram', user: '@zara.blooms', ritual: 'BERRY BLOOM', note: '3PM still glowing 🍓', color: '#f472b6', likes: 876 },
-  { id: 4, platform: 'instagram', user: '@nida.rituals', ritual: 'SAFFRON MIST', note: 'golden hour 🌙', color: '#E7D3A8', likes: 1520 },
+  { id: 4, platform: 'instagram', user: '@nida.rituals', ritual: 'SAFFRON MIST', note: 'golden hour 🌙', color: '#a78bfa', likes: 1520 },
   { id: 5, platform: 'tiktok', user: '@omar.light', ritual: 'COCO GLOW', note: 'reset day 🥥', color: '#5eead4', likes: 964 },
   { id: 6, platform: 'instagram', user: '@maha.gold', ritual: 'ALOE TIDE', note: 'barrier of light ✨', color: '#22d3ee', likes: 1102 },
 ];
@@ -121,64 +124,37 @@ function CountUp({ target, duration = 1200 }) {
   }, []);
   return <span>{value.toLocaleString()}</span>;
 }
-
-function ClubOrb() {
-  return (
-    <motion.div
-      aria-hidden="true"
-      className="relative mx-auto h-48 w-48 md:h-56 md:w-56"
-      animate={{ scale: [1, 1.05, 1] }}
-      transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-    >
-      <motion.div
-        className="absolute inset-0 rounded-full bg-gradient-to-br from-[#f472b6] via-[#ff8fb2] to-[#a78bfa] blur-xl"
-        animate={{ opacity: [0.65, 0.9, 0.65] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <div className="absolute inset-3 rounded-full border border-white/30 bg-white/90" />
-      {MEMBER_AVATARS.map((avatar, i) => (
-        <motion.div
-          key={avatar.id}
-          className="absolute left-1/2 top-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-ink/10 bg-white text-lg shadow-sm"
-          style={{ marginLeft: -20, marginTop: -20 }}
-          animate={{ rotate: i * 45 }}
-          transition={{ repeat: Infinity, duration: 20, ease: 'linear' }}
-        >
-          {avatar.emoji}
-        </motion.div>
-      ))}
-      <motion.div
-        className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-gradient-to-br from-[#ff8fb2] to-[#a78bfa]"
-        animate={{ scale: [1, 1.12, 1] }}
-        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        <Sparkles className="text-white" size={24} />
-      </motion.div>
-    </motion.div>
-  );
-}
-
 function Marquee({ items }) {
-  const doubled = [...items, ...items];
+  const doubled = [...(items || []), ...(items || [])];
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden py-2">
       <motion.div
         className="flex w-max gap-4"
         animate={{ x: ['0%', '-50%'] }}
-        transition={{ duration: 36, repeat: Infinity, ease: 'linear' }}
+        transition={{ duration: 32, repeat: Infinity, ease: 'linear' }}
       >
-        {doubled.map((item, i) => (
-          <div key={`${item.id}-${i}`} className="glass w-72 shrink-0 rounded-[1.5rem] p-5">
-            <p className="text-sm leading-relaxed text-ink/75">“{item.note}”</p>
-            <div className="mt-3 flex items-center justify-between">
-              <span className="text-xs font-bold text-ink/60">{item.name}</span>
-              <span className="rounded-full bg-[#C79A44]/15 px-3 py-1 text-[10px] font-bold text-[#C79A44]">
-                {item.ritual}
-              </span>
+        {doubled.map((item, i) => {
+          const text = typeof item === 'string' ? item : `${item.name}: "${item.note}"`;
+          return (
+            <div key={`${i}-${text}`} className="glass shrink-0 rounded-full px-5 py-3 text-sm flex items-center gap-2">
+              <span className="font-bold text-cyan-500">✦</span>
+              <span className="text-ink/80">{text}</span>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </motion.div>
+    </div>
+  );
+}
+
+
+function ClubOrb() {
+  return (
+    <div className="relative mx-auto max-w-md text-center">
+      <CelestialLotusTorus />
+      <p className="mt-1 text-[10px] font-mono tracking-widest text-pink-500 uppercase">
+        ✦ TAP CELESTIAL TORUS TO BURST LOVE PARTICLES ✦
+      </p>
     </div>
   );
 }
@@ -234,9 +210,9 @@ export default function ClubExperience() {
   const todayCircle = WEEKLY_CIRCLES[4]; // Friday community circle as "tonight's circle"
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#ffffff] text-ink">
+    <div className="relative min-h-screen w-full overflow-x-clip bg-[#ffffff] text-ink pb-36">
       <div className="relative z-20 mx-auto w-full max-w-7xl px-4 pt-4 md:px-8">
-        <BackToHome className="fixed top-6 left-6 z-50" />
+        <BackToHome className="fixed top-20 left-4 sm:left-6 z-30" />
       </div>
 
       {/* Aurora background */}
@@ -391,7 +367,7 @@ export default function ClubExperience() {
                   viewport={{ once: true }}
                   transition={{ type: 'spring', stiffness: 200, damping: 12 }}
                 >
-                  <Crown size={32} className="mx-auto text-[#C79A44]" />
+                  <Crown size={32} className="mx-auto text-[#22d3ee]" />
                 </motion.div>
                 <span className="mt-4 block text-4xl">{spotlight.emoji}</span>
                 <h3 className="mt-2 text-xl font-bold">{spotlight.name}</h3>
@@ -455,7 +431,7 @@ export default function ClubExperience() {
       <section className="relative z-10 mx-auto mt-16 max-w-6xl px-4">
         <div className="glass rounded-[2.5rem] p-8 md:p-10">
           <div className="flex items-center gap-2">
-            <Trophy size={22} className="text-[#C79A44]" />
+            <Trophy size={22} className="text-[#22d3ee]" />
             <h2 className="display-heading text-2xl md:text-3xl">Circle Streaks</h2>
           </div>
           <p className="mt-2 text-ink/60">Members who keep showing up, keep glowing.</p>
@@ -568,7 +544,7 @@ export default function ClubExperience() {
           className="group flex items-center justify-between rounded-[2rem] border border-ink/10 bg-gradient-to-r from-[#fff0f3] to-[#f3e8ff] p-6 transition hover:scale-[1.01]"
         >
           <div>
-            <Crown size={20} className="text-[#C79A44]" />
+            <Crown size={20} className="text-[#22d3ee]" />
             <h3 className="mt-2 text-xl font-bold">Ambassador Hub</h3>
             <p className="text-sm text-ink/60">Love NOORIVA? Grow with us, earn rewards.</p>
           </div>
