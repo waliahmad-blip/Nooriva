@@ -7,7 +7,7 @@ import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { ChevronDown, ArrowRight, Sparkles } from 'lucide-react';
 import { BRAND, COMMERCE, NOORISH_GOLD, SKUS, FAQS } from '@/lib/noorishGold';
 
-const BASE_URL = 'https://nooriva.co';
+import { SITE_URL as BASE_URL } from '@/lib/site';
 
 const CategoryScene = dynamic(() => import('@/components/three/CategoryScene'), {
   ssr: false,

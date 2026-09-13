@@ -2,7 +2,7 @@ import Link from "next/link";
 import NoorishGoldShowcase from "@/components/seo/NoorishGoldShowcase";
 import { BRAND, SKUS, FAQS } from "@/lib/noorishGold";
 
-const BASE_URL = "https://nooriva.co";
+import { SITE_URL as BASE_URL } from "@/lib/site";
 
 export const metadata = {
   title: "NOORISH GOLD by NOORIVA | Nature's Golden Heart Pakistan",

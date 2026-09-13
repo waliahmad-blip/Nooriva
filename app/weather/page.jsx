@@ -1,3 +1,4 @@
+import { abs } from "@/lib/site";
 import WeatherGlow from '@/components/weather/WeatherGlow';
 
 export const metadata = {
@@ -9,10 +10,10 @@ export const metadata = {
     'natural glow weather', 'air quality skin', 'botanical hydration',
     'weather ritual', 'skin protection timeline',
   ],
-  alternates: { canonical: 'https://nooriva.co/weather' },
+  alternates: { canonical: abs('/weather') },
   openGraph: {
     type: 'website',
-    url: 'https://nooriva.co/weather',
+    url: abs('/weather'),
     title: 'Weather Glow — Your Skin, Tuned to the Sky',
     description:
       'Live weather, UV, and air — matched to your natural glow ritual.',
@@ -25,7 +26,7 @@ const jsonLd = {
   '@type': 'WebApplication',
   name: 'NOORIVA Weather Glow',
   applicationCategory: 'LifestyleApplication',
-  url: 'https://nooriva.co/weather',
+  url: abs('/weather'),
   description:
     'Live weather and UV guidance matched to botanical skin-food rituals.',
 };
@@ -33,8 +34,8 @@ const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nooriva.co' },
-    { '@type': 'ListItem', position: 2, name: 'Weather Glow', item: 'https://nooriva.co/weather' },
+    { '@type': 'ListItem', position: 1, name: 'Home', item: abs('') },
+    { '@type': 'ListItem', position: 2, name: 'Weather Glow', item: abs('/weather') },
   ],
 };
 

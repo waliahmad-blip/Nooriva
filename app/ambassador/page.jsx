@@ -1,3 +1,4 @@
+import { abs } from "@/lib/site";
 import AmbassadorHub from '@/components/ambassador/AmbassadorHub';
 
 export const metadata = {
@@ -9,10 +10,10 @@ export const metadata = {
     'botanical brand ambassador', 'creator rewards', 'glow influencer',
     'drink your natural glow', 'NOORIVA rewards',
   ],
-  alternates: { canonical: 'https://nooriva.co/ambassador' },
+  alternates: { canonical: abs('/ambassador') },
   openGraph: {
     type: 'website',
-    url: 'https://nooriva.co/ambassador',
+    url: abs('/ambassador'),
     title: 'Ambassador Hub — Grow with NOORIVA',
     description:
       'Share your natural glow, earn rewards, and grow with NOORIVA.',
@@ -26,14 +27,14 @@ const jsonLd = {
   name: 'NOORIVA Ambassador Program',
   description:
     'Creator rewards program for people who love natural, botanical glow rituals.',
-  url: 'https://nooriva.co/ambassador',
+  url: abs('/ambassador'),
 };
 const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nooriva.co' },
-    { '@type': 'ListItem', position: 2, name: 'Ambassador', item: 'https://nooriva.co/ambassador' },
+    { '@type': 'ListItem', position: 1, name: 'Home', item: abs('') },
+    { '@type': 'ListItem', position: 2, name: 'Ambassador', item: abs('/ambassador') },
   ],
 };
 

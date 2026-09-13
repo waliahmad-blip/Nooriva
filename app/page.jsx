@@ -1,3 +1,4 @@
+import { abs } from "@/lib/site";
 import NoorivaApp from '@/components/NoorivaApp';
 
 export const metadata = {
@@ -24,7 +25,7 @@ export const metadata = {
   creator: 'NOORIVA',
   publisher: 'NOORIVA',
   alternates: {
-    canonical: 'https://nooriva.co/',
+    canonical: abs('/'),
   },
   robots: {
     index: true,
@@ -39,7 +40,7 @@ export const metadata = {
   },
   openGraph: {
     type: 'website',
-    url: 'https://nooriva.co/',
+    url: abs('/'),
     title: 'NOORIVA — Natural Glow Rituals',
     description:
       'Botanical skin-food rituals from NOORIVA. Saffron sunrises, rose gardens, and pure natural radiance.',

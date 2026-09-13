@@ -1,3 +1,4 @@
+import { abs } from "@/lib/site";
 import RitualOfDay from '@/components/ritual/RitualOfDay';
 
 export const metadata = {
@@ -9,10 +10,10 @@ export const metadata = {
     'natural skin food', 'botanical drink today', 'rose saffron drink',
     'mango botanical energy', 'daily beauty ritual',
   ],
-  alternates: { canonical: 'https://nooriva.co/ritual-of-the-day' },
+  alternates: { canonical: abs('/ritual-of-the-day') },
   openGraph: {
     type: 'website',
-    url: 'https://nooriva.co/ritual-of-the-day',
+    url: abs('/ritual-of-the-day'),
     title: 'Ritual of the Day — Today’s Natural Glow',
     description:
       'A botanical skin-food moment matched to nature, every single day.',
@@ -26,14 +27,14 @@ const jsonLd = {
   name: 'NOORIVA Ritual of the Day',
   description:
     'Daily botanical skin-food ritual matched to nature’s rhythm.',
-  url: 'https://nooriva.co/ritual-of-the-day',
+  url: abs('/ritual-of-the-day'),
 };
 const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nooriva.co' },
-    { '@type': 'ListItem', position: 2, name: 'Ritual of the Day', item: 'https://nooriva.co/ritual-of-the-day' },
+    { '@type': 'ListItem', position: 1, name: 'Home', item: abs('') },
+    { '@type': 'ListItem', position: 2, name: 'Ritual of the Day', item: abs('/ritual-of-the-day') },
   ],
 };
 

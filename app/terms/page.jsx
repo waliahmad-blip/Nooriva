@@ -1,17 +1,18 @@
-﻿import BackToHome from "@/components/ui/BackToHome";
+import { abs } from "@/lib/site";
+import BackToHome from "@/components/ui/BackToHome";
 import { FileCheck, Sparkles, Scale, AlertCircle } from "lucide-react";
 
 export const metadata = {
   title: "Terms of Service | NOORIVA NOORISH GOLD",
   description: "Terms and conditions governing the purchase and consumption of NOORIVA NOORISH GOLD rituals in Pakistan.",
-  alternates: { canonical: "https://nooriva.co/terms" },
+  alternates: { canonical: abs("/terms") },
 };
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nooriva.co' },
-    { '@type': 'ListItem', position: 2, name: 'Terms of Service', item: 'https://nooriva.co/terms' },
+    { '@type': 'ListItem', position: 1, name: 'Home', item: abs('') },
+    { '@type': 'ListItem', position: 2, name: 'Terms of Service', item: abs('/terms') },
   ],
 };
 

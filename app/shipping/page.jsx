@@ -2,7 +2,7 @@ import BackToHome from "@/components/ui/BackToHome";
 import { Truck, Clock, ShieldCheck, MapPin } from "lucide-react";
 import { BRAND, COMMERCE } from "@/lib/noorishGold";
 
-const BASE_URL = "https://nooriva.co";
+import { SITE_URL as BASE_URL } from "@/lib/site";
 
 export const metadata = {
   title: "Shipping & Delivery Across Pakistan | Cash on Delivery (COD) | NOORIVA",

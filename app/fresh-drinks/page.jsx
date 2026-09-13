@@ -1,5 +1,6 @@
 import SeoLandingPage from "@/components/seo/SeoLandingPage";
 import { getSeoLandingPage } from "@/lib/seoLandingPages";
+import { abs } from "@/lib/site";
 
 const config = getSeoLandingPage("fresh-drinks");
 
@@ -11,11 +12,11 @@ export const metadata = {
   creator: "NOORIVA",
   publisher: "NOORIVA",
   alternates: {
-    canonical: `https://nooriva.co/${config.slug}`,
+    canonical: abs(`/${config.slug}`),
     languages: {
-      "en-PK": `https://nooriva.co/${config.slug}`,
-      "ur-PK": `https://nooriva.co/${config.slug}`,
-      "ar-PK": `https://nooriva.co/${config.slug}`,
+      "en-PK": abs(`/${config.slug}`),
+      "ur-PK": abs(`/${config.slug}`),
+      "ar-PK": abs(`/${config.slug}`),
     },
   },
   robots: {
@@ -24,7 +25,7 @@ export const metadata = {
   },
   openGraph: {
     type: "website",
-    url: `https://nooriva.co/${config.slug}`,
+    url: abs(`/${config.slug}`),
     title: config.title,
     description: config.description,
     siteName: "NOORIVA",
@@ -32,7 +33,7 @@ export const metadata = {
     alternateLocale: ["ur_PK", "ar_PK"],
     images: [
       {
-        url: "https://nooriva.co/og-image.png",
+        url: abs("/og-image.png"),
         width: 1200,
         height: 630,
         alt: "NOORIVA fresh fruit drink rituals in Pakistan built on NOORISH GOLD",
@@ -43,7 +44,7 @@ export const metadata = {
     card: "summary_large_image",
     title: config.title,
     description: config.description,
-    images: ["https://nooriva.co/og-image.png"],
+    images: [abs("/og-image.png")],
   },
 };
 

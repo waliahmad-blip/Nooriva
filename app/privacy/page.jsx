@@ -1,17 +1,18 @@
-﻿import BackToHome from "@/components/ui/BackToHome";
+import { abs } from "@/lib/site";
+import BackToHome from "@/components/ui/BackToHome";
 import { ShieldCheck, Lock, Eye, FileText } from "lucide-react";
 
 export const metadata = {
   title: "Privacy Policy | NOORIVA NOORISH GOLD",
   description: "NOORIVA's privacy policy. Learn how we handle customer data, order details, and privacy with discretion.",
-  alternates: { canonical: "https://nooriva.co/privacy" },
+  alternates: { canonical: abs("/privacy") },
 };
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nooriva.co' },
-    { '@type': 'ListItem', position: 2, name: 'Privacy Policy', item: 'https://nooriva.co/privacy' },
+    { '@type': 'ListItem', position: 1, name: 'Home', item: abs('') },
+    { '@type': 'ListItem', position: 2, name: 'Privacy Policy', item: abs('/privacy') },
   ],
 };
 
@@ -64,7 +65,7 @@ export default function PrivacyPage() {
               All customer transmissions are encrypted using industry-standard TLS 1.3 protocol. Order records are stored within secure database environments with strict row-level security. Payment on delivery (COD) ensures financial credentials are never held on our servers.
             </p>
             <p className="mt-4">
-              For privacy inquiries, contact our customer concierge at <a href="mailto:hello@nooriva.co" className="font-bold underline text-[#a78bfa]">hello@nooriva.co</a> or WhatsApp <a href="https://wa.me/923210550303" className="font-bold underline text-[#a78bfa]">+92 321 0550303</a>.
+              For privacy inquiries, contact our customer concierge at <a href="mailto:hello@nooriva.ai" className="font-bold underline text-[#a78bfa]">hello@nooriva.ai</a> or WhatsApp <a href="https://wa.me/923210550303" className="font-bold underline text-[#a78bfa]">+92 321 0550303</a>.
             </p>
           </section>
         </div>

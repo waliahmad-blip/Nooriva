@@ -1,18 +1,19 @@
-﻿import BackToHome from "@/components/ui/BackToHome";
+import { abs } from "@/lib/site";
+import BackToHome from "@/components/ui/BackToHome";
 import { RotateCcw, CheckCircle2, MessageCircle, HelpCircle } from "lucide-react";
 import { WHATSAPP_NUMBER } from "@/lib/data";
 
 export const metadata = {
   title: "Refund & Return Policy | NOORIVA NOORISH GOLD",
   description: "NOORIVA's 7-day easy return and refund policy. Dedicated customer support across Pakistan.",
-  alternates: { canonical: "https://nooriva.co/refund" },
+  alternates: { canonical: abs("/refund") },
 };
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nooriva.co' },
-    { '@type': 'ListItem', position: 2, name: 'Refund & Return Policy', item: 'https://nooriva.co/refund' },
+    { '@type': 'ListItem', position: 1, name: 'Home', item: abs('') },
+    { '@type': 'ListItem', position: 2, name: 'Refund & Return Policy', item: abs('/refund') },
   ],
 };
 

@@ -1,3 +1,4 @@
+import { abs } from "@/lib/site";
 import GlowQuizPage from '@/components/quiz/GlowQuizPage';
 
 export const metadata = {
@@ -8,10 +9,10 @@ export const metadata = {
     'glow quiz', 'NOORIVA quiz', 'find my ritual', 'natural drink quiz',
     'skin food quiz', 'botanical ritual match', 'glow drink finder',
   ],
-  alternates: { canonical: 'https://nooriva.co/quiz' },
+  alternates: { canonical: abs('/quiz') },
   openGraph: {
     type: 'website',
-    url: 'https://nooriva.co/quiz',
+    url: abs('/quiz'),
     title: 'Glow Quiz — Find Your Natural Ritual',
     description:
       'Three questions. One perfect botanical ritual.',
@@ -24,7 +25,7 @@ const jsonLd = {
   '@type': 'WebApplication',
   name: 'NOORIVA Glow Quiz',
   applicationCategory: 'LifestyleApplication',
-  url: 'https://nooriva.co/quiz',
+  url: abs('/quiz'),
   description:
     'Interactive quiz that matches visitors to their ideal botanical glow ritual.',
 };
@@ -33,8 +34,8 @@ const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nooriva.co' },
-    { '@type': 'ListItem', position: 2, name: 'Glow Quiz', item: 'https://nooriva.co/quiz' },
+    { '@type': 'ListItem', position: 1, name: 'Home', item: abs('') },
+    { '@type': 'ListItem', position: 2, name: 'Glow Quiz', item: abs('/quiz') },
   ],
 };
 export default function QuizPage() {

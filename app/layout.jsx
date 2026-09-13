@@ -9,8 +9,7 @@ import ScrollToTop from "@/components/ui/ScrollToTop";
 
 import { SessionProvider } from "next-auth/react";
 import { BRAND, COMMERCE, NOORISH_GOLD, HERO, SKUS, FAQS } from "@/lib/noorishGold";
-
-const BASE_URL = "https://nooriva.co";
+import { SITE_URL as BASE_URL } from "@/lib/site";
 
 const jsonLd = {
   "@context": "https://schema.org",

@@ -146,7 +146,7 @@ export default function Footer() {
                     </li>
                   ))}
                   <li className="flex items-center gap-2"><Phone size={14} /> +92 321 0550303</li>
-                  <li className="flex items-center gap-2"><Mail size={14} /> hello@nooriva.co</li>
+                  <li className="flex items-center gap-2"><Mail size={14} /> hello@nooriva.ai</li>
                 </ul>
 
                 <form onSubmit={handleSubscribe} className="mt-4 flex gap-2">

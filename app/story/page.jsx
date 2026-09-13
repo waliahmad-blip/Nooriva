@@ -1,3 +1,4 @@
+import { abs } from "@/lib/site";
 import OriginStory from '@/components/story/OriginStory';
 
 export const metadata = {
@@ -9,14 +10,14 @@ export const metadata = {
     'natural glow brand story', 'Pakistani beauty brand story',
     'collagen drink Pakistan', 'glutathione drink Pakistan',
   ],
-  alternates: { canonical: 'https://nooriva.co/story' },
+  alternates: { canonical: abs('/story') },
   openGraph: {
     type: 'article',
-    url: 'https://nooriva.co/story',
+    url: abs('/story'),
     title: 'Our Origin Story — How NOORIVA Came Home',
     description:
       'From an island convenience-store shelf to Lahore — the story behind NOORIVA’s glow.',
-    images: [{ url: 'https://nooriva.co/og-image.png', width: 1200, height: 630 }],
+    images: [{ url: abs('/og-image.png'), width: 1200, height: 630 }],
   },
 };
 
@@ -26,15 +27,15 @@ const jsonLd = {
   name: 'NOORIVA Origin Story',
   description:
     'The founding story of NOORIVA: a search for pure wellness in Koh Samui that became a promise to millions of women in Pakistan.',
-  url: 'https://nooriva.co/story',
+  url: abs('/story'),
 };
 
 const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nooriva.co' },
-    { '@type': 'ListItem', position: 2, name: 'Our Origin Story', item: 'https://nooriva.co/story' },
+    { '@type': 'ListItem', position: 1, name: 'Home', item: abs('') },
+    { '@type': 'ListItem', position: 2, name: 'Our Origin Story', item: abs('/story') },
   ],
 };
 export default function StoryPage() {

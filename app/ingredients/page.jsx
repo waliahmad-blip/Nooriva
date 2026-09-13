@@ -1,3 +1,4 @@
+import { abs } from "@/lib/site";
 import IngredientStory from '@/components/ingredients/IngredientStory';
 
 export const metadata = {
@@ -9,10 +10,10 @@ export const metadata = {
     'natural skin food', 'golden botanical heart', 'organic glow ritual',
     'mastic amla hibiscus', 'nature drink story',
   ],
-  alternates: { canonical: 'https://nooriva.co/ingredients' },
+  alternates: { canonical: abs('/ingredients') },
   openGraph: {
     type: 'website',
-    url: 'https://nooriva.co/ingredients',
+    url: abs('/ingredients'),
     title: 'Inside Nature’s Golden Heart',
     description:
       'The botanical soul of NOORIVA — a sensory journey through nature’s golden heart.',
@@ -26,15 +27,15 @@ const jsonLd = {
   name: 'NOORIVA Ingredient Story',
   description:
     'The botanical story behind NOORIVA’s natural glow rituals.',
-  url: 'https://nooriva.co/ingredients',
+  url: abs('/ingredients'),
 };
 
 const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nooriva.co' },
-    { '@type': 'ListItem', position: 2, name: 'Botanicals', item: 'https://nooriva.co/ingredients' },
+    { '@type': 'ListItem', position: 1, name: 'Home', item: abs('') },
+    { '@type': 'ListItem', position: 2, name: 'Botanicals', item: abs('/ingredients') },
   ],
 };
 export default function IngredientsPage() {

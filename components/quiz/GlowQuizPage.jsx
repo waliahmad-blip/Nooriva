@@ -86,7 +86,7 @@ export default function GlowQuizPage() {
   }
 
   function share() {
-    const text = `My NOORIVA ritual is ${result.name} — ${result.note}. Find yours at nooriva.co #DrinkYourNaturalGlow #NOORIVA`;
+    const text = `My NOORIVA ritual is ${result.name} — ${result.note}. Find yours at nooriva.ai #DrinkYourNaturalGlow #NOORIVA`;
     if (navigator.share) {
       navigator.share({ title: 'NOORIVA Glow Quiz', text });
     } else if (navigator.clipboard) {

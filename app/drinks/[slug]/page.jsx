@@ -8,7 +8,7 @@ import {
   SKUS,
 } from "@/lib/noorishGold";
 
-const BASE_URL = "https://nooriva.co";
+import { SITE_URL as BASE_URL } from "@/lib/site";
 
 function getDrink(slug) {
   return SKUS.find((sku) => sku.slug === slug) || null;

@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 export default async function AccountPage() {
-  const session = process.env.BYPASS_AUTH === 'true' ? { user: { name: 'Dev User', email: 'dev@nooriva.co', image: null, plan: 'glow' }, provider: 'dev-bypass', expires: new Date(Date.now() + 86400000).toISOString() } : await auth();
+  const session = process.env.BYPASS_AUTH === 'true' ? { user: { name: 'Dev User', email: 'dev@nooriva.ai', image: null, plan: 'glow' }, provider: 'dev-bypass', expires: new Date(Date.now() + 86400000).toISOString() } : await auth();
   if (!session) redirect("/login");
 
   // Serialize session to pass to client component safely

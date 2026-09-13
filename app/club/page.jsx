@@ -1,3 +1,4 @@
+import { abs } from "@/lib/site";
 import ClubExperience from '@/components/club/ClubExperience';
 
 export const metadata = {
@@ -10,11 +11,11 @@ export const metadata = {
     'botanical lifestyle', 'skin food community', 'glow support group',
     'respectful space', 'everyone blooms',
   ],
-  alternates: { canonical: 'https://nooriva.co/club' },
+  alternates: { canonical: abs('/club') },
   robots: { index: true, follow: true },
   openGraph: {
     type: 'website',
-    url: 'https://nooriva.co/club',
+    url: abs('/club'),
     title: 'NOORIVA Club — Everyone Blooms Here',
     description:
       'A co-ed garden of glow. Heart-to-heart talks, weekly circles, and spotlights for everyone.',
@@ -35,15 +36,15 @@ const jsonLd = {
   name: 'NOORIVA Club',
   description:
     'A co-ed community for people who love natural, botanical glow rituals.',
-  url: 'https://nooriva.co/club',
+  url: abs('/club'),
   slogan: 'Everyone blooms here.',
 };
 const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nooriva.co' },
-    { '@type': 'ListItem', position: 2, name: 'Club', item: 'https://nooriva.co/club' },
+    { '@type': 'ListItem', position: 1, name: 'Home', item: abs('') },
+    { '@type': 'ListItem', position: 2, name: 'Club', item: abs('/club') },
   ],
 };
 
