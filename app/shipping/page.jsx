@@ -1,5 +1,4 @@
 import BackToHome from "@/components/ui/BackToHome";
-import ScrollToTop from "@/components/ui/ScrollToTop";
 import { Truck, Clock, ShieldCheck, MapPin } from "lucide-react";
 import { BRAND, COMMERCE } from "@/lib/noorishGold";
 
@@ -78,7 +77,7 @@ export default function ShippingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="section-shell pt-8">
+      <div className="section-shell pt-24">
         <BackToHome />
       </div>
 
@@ -140,8 +139,6 @@ export default function ShippingPage() {
           </section>
         </div>
       </main>
-
-      <ScrollToTop />
     </div>
   );
 }

@@ -1,5 +1,4 @@
 ﻿import BackToHome from "@/components/ui/BackToHome";
-import ScrollToTop from "@/components/ui/ScrollToTop";
 import { RotateCcw, CheckCircle2, MessageCircle, HelpCircle } from "lucide-react";
 import { WHATSAPP_NUMBER } from "@/lib/data";
 
@@ -20,7 +19,7 @@ const jsonLd = {
 export default function RefundPage() {
   return (
     <div className="relative min-h-screen w-full bg-cream text-ink pb-36">
-      <div className="section-shell pt-8">
+      <div className="section-shell pt-24">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <BackToHome />
       </div>
@@ -69,8 +68,6 @@ export default function RefundPage() {
           </section>
         </div>
       </main>
-
-      <ScrollToTop />
     </div>
   );
 }

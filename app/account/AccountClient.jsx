@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
-import ScrollToTop from "@/components/ui/ScrollToTop";
 import BackToHome from "@/components/ui/BackToHome";
 import AccountOrders from "@/components/account/AccountOrders";
 
@@ -592,8 +591,6 @@ export default function AccountClient({ session }) {
         .noorix-orb-spin { animation: noorixOrbSpin 8s linear infinite; }
         @keyframes noorixOrbSpin { to { transform: rotate(360deg); } }
       `}</style>
-
-      <ScrollToTop />
 
       {/* Profile Picture Modal */}
       <AnimatePresence>

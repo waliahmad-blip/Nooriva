@@ -16,6 +16,7 @@ import {
   testimonials,
   faqs,
   PRICE,
+  WHATSAPP_NUMBER,
 } from "@/lib/data";
 
 const FLAVOR_SLUG_BY_ID = {

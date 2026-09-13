@@ -28,7 +28,7 @@ export default function StickyCart() {
           exit={{ y: 100, opacity: 0 }}
           className="fixed bottom-0 inset-x-0 z-20 md:hidden"
         >
-          <div className="glass mx-3 mb-3 rounded-2xl px-4 py-3 flex items-center justify-between">
+          <div className="glass mx-3 mb-28 rounded-2xl px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="h-8 w-8 rounded-full" style={{ background: flavor.color }} />
               <div>

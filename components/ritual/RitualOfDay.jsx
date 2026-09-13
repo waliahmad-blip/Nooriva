@@ -20,7 +20,6 @@ import {
   Calendar,
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
-import ScrollToTop from '@/components/ui/ScrollToTop';
 
 const RITUALS = [
   {
@@ -290,8 +289,6 @@ export default function RitualOfDay() {
           </Link>
         </section>
       </main>
-
-      <ScrollToTop />
     </div>
   );
 }

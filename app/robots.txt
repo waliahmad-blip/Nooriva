@@ -1,8 +1,5 @@
 User-agent: *
 Allow: /
 Disallow: /api/
-Disallow: /_next/
-
 Sitemap: https://nooriva.co/sitemap.xml
-Host: https://nooriva.co
 

@@ -4,7 +4,6 @@ import { motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { Leaf, Sparkles, ArrowRight, Flame, ShieldCheck, Heart } from 'lucide-react';
 import BackToHome from '@/components/ui/BackToHome';
-import ScrollToTop from '@/components/ui/ScrollToTop';
 
 const ORIGIN = [
   {
@@ -147,8 +146,6 @@ export default function OriginStory() {
           </Link>
         </motion.div>
       </main>
-
-      <ScrollToTop />
     </div>
   );
 }

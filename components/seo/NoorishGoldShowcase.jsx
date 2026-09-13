@@ -1,6 +1,5 @@
 ﻿'use client';
 import BackToHome from "@/components/ui/BackToHome";
-import ScrollToTop from "@/components/ui/ScrollToTop";
 
 import { useState, useMemo } from "react";
 import dynamic from "next/dynamic";
@@ -23,17 +22,6 @@ import {
 const CYBER_COLORS = ["#a78bfa", "#22d3ee", "#ff8fb2", "#5eead4", "#e2e8f0"];
 const orderMessage = encodeURIComponent("Hi NOORIVA! I want to learn more about NOORISH GOLD and order it in Pakistan.");
 const orderUrl = `https://wa.me/${COMMERCE.whatsappNumber}?text=${orderMessage}`;
-
-function ScrollProgress() {
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 });
-  return (
-    <motion.div
-      className="fixed top-0 left-0 right-0 z-50 h-[3px] origin-left"
-      style={{ scaleX, background: "linear-gradient(90deg, #a78bfa, #22d3ee, #ff8fb2, #5eead4)" }}
-    />
-  );
-}
 
 function AuroraField() {
   return (
@@ -139,8 +127,6 @@ export default function NoorishGoldShowcase() {
   return (
     <main className="relative min-h-screen overflow-x-clip pb-36">
       <BackToHome className="fixed top-20 left-4 sm:left-6 z-30" />
-      <ScrollToTop />
-      <ScrollProgress />
       <AuroraField />
 
       <section className="section-shell relative flex min-h-[90vh] items-center justify-center py-24">
@@ -163,7 +149,7 @@ export default function NoorishGoldShowcase() {
             <motion.p variants={revealUp} className="mx-auto mt-6 max-w-3xl text-sm leading-relaxed text-ink/65 md:text-base">{HERO.description}</motion.p>
             <motion.div variants={revealUp} className="mt-8 flex flex-wrap justify-center gap-3">
               <a href={orderUrl} className="btn-primary">Order NOORISH GOLD</a>
-              <Link href="/#flavours" className="btn-secondary">View 12 Rituals</Link>
+              <Link href="/noorish-gold#rituals" className="btn-secondary">View 12 Rituals</Link>
               <Link href="/ingredients" className="btn-secondary">Botanical Story</Link>
             </motion.div>
             
@@ -312,7 +298,7 @@ export default function NoorishGoldShowcase() {
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-ink/60 md:text-base">Choose one of the 12 glow rituals or order the full NOORISH GOLD collection for Pakistan.</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <a href={orderUrl} className="btn-primary">Order on WhatsApp</a>
-            <Link href="/#flavours" className="btn-secondary">Browse All 12 Rituals</Link>
+            <Link href="/noorish-gold#rituals" className="btn-secondary">Browse All 12 Rituals</Link>
           </div>
         </motion.div>
       </section>

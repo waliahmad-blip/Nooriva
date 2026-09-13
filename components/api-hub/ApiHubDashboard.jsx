@@ -9,7 +9,6 @@ import {
   Sunrise, CalendarDays, Hash, HeartPulse, Salad, FlaskConical
 } from "lucide-react";
 import Link from "next/link";
-import ScrollToTop from "@/components/ui/ScrollToTop";
 
 /* ═══════════════════════════════════════════════════════════
    GENERIC API HOOK
@@ -520,8 +519,6 @@ export default function ApiHubDashboard() {
           <ProfileGuessCard />
         </div>
       </div>
-
-      <ScrollToTop />
     </div>
   );
 }

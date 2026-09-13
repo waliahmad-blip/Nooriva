@@ -21,7 +21,6 @@ import {
   Youtube,
   Music2,
 } from 'lucide-react';
-import ScrollToTop from '@/components/ui/ScrollToTop';
 
 const PERKS = [
   { icon: Gift, title: 'Free Rituals', desc: 'Monthly NOORIVA drops, on us.' },
@@ -291,8 +290,6 @@ export default function AmbassadorHub() {
           </div>
         </section>
       </main>
-
-      <ScrollToTop />
     </div>
   );
 }

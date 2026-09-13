@@ -23,7 +23,6 @@ import {
   ShoppingBag,
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
-import ScrollToTop from '@/components/ui/ScrollToTop';
 
 /* ─────────────────────────────────────────────
    CITY ROUTER — free Open-Meteo endpoints
@@ -375,8 +374,6 @@ export default function WeatherGlow() {
           </button>
         </section>
       </main>
-
-      <ScrollToTop />
     </div>
   );
 }

@@ -53,21 +53,21 @@
       "name": "Shop NOORISH GOLD",
       "short_name": "Shop",
       "description": "Browse the 12 Noorish Gold glow rituals.",
-      "url": "/#flavours",
+      "url": "/noorish-gold#rituals",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Find My Ritual",
       "short_name": "Ritual",
       "description": "Find your personal glow ritual.",
-      "url": "/#rituals",
+      "url": "/quiz",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Order on WhatsApp",
       "short_name": "Order",
       "description": "Order NOORISH GOLD pouches in Pakistan.",
-      "url": "/#flavours",
+      "url": "/noorish-gold#rituals",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ],

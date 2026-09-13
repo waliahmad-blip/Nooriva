@@ -17,7 +17,6 @@ import {
   ShoppingBag,
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
-import ScrollToTop from '@/components/ui/ScrollToTop';
 
 const QUESTIONS = [
   {
@@ -277,8 +276,6 @@ export default function GlowQuizPage() {
           </AnimatePresence>
         </div>
       </main>
-
-      <ScrollToTop />
     </div>
   );
 }

@@ -35,7 +35,6 @@ import {
   Trophy,
 } from 'lucide-react';
 import BackToHome from '@/components/ui/BackToHome';
-import ScrollToTop from '@/components/ui/ScrollToTop';
 
 const WEEKLY_CIRCLES = [
   { id: 'skin', label: 'Skin', icon: Sparkles, color: '#ff8fb2', day: 'Mon', time: '8:00 PM', desc: 'Glow check-ins, texture talk, skin food.' },
@@ -615,8 +614,6 @@ export default function ClubExperience() {
           )}
         </AnimatePresence>
       </div>
-
-      <ScrollToTop />
     </div>
   );
 }

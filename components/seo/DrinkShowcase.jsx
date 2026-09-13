@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import BackToHome from '@/components/ui/BackToHome';
-import ScrollToTop from '@/components/ui/ScrollToTop';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { ShoppingBag, ArrowRight, ChevronDown, HelpCircle } from 'lucide-react';
 import { useStore } from '@/lib/store';
@@ -12,17 +11,6 @@ import { BRAND, COMMERCE, SKUS, FLAVOR_ARCHITECTURE } from '@/lib/noorishGold';
 import DrinkHero from './drink/DrinkHero';
 import DrinkTelemetryHud from './drink/DrinkTelemetryHud';
 import DrinkIngredients from './drink/DrinkIngredients';
-
-function ScrollProgress({ color }) {
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 });
-  return (
-    <motion.div
-      className="fixed top-0 left-0 right-0 z-50 h-[3px] origin-left"
-      style={{ scaleX, background: `linear-gradient(90deg, ${color}, #22d3ee, #ff8fb2, ${color})` }}
-    />
-  );
-}
 
 function SkuCard({ sku, index }) {
   return (
@@ -73,8 +61,6 @@ export default function DrinkShowcase({ drink }) {
   return (
     <main className="relative min-h-screen overflow-x-clip pb-36">
       <BackToHome className="fixed top-20 left-4 sm:left-6 z-30" />
-      <ScrollToTop />
-      <ScrollProgress color={drink.frameColour} />
       <nav className="section-shell mt-24 mb-6 flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-ink/50" aria-label="Breadcrumb">
         <Link href="/" className="hover:text-ink">Home</Link>
         <span>/</span>

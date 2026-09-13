@@ -18,7 +18,6 @@ import {
   Heart,
   Wind,
 } from 'lucide-react';
-import ScrollToTop from '@/components/ui/ScrollToTop';
 
 const BOTANICALS = [
   {
@@ -261,8 +260,6 @@ export default function IngredientStory() {
           </Link>
         </section>
       </main>
-
-      <ScrollToTop />
     </div>
   );
 }

@@ -2,7 +2,6 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import BackToHome from '@/components/ui/BackToHome';
-import ScrollToTop from '@/components/ui/ScrollToTop';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { ChevronDown, ArrowRight, Sparkles } from 'lucide-react';
@@ -14,22 +13,6 @@ const CategoryScene = dynamic(() => import('@/components/three/CategoryScene'), 
   ssr: false,
   loading: () => null,
 });
-
-function ScrollProgress({ colors }) {
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 });
-  const gradient = useMemo(() => {
-    const c = colors.length >= 2 ? colors.slice(0, 4) : ['#ff8fb2', '#a78bfa', '#22d3ee'];
-    return `linear-gradient(90deg, ${c.join(', ')})`;
-  }, [colors]);
-
-  return (
-    <motion.div
-      className="fixed top-0 left-0 right-0 z-50 h-[3px] origin-left"
-      style={{ scaleX, background: gradient }}
-    />
-  );
-}
 
 function AuroraField({ colors }) {
   const blobs = useMemo(() => {
@@ -382,8 +365,6 @@ export default function SeoLandingPage({ config }) {
   return (
     <main className="relative min-h-screen overflow-x-clip pb-36">
       <BackToHome className="fixed top-20 left-4 sm:left-6 z-30" />
-      <ScrollToTop />
-      <ScrollProgress colors={skuColors} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <section className="section-shell relative flex min-h-[90vh] items-center justify-center py-24">
@@ -438,7 +419,7 @@ export default function SeoLandingPage({ config }) {
               {config.description}
             </motion.p>
             <motion.div variants={revealUp} className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link href="/#flavours" className="btn-primary">
+              <Link href="/noorish-gold#rituals" className="btn-primary">
                 Shop 12 Rituals
               </Link>
               <Link href="/noorish-gold" className="btn-secondary">
@@ -600,7 +581,7 @@ export default function SeoLandingPage({ config }) {
               >
                 Order on WhatsApp
               </a>
-              <Link href="/#flavours" className="btn-secondary">
+              <Link href="/noorish-gold#rituals" className="btn-secondary">
                 Browse All 12 Rituals
               </Link>
             </div>

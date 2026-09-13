@@ -67,7 +67,7 @@ export default function Footer() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-40"
+      className="fixed bottom-16 left-0 right-0 z-40 md:bottom-0"
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >

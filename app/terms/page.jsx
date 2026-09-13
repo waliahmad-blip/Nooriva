@@ -1,5 +1,4 @@
 ﻿import BackToHome from "@/components/ui/BackToHome";
-import ScrollToTop from "@/components/ui/ScrollToTop";
 import { FileCheck, Sparkles, Scale, AlertCircle } from "lucide-react";
 
 export const metadata = {
@@ -19,7 +18,7 @@ const jsonLd = {
 export default function TermsPage() {
   return (
     <div className="relative min-h-screen w-full bg-cream text-ink pb-36">
-      <div className="section-shell pt-8">
+      <div className="section-shell pt-24">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <BackToHome />
       </div>
@@ -65,8 +64,6 @@ export default function TermsPage() {
           </section>
         </div>
       </main>
-
-      <ScrollToTop />
     </div>
   );
 }
