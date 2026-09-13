@@ -123,6 +123,15 @@ export const metadata = {
   publisher: BRAND.name,
   applicationName: BRAND.name,
   formatDetection: { telephone: false, address: false, email: false },
+  // ── Google Search Console ownership verification ──────────────────
+  // HTML-tag method. Set GOOGLE_SITE_VERIFICATION in the Netlify
+  // environment variables to the token Search Console shows you under
+  // "HTML tag" — no code change or redeploy of code is needed, only a
+  // Netlify env var + rebuild. The HTML-FILE method is also already in
+  // place at public/googlef846f8f2e22cd419.html as a second method.
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
+  },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
   openGraph: {
     type: "website",
@@ -166,7 +175,6 @@ export const metadata = {
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-title": "NOORIVA",
     "apple-mobile-web-app-status-bar-style": "default",
-    "facebook-domain-verification": "",
   },
 };
 
