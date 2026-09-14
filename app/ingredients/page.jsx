@@ -1,5 +1,6 @@
 import { abs } from "@/lib/site";
 import IngredientStory from '@/components/ingredients/IngredientStory';
+import IngredientLinks from '@/components/seo/IngredientLinks';
 
 export const metadata = {
   title: 'Inside Nature’s Golden Heart',
@@ -44,6 +45,7 @@ export default function IngredientsPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <IngredientStory />
+      <IngredientLinks />
     </>
   );
 }

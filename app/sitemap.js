@@ -10,6 +10,7 @@
 import { SITE_URL } from "@/lib/site";
 import { SKUS } from "@/lib/noorishGold";
 import { CITY_PAGES } from "@/lib/cityPages";
+import { INGREDIENT_PAGES } from "@/lib/ingredientPages";
 
 const STATIC_ROUTES = [
   { path: "/", changeFrequency: "daily", priority: 1.0 },
@@ -55,5 +56,12 @@ export default function sitemap() {
     priority: 0.85,
   }));
 
-  return [...pages, ...drinks, ...cities];
+  const botanicals = INGREDIENT_PAGES.map((item) => ({
+    url: `${SITE_URL}/ingredients/${item.slug}`,
+    lastModified,
+    changeFrequency: "monthly",
+    priority: 0.8,
+  }));
+
+  return [...pages, ...drinks, ...cities, ...botanicals];
 }
