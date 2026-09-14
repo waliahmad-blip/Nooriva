@@ -1,6 +1,7 @@
 import SeoLandingPage from "@/components/seo/SeoLandingPage";
 import { getSeoLandingPage } from "@/lib/seoLandingPages";
 import { abs } from "@/lib/site";
+import CityLinks from "@/components/seo/CityLinks";
 
 const config = getSeoLandingPage("glow-drinks");
 
@@ -49,5 +50,10 @@ export const metadata = {
 };
 
 export default function GlowDrinksPage() {
-  return <SeoLandingPage config={config} />;
+  return (
+    <>
+      <SeoLandingPage config={config} />
+      <CityLinks />
+    </>
+  );
 }

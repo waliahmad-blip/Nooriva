@@ -6,10 +6,16 @@ import TopBar from "@/components/ui/TopBar";
 import GlobalCommerce from "@/components/commerce/GlobalCommerce";
 import LenisProvider from "@/components/ui/LenisProvider";
 import ScrollToTop from "@/components/ui/ScrollToTop";
+import Script from "next/script";
 
 import { SessionProvider } from "next-auth/react";
 import { BRAND, COMMERCE, NOORISH_GOLD, HERO, SKUS, FAQS } from "@/lib/noorishGold";
 import { SITE_URL as BASE_URL } from "@/lib/site";
+
+// Google Analytics 4 — set NEXT_PUBLIC_GA_ID (e.g. G-XXXXXXXXXX) in Netlify
+// environment variables. No code change needed; the tag is simply omitted
+// while the variable is unset.
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -214,6 +220,20 @@ export default function RootLayout({ children }) {
               dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
           </LenisProvider>
+        {GA_ID && (
+            <>
+              <Script
+                src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+                strategy="afterInteractive"
+              />
+              <Script id="ga4-init" strategy="afterInteractive">
+                {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_ID}', { anonymize_ip: true });`}
+              </Script>
+            </>
+          )}
         </SessionProvider>
       </body>
     </html>
