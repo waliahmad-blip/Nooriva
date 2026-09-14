@@ -256,7 +256,7 @@ function GlowCard({ ritual, index }) {
         <p className="text-sm text-ink/60">{ritual.note}</p>
         <button
           onClick={share}
-          className="mt-4 inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-xs font-bold text-cream-50"
+          className="mt-4 inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-xs font-bold text-cream"
         >
           {copied ? <Check size={14} /> : <Share2 size={14} />}
           {copied ? 'Copied' : 'Share this glow'}

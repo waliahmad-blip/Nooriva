@@ -88,7 +88,7 @@ export default function MobileNav() {
             }}
           />
           <Bot size={17} className="relative z-10 text-ink" />
-          <span className="relative z-10 text-[8px] font-bold leading-none text-ink">AI</span>
+          <span className="relative z-10 text-[8px] font-bold leading-none text-ink">Noorix AI</span>
         </Link>
 
         {/* Account Link */}
@@ -105,7 +105,7 @@ export default function MobileNav() {
             }}
           />
           <User size={17} className="relative z-10 text-ink" />
-          <span className="relative z-10 text-[8px] font-bold leading-none text-ink">Me</span>
+          <span className="relative z-10 text-[8px] font-bold leading-none text-ink">Account</span>
         </Link>
       </div>
     </nav>

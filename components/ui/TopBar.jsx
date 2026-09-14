@@ -35,7 +35,7 @@ export default function TopBar() {
         <Link
           href="/"
           onClick={playPop}
-          className="pointer-events-auto flex items-center p-0 bg-transparent border-0 transition hover:scale-105 shrink-0 max-w-[110px] sm:max-w-none"
+          className="pointer-events-auto flex min-w-0 flex-1 items-center overflow-hidden p-0 bg-transparent border-0 transition hover:scale-105 sm:flex-none"
           aria-label="NOORIVA Home"
         >
           <AnimatedLogo size="small" />
@@ -82,7 +82,7 @@ export default function TopBar() {
         </nav>
 
         {/* Action buttons */}
-        <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="pointer-events-auto flex shrink-0 items-center gap-1 sm:gap-2">
           {/* Search Button */}
           <button
             type="button"
@@ -130,7 +130,7 @@ export default function TopBar() {
           <Link
             href="/account"
             onClick={playPop}
-            className={`tap-target hidden items-center justify-center rounded-full bg-white/60 p-2.5 text-ink backdrop-blur-xl transition hover:bg-white hover:scale-105 md:flex ${
+            className={`tap-target flex items-center justify-center rounded-full bg-white/60 p-2.5 text-ink backdrop-blur-xl transition hover:bg-white hover:scale-105 ${
               pathname === "/account" ? "ring-2 ring-ink/20" : ""
             }`}
             style={{ minWidth: "38px", minHeight: "38px" }}

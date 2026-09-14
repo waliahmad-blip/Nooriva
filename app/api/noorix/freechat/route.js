@@ -138,7 +138,22 @@ export async function POST(request) {
       ? 'Service is busy. Please wait a moment.'
       : 'Something went wrong. Please try again.';
 
-    return NextResponse.json({ error: clientMessage, detail: error.message, cause: error.cause?.message || error.cause, stack: error.stack }, { status: 500 });
+    // Diagnostic fields are development-only. Returning error.message,
+    // error.cause and error.stack to the browser exposes internal file paths
+    // and provider details to anyone who can trigger a failure.
+    const diagnostics =
+      process.env.NODE_ENV === 'development'
+        ? {
+            detail: error.message,
+            cause: error.cause?.message || error.cause,
+            stack: error.stack,
+          }
+        : {};
+
+    return NextResponse.json(
+      { error: clientMessage, ...diagnostics },
+      { status: 500 }
+    );
   }
 }
 

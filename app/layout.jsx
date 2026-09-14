@@ -199,7 +199,7 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Cairo:wght@400;600;700;800&display=swap"
         />
       </head>
-      <body className="bg-cream-50 text-ink antialiased">
+      <body className="bg-cream text-ink antialiased">
         <SessionProvider>
           <LenisProvider>
             <ScrollToTop />

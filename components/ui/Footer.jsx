@@ -92,7 +92,7 @@ export default function Footer() {
           open ? 'max-h-[640px] opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <footer className="border-t border-ink/10 bg-cream-50/95 backdrop-blur-md">
+        <footer className="border-t border-ink/10 bg-cream/95 backdrop-blur-md">
           <div className="mx-auto max-w-7xl px-5 py-8 md:px-8">
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {/* Brand + socials */}
