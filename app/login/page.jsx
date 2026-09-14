@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import LoginClient from "./LoginClient";
 
 export const metadata = {
-  title: "Login | NOORIVA — Drink Your Glow",
+  title: "Login",
   description: "Login to NOORIVA to access Noorix, your personal glow guide.",
   robots: { index: false, follow: false },
 };

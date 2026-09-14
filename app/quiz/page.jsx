@@ -2,7 +2,7 @@ import { abs } from "@/lib/site";
 import GlowQuizPage from '@/components/quiz/GlowQuizPage';
 
 export const metadata = {
-  title: 'Glow Quiz — Find Your Natural Ritual | NOORIVA',
+  title: 'Glow Quiz — Find Your Natural Ritual',
   description:
     'Answer three little questions and NOORIVA will match you to your perfect botanical ritual. Find your natural glow in under a minute.',
   keywords: [

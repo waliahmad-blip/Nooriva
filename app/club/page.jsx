@@ -2,7 +2,7 @@ import { abs } from "@/lib/site";
 import ClubExperience from '@/components/club/ClubExperience';
 
 export const metadata = {
-  title: 'NOORIVA Club — Everyone Blooms Here | Natural Glow Community',
+  title: 'NOORIVA Club — Everyone Blooms Here',
   description:
     'Join the NOORIVA Club — a co-ed garden of glow. Heart-to-heart talks, weekly circles, Lady & Gentleman of the Day, and an honest, respectful safe space for everyone who drinks their natural glow.',
   keywords: [

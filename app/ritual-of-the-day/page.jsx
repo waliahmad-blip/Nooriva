@@ -2,7 +2,7 @@ import { abs } from "@/lib/site";
 import RitualOfDay from '@/components/ritual/RitualOfDay';
 
 export const metadata = {
-  title: 'Ritual of the Day — Today’s Natural Glow | NOORIVA',
+  title: 'Ritual of the Day — Today’s Natural Glow',
   description:
     'Discover today’s NOORIVA ritual — a botanical skin-food moment matched to nature. Saffron, rose, mango, and more. Drink your natural glow.',
   keywords: [

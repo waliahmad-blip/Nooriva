@@ -2,7 +2,7 @@ import { abs } from "@/lib/site";
 import WeatherGlow from '@/components/weather/WeatherGlow';
 
 export const metadata = {
-  title: 'Weather Glow — Your Skin, Tuned to the Sky | NOORIVA',
+  title: 'Weather Glow — Your Skin, Tuned to the Sky',
   description:
     'Live weather, UV, and air quality — matched to your natural NOORIVA glow ritual. Drink your natural glow, whatever the sky says.',
   keywords: [

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import SignupClient from "./SignupClient";
 
 export const metadata = {
-  title: "Sign Up | NOORIVA — Drink Your Glow",
+  title: "Sign Up",
   description: "Create a NOORIVA account to access Noorix, your personal glow guide.",
   robots: { index: false, follow: false },
 };

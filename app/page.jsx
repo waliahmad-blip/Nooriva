@@ -3,7 +3,7 @@ import NoorivaApp from '@/components/NoorivaApp';
 
 export const metadata = {
   title: {
-    default: 'NOORIVA — Natural Glow Rituals | Skin Food, Straight from Nature',
+    absolute: 'NOORIVA — Natural Glow Rituals | Drink Your Glow',
   },
   description:
     'Discover NOORIVA’s botanical rituals — premium glow drinks, natural energy, and skin-food hydration crafted from saffron, rose, and organic botanicals. Drink your natural glow.',

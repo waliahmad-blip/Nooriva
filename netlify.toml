@@ -7,3 +7,27 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# ────────────────────────────────────────────────────────────────
+# Canonical host redirects
+#
+# nooriva.co / www.nooriva.co are registered as Netlify "domain
+# aliases", which serve the site directly (HTTP 200) instead of
+# redirecting — Netlify only auto-redirects the www <-> apex pair.
+#
+# These rules force a 301 onto the canonical host so Google
+# consolidates all signals onto nooriva.ai and so Search Console's
+# "Change of Address" can be completed.
+# ────────────────────────────────────────────────────────────────
+
+[[redirects]]
+  from = "https://nooriva.co/*"
+  to = "https://nooriva.ai/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.nooriva.co/*"
+  to = "https://nooriva.ai/:splat"
+  status = 301
+  force = true

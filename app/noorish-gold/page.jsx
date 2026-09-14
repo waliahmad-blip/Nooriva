@@ -5,7 +5,7 @@ import { BRAND, SKUS, FAQS } from "@/lib/noorishGold";
 import { SITE_URL as BASE_URL } from "@/lib/site";
 
 export const metadata = {
-  title: "NOORISH GOLD by NOORIVA | Nature's Golden Heart Pakistan",
+  title: "NOORISH GOLD — Signature Golden Heart",
   description:
     "Discover NOORISH GOLD by NOORIVA — a golden botanical heart of saffron, rose, and nature's own glow. Available nationwide in Pakistan with Cash on Delivery (COD) across Karachi, Lahore, Islamabad, Rawalpindi, Faisalabad, Multan, Peshawar, Quetta, Sialkot, and Gujranwala.",
   keywords: [
@@ -53,7 +53,7 @@ export const metadata = {
   openGraph: {
     type: "website",
     url: `${BASE_URL}/noorish-gold`,
-    title: "NOORISH GOLD by NOORIVA — Nature's Golden Heart Pakistan",
+    title: "NOORISH GOLD — Signature Golden Heart",
     description: "A golden botanical heart of saffron, rose, and nature's own glow. Available nationwide with Cash on Delivery (COD) across Karachi, Lahore, Islamabad, Rawalpindi, Faisalabad, Multan, Peshawar, Quetta, Sialkot, and Gujranwala.",
     siteName: "NOORIVA",
     locale: "en_PK",

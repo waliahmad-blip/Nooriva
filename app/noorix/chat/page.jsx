@@ -8,7 +8,7 @@ import { BRAND } from "@/lib/noorishGold";
 
 export const metadata = {
   metadataBase: new URL(abs("")),
-  title: "Noorix Chat — Your Personal Glow Guide | NOORIVA",
+  title: "Noorix Chat — Your Personal Glow Guide",
   description:
     "Chat with Noorix, your personal glow guide. Skin analysis, nutrition coaching, sleep optimization, and more — no typing required.",
   keywords: [
@@ -39,7 +39,7 @@ export const metadata = {
   openGraph: {
     type: "website",
     url: abs("/noorix/chat"),
-    title: "Noorix Chat — Your Personal Glow Guide | NOORIVA",
+    title: "Noorix Chat — Your Personal Glow Guide",
     description:
       "Chat with Noorix, your personal glow guide. Skin analysis, nutrition coaching, sleep optimization, and more.",
     siteName: "NOORIVA",
@@ -55,7 +55,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Noorix Chat — Your Personal Glow Guide | NOORIVA",
+    title: "Noorix Chat — Your Personal Glow Guide",
     description:
       "Chat with Noorix, your personal glow guide. No typing required.",
     images: [abs("/og-image.png")],

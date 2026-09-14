@@ -5,7 +5,7 @@ import { BRAND, COMMERCE } from "@/lib/noorishGold";
 import { SITE_URL as BASE_URL } from "@/lib/site";
 
 export const metadata = {
-  title: "Shipping & Delivery Across Pakistan | Cash on Delivery (COD) | NOORIVA",
+  title: "Shipping & Delivery Across Pakistan | COD",
   description: "Nationwide delivery across Pakistan in 2–4 business days. Cash on Delivery (COD) accepted. Flat ₨ 250 shipping, free delivery over ₨ 5,000 in Karachi, Lahore, Islamabad, Rawalpindi, Faisalabad, Multan, Peshawar, Quetta, Sialkot, and Gujranwala.",
   keywords: [
     "NOORIVA shipping Pakistan", "Cash on Delivery drinks Pakistan", "COD beauty drink Karachi", "delivery Lahore",

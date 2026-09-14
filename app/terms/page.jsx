@@ -3,7 +3,7 @@ import BackToHome from "@/components/ui/BackToHome";
 import { FileCheck, Sparkles, Scale, AlertCircle } from "lucide-react";
 
 export const metadata = {
-  title: "Terms of Service | NOORIVA NOORISH GOLD",
+  title: "Terms of Service",
   description: "Terms and conditions governing the purchase and consumption of NOORIVA NOORISH GOLD rituals in Pakistan.",
   alternates: { canonical: abs("/terms") },
 };

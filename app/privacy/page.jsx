@@ -3,7 +3,7 @@ import BackToHome from "@/components/ui/BackToHome";
 import { ShieldCheck, Lock, Eye, FileText } from "lucide-react";
 
 export const metadata = {
-  title: "Privacy Policy | NOORIVA NOORISH GOLD",
+  title: "Privacy Policy",
   description: "NOORIVA's privacy policy. Learn how we handle customer data, order details, and privacy with discretion.",
   alternates: { canonical: abs("/privacy") },
 };

@@ -108,7 +108,7 @@ export const metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
     default: "NOORIVA — Natural Glow Rituals | Drink Your Glow",
-    template: "%s · NOORIVA NOORISH GOLD",
+    template: "%s | NOORIVA",
   },
   description: "Discover NOORISH GOLD by NOORIVA — 12 botanical skin-food rituals for natural radiance. Available nationwide across Pakistan with Cash on Delivery (COD), ₨ 250 flat shipping, free delivery over ₨ 5,000 in Karachi, Lahore, Islamabad, Rawalpindi, Faisalabad, Multan, Peshawar, Quetta, Sialkot, and Gujranwala.",
   keywords: [

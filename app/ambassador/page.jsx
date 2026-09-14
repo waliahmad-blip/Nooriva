@@ -2,7 +2,7 @@ import { abs } from "@/lib/site";
 import AmbassadorHub from '@/components/ambassador/AmbassadorHub';
 
 export const metadata = {
-  title: 'Ambassador Hub — Grow with NOORIVA | Natural Glow Creators',
+  title: 'Ambassador Hub — Creator Programme',
   description:
     'Join the NOORIVA Ambassador program. Share your natural glow, earn points, unlock rewards, and grow with a botanical beauty brand. Open to creators with 5,000+ engaged followers.',
   keywords: [

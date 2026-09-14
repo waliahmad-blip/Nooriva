@@ -4,7 +4,7 @@ import { RotateCcw, CheckCircle2, MessageCircle, HelpCircle } from "lucide-react
 import { WHATSAPP_NUMBER } from "@/lib/data";
 
 export const metadata = {
-  title: "Refund & Return Policy | NOORIVA NOORISH GOLD",
+  title: "Refund & Return Policy",
   description: "NOORIVA's 7-day easy return and refund policy. Dedicated customer support across Pakistan.",
   alternates: { canonical: abs("/refund") },
 };

@@ -24,7 +24,6 @@ const STATIC_ROUTES = [
   { path: "/quiz", changeFrequency: "weekly", priority: 0.9 },
   { path: "/ritual-of-the-day", changeFrequency: "daily", priority: 0.9 },
   { path: "/ambassador", changeFrequency: "weekly", priority: 0.88 },
-  { path: "/api-hub", changeFrequency: "weekly", priority: 0.85 },
   { path: "/privacy", changeFrequency: "monthly", priority: 0.7 },
   { path: "/terms", changeFrequency: "monthly", priority: 0.7 },
   { path: "/shipping", changeFrequency: "monthly", priority: 0.7 },

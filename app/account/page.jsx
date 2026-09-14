@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import AccountClient from "./AccountClient";
 
 export const metadata = {
-  title: "My Account | NOORIVA",
+  title: "My Account",
   description: "Your NOORIVA account and glow journey.",
   robots: { index: false, follow: false },
 };

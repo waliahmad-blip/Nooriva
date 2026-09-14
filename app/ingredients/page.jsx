@@ -2,7 +2,7 @@ import { abs } from "@/lib/site";
 import IngredientStory from '@/components/ingredients/IngredientStory';
 
 export const metadata = {
-  title: 'Inside Nature’s Golden Heart — NOORIVA Botanical Story',
+  title: 'Inside Nature’s Golden Heart',
   description:
     'Discover the botanical soul of NOORIVA — saffron, rose, mastic, amla, sea buckthorn, and hibiscus. A sensory journey through nature’s golden heart, without revealing the recipe.',
   keywords: [

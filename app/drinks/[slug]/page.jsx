@@ -29,7 +29,7 @@ export async function generateMetadata({ params }) {
     };
   }
   const url = `${BASE_URL}/drinks/${drink.slug}`;
-  const title = `${drink.name} — ${drink.slogan} | NOORISH GOLD by NOORIVA Pakistan`;
+  const title = `${drink.name} — ${drink.slogan}`;
   const description = `${drink.slogan}. ${drink.name} is a 150ml squeezable ${drink.illustrationStyle} glow drink ritual in Pakistan. Built on the proprietary NOORISH GOLD core. 100% zero-sugar, Halal certified, and available nationwide with Cash on Delivery (COD).`;
 
   return {
