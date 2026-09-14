@@ -1,5 +1,6 @@
 import { abs } from "@/lib/site";
 import NoorivaApp from '@/components/NoorivaApp';
+import { FAQS } from '@/lib/noorishGold';
 
 export const metadata = {
   title: {
@@ -65,5 +66,26 @@ export const metadata = {
 };
 
 export default function Home() {
-  return <NoorivaApp />;
+  return (
+    <>
+      {/* FAQPage lives here and not in the root layout: the homepage is the
+          only route that actually renders these questions, and Google requires
+          FAQ markup to match content that is visible on the page. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: FAQS.map((faq) => ({
+              "@type": "Question",
+              name: faq.question,
+              acceptedAnswer: { "@type": "Answer", text: faq.answer },
+            })),
+          }),
+        }}
+      />
+      <NoorivaApp />
+    </>
+  );
 }

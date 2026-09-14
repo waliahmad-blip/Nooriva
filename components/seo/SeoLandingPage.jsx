@@ -280,7 +280,7 @@ export default function SeoLandingPage({ config }) {
   ).filter((page) => config.relatedPageSlugs.includes(page.slug));
 
   const pageUrl = `${BASE_URL}/${config.slug}`;
-  const faqs = config.faqIndexes.map((index) => FAQS[index]).filter(Boolean);
+  const faqs = config.faq || config.faqIndexes.map((index) => FAQS[index]).filter(Boolean);
 
   const ctaGradient = `linear-gradient(135deg, ${skuColors[0] || '#ff8fb2'}, ${
     skuColors[1] || '#a78bfa'
@@ -450,7 +450,7 @@ export default function SeoLandingPage({ config }) {
           className="mx-auto max-w-3xl text-center"
         >
           <h2 className="display-heading text-4xl md:text-5xl">
-            Why These {BRAND.name} Rituals Work
+            {config.whyTitle || `Why These ${BRAND.name} Rituals Work`}
           </h2>
         </motion.div>
         <div className="mx-auto mt-10 max-w-4xl space-y-6">
@@ -478,7 +478,7 @@ export default function SeoLandingPage({ config }) {
           className="mx-auto mb-10 max-w-3xl text-center"
         >
           <h2 className="display-heading text-4xl md:text-5xl">
-            Matched NOORISH GOLD Rituals
+            {config.relatedTitle || 'Matched NOORISH GOLD Rituals'}
           </h2>
         </motion.div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -497,7 +497,7 @@ export default function SeoLandingPage({ config }) {
           className="mx-auto mb-10 max-w-3xl text-center"
         >
           <h2 className="display-heading text-4xl md:text-5xl">
-            Questions About These Drinks
+            {config.faqTitle || 'Questions About These Drinks'}
           </h2>
         </motion.div>
         <div className="mx-auto max-w-4xl space-y-4">

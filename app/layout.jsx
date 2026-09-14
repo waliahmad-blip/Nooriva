@@ -9,7 +9,7 @@ import ScrollToTop from "@/components/ui/ScrollToTop";
 import Script from "next/script";
 
 import { SessionProvider } from "next-auth/react";
-import { BRAND, COMMERCE, NOORISH_GOLD, HERO, SKUS, FAQS } from "@/lib/noorishGold";
+import { BRAND, COMMERCE, NOORISH_GOLD, HERO, SKUS } from "@/lib/noorishGold";
 import { SITE_URL as BASE_URL } from "@/lib/site";
 
 // Google Analytics 4 — set NEXT_PUBLIC_GA_ID (e.g. G-XXXXXXXXXX) in Netlify
@@ -102,10 +102,6 @@ const jsonLd = {
           },
         },
       })),
-    },
-    {
-      "@type": "FAQPage",
-      mainEntity: FAQS.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })),
     },
   ],
 };
