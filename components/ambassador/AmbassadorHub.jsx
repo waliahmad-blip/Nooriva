@@ -127,9 +127,7 @@ export default function AmbassadorHub() {
 
   return (
     <div className="relative min-h-screen w-full overflow-x-clip bg-[#ffffff] text-ink pb-36">
-      <BackToHome className="fixed top-20 left-4 sm:left-6 z-30" />
-      <div className="relative z-20 mx-auto w-full max-w-6xl px-4 pt-4 md:px-8">
-      </div>
+      <div className="relative z-20 mx-auto w-full max-w-6xl px-4 pt-20 md:px-8"><BackToHome className="mb-2 inline-block" /></div>
       {/* Aurora accents */}
       <div
         aria-hidden="true"

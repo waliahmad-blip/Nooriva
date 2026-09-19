@@ -29,6 +29,10 @@ const ROUTE_PALETTES = {
   '/ritual-of-the-day': ['#f59e0b', '#fbbf24', '#E7D3A8', '#C79A44', '#fff7ed', '#d97706'],
   '/ambassador': ['#7c3aed', '#f472b6', '#ff8fb2', '#4ade80', '#e879f9', '#1e1b4b'],
   '/ingredients': ['#5eead4', '#0ea5e9', '#a7f3d0', '#99f6e4', '#14b8a6', '#e0f2fe'],
+  '/shipping': ['#fbbf24', '#f59e0b', '#E7D3A8', '#C79A44', '#fff7ed', '#d97706'],
+  '/refund': ['#5eead4', '#67e8f9', '#ff8fb2', '#a78bfa', '#f472b6', '#ffffff'],
+  '/privacy': ['#a78bfa', '#22d3ee', '#c4b5fd', '#67e8f9', '#e2e8f0', '#5eead4'],
+  '/terms': ['#E7D3A8', '#C79A44', '#8E6B3F', '#F3E9D8', '#D9B7A8', '#4A2C1A'],
 };
 
 const ROUTE_NAMES = {
@@ -50,6 +54,10 @@ const ROUTE_NAMES = {
   '/ritual-of-the-day': 'Ritual of the Day',
   '/ambassador': 'Ambassador Hub',
   '/ingredients': 'Botanicals',
+  '/shipping': 'Shipping & Delivery',
+  '/refund': 'Refund Policy',
+  '/privacy': 'Privacy Policy',
+  '/terms': 'Terms of Service',
 };
 
 const ROUTE_TAGLINES = {
@@ -71,11 +79,17 @@ const ROUTE_TAGLINES = {
   '/ritual-of-the-day': "Today's golden ritual.",
   '/ambassador': 'Grow with NOORIVA.',
   '/ingredients': "Inside nature's golden heart.",
+  '/shipping': 'Nationwide, with Cash on Delivery.',
+  '/refund': 'Seven days, no awkward questions.',
+  '/privacy': 'Your glow journey stays yours.',
+  '/terms': 'The plain-English version.',
 };
 
 function getPalette(path) {
   if (ROUTE_PALETTES[path]) return ROUTE_PALETTES[path];
   if (path.startsWith('/drinks/')) return ROUTE_PALETTES['/glow-drinks'];
+  if (path.startsWith('/glow-drinks/')) return ROUTE_PALETTES['/glow-drinks'];
+  if (path.startsWith('/ingredients/')) return ROUTE_PALETTES['/ingredients'];
   return ROUTE_PALETTES['/'];
 }
 
@@ -85,11 +99,29 @@ function getRouteName(path) {
     const slug = path.replace('/drinks/', '');
     return slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
   }
-  return path.replace('/', '').replace(/-/g, ' ');
+  // City and botanical detail pages — title-case the slug rather than dumping
+  // the raw path. (Kept dependency-free on purpose: this file is in the root
+  // layout, so anything imported here ships in EVERY route bundle.)
+  if (path.startsWith('/glow-drinks/')) {
+    const label = path.replace('/glow-drinks/', '').replace(/-/g, ' ');
+    return `Glow Drinks · ${label.replace(/\b\w/g, (c) => c.toUpperCase())}`;
+  }
+
+  if (path.startsWith('/ingredients/')) {
+    const label = path.replace('/ingredients/', '').replace(/-/g, ' ');
+    return label.replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+
+  // Fallback: title-case the last segment rather than dumping the raw slug.
+  const lastSegment = path.split('/').filter(Boolean).pop() || 'NOORIVA';
+  return lastSegment.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function getTagline(path) {
-  return ROUTE_TAGLINES[path] || "Nature's glow, inside and out.";
+  if (ROUTE_TAGLINES[path]) return ROUTE_TAGLINES[path];
+  if (path.startsWith('/glow-drinks/')) return 'Radiance you can drink.';
+  if (path.startsWith('/ingredients/')) return "Inside nature's golden heart.";
+  return "Nature's glow, inside and out.";
 }
 
 export default function PageTransition({ children }) {
@@ -123,14 +155,14 @@ export default function PageTransition({ children }) {
 
   return (
     <>
-      <main className="relative z-10 min-h-screen">
+      <div className="relative z-10 min-h-screen">
         {children}
-      </main>
+      </div>
 
       {transition && (
         <div
           aria-hidden="true"
-          className="fixed inset-0 z-[9999] pointer-events-none"
+          className="route-veil fixed inset-0 z-[9999] pointer-events-none"
         >
           <style>{`
             @keyframes bladeEnterLeft {
@@ -173,7 +205,7 @@ export default function PageTransition({ children }) {
               <div
                 key={i}
                 aria-hidden="true"
-                className="fixed top-0 h-full"
+                className="route-veil-blade fixed top-0 h-full"
                 style={{
                   left: `${i * (100 / BLADE_COUNT)}vw`,
                   width: `${100 / BLADE_COUNT + 1.5}vw`,
@@ -188,7 +220,7 @@ export default function PageTransition({ children }) {
           })}
 
           <div
-            className="fixed inset-0 flex flex-col items-center justify-center text-center"
+            className="route-veil-title fixed inset-0 flex flex-col items-center justify-center text-center"
             style={{
               animation: `titlePulse ${TOTAL_MS - 80}ms forwards`,
               willChange: 'opacity, transform, filter',
@@ -201,7 +233,7 @@ export default function PageTransition({ children }) {
               {transition.name}
             </span>
             <span
-              className="mt-3 block max-w-md text-sm italic text-white/75 md:text-base"
+              className="route-veil-tagline mt-3 block max-w-md text-sm italic text-white/75 md:text-base"
               style={{
                 animation: `taglinePulse ${TOTAL_MS - 120}ms 140ms both`,
               }}

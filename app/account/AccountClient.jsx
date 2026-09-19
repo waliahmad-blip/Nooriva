@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import BackToHome from "@/components/ui/BackToHome";
 import AccountOrders from "@/components/account/AccountOrders";
+import { useStore } from "@/lib/store";
 
 /* ═══════════════════════════════════════════════════════════
    CONSTANTS (unchanged)
@@ -108,7 +109,17 @@ export default function AccountClient({ session }) {
   const router = useRouter();
   const name = session?.user?.name || session?.user?.email || "Glow Seeker";
   const provider = session?.provider || "Email";
-  const userPlan = (session?.user?.plan || "lite").toLowerCase();
+
+  const storePlan = useStore((s) => s.noorixPlan);
+  const setNoorixPlan = useStore((s) => s.setNoorixPlan);
+
+  useEffect(() => {
+    if (session?.user?.plan) {
+      setNoorixPlan(session.user.plan.toLowerCase());
+    }
+  }, [session?.user?.plan, setNoorixPlan]);
+
+  const userPlan = (session?.user?.plan || storePlan || "lite").toLowerCase();
   const userTierIndex = TIER_LEVELS.indexOf(userPlan) >= 0 ? TIER_LEVELS.indexOf(userPlan) : 0;
 
   const glowScore = 84;
@@ -330,44 +341,118 @@ export default function AccountClient({ session }) {
 
       <div className="relative z-10 mx-auto max-w-7xl space-y-8">
         {/* HEADER */}
-        <motion.header initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-3xl border backdrop-blur-xl shadow-xl ${isDark ? "bg-white/5 border-white/10" : "bg-white/80 border-gray-200"}`}>
-          <div className="flex items-center gap-4">
-            <BackToHome className="!px-3 !py-2" />
-            <NoorixOrb size={48} />
-            <button type="button" onClick={() => setShowPicModal(true)} aria-label="Change profile picture" className="relative group focus:outline-none">
-              {profilePic ? (
-                <img src={profilePic} alt={`${name}'s profile`} className="h-14 w-14 rounded-2xl object-cover shadow-lg transition-transform group-hover:scale-105" />
-              ) : (
-                <div className={`flex h-14 w-14 items-center justify-center rounded-2xl text-2xl font-bold text-white shadow-lg transition-transform group-hover:scale-105 ${isDark ? "bg-gradient-to-br from-[#ff8fb2] to-[#a78bfa]" : "bg-gradient-to-br from-[#a78bfa] to-[#22d3ee]"}`}>
-                  {name.charAt(0).toUpperCase()}
-                </div>
-              )}
-              <span className={`absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border shadow-md transition-transform group-hover:scale-110 ${isDark ? "bg-white/20 border-white/20 text-white" : "bg-white border-gray-200 text-gray-700"}`}>
-                <Camera size={13} />
-              </span>
-            </button>
-            <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold">{name}</h1>
-                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-md ${isDark ? "bg-gradient-to-r from-[#ff8fb2] to-[#a78bfa]" : "bg-gradient-to-r from-[#a78bfa] to-[#22d3ee]"}`}>
-                  <Crown size={10} /> {userPlan}
-                </span>
+        <motion.header
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className={`flex flex-col gap-5 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between rounded-3xl border backdrop-blur-xl shadow-xl ${isDark ? "bg-white/5 border-white/10" : "bg-white/80 border-gray-200"}`}
+        >
+          {/* Left Column / Mobile Stack */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 min-w-0">
+            {/* Top row for mobile: BackToHome + Quick actions */}
+            <div className="flex items-center justify-between sm:justify-start gap-3">
+              <BackToHome className="!px-3 !py-2 shrink-0" />
+              <div className="flex items-center gap-2 sm:hidden">
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  aria-label="Toggle theme"
+                  className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-all ${isDark ? "bg-white/5 border-white/10 text-yellow-400" : "bg-white border-gray-200 text-indigo-500"}`}
+                >
+                  {isDark ? <Sun size={15} /> : <Moon size={15} />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                  aria-label="Sign out"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 transition-all hover:bg-red-500/20"
+                >
+                  <LogOut size={15} />
+                </button>
               </div>
-              <p className={`mt-1 text-xs ${isDark ? "text-white/50" : "text-gray-500"}`}>
-                {greeting}, {name.split(" ")[0]} • Connected via {provider}
-              </p>
+            </div>
+
+            {/* User Profile Identity */}
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="shrink-0 hidden md:block">
+                <NoorixOrb size={44} />
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPicModal(true)}
+                aria-label="Change profile picture"
+                className="relative group shrink-0 focus:outline-none"
+              >
+                {profilePic ? (
+                  <img
+                    src={profilePic}
+                    alt={`${name}'s profile`}
+                    className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl object-cover shadow-lg transition-transform group-hover:scale-105"
+                  />
+                ) : (
+                  <div
+                    className={`flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl text-xl sm:text-2xl font-bold text-white shadow-lg transition-transform group-hover:scale-105 ${isDark ? "bg-gradient-to-br from-[#ff8fb2] to-[#a78bfa]" : "bg-gradient-to-br from-[#a78bfa] to-[#22d3ee]"}`}
+                  >
+                    {name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <span
+                  className={`absolute -bottom-1 -right-1 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full border shadow-md transition-transform group-hover:scale-110 ${isDark ? "bg-white/20 border-white/20 text-white" : "bg-white border-gray-200 text-gray-700"}`}
+                >
+                  <Camera size={11} />
+                </span>
+              </button>
+
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="text-xl sm:text-2xl font-bold truncate max-w-[200px] sm:max-w-none">{name}</h1>
+                  <Link
+                    href="/plans"
+                    title="View & manage membership tiers"
+                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all hover:scale-105 active:scale-95 ${isDark ? "bg-gradient-to-r from-[#ff8fb2] to-[#a78bfa]" : "bg-gradient-to-r from-[#a78bfa] to-[#22d3ee]"}`}
+                  >
+                    <Crown size={11} /> {userPlan}
+                  </Link>
+                </div>
+                <p className={`mt-0.5 text-xs truncate ${isDark ? "text-white/50" : "text-gray-500"}`}>
+                  {greeting}, {name.split(" ")[0]} • Connected via {provider}
+                </p>
+              </div>
             </div>
           </div>
-          <div className="flex w-full items-center gap-3 sm:w-auto">
-            <button type="button" onClick={toggleTheme} className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold transition-all ${isDark ? "bg-white/5 border-white/10 hover:bg-white/10" : "bg-white border-gray-200 hover:bg-gray-50"}`}>
+          {/* Desktop Right Column: Full Action Buttons */}
+          <div className="hidden sm:flex items-center gap-3">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold transition-all ${isDark ? "bg-white/5 border-white/10 hover:bg-white/10" : "bg-white border-gray-200 hover:bg-gray-50"}`}
+            >
               <AnimatePresence mode="wait" initial={false}>
-                <motion.div key={theme} initial={{ y: -6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 6, opacity: 0 }} transition={{ duration: 0.15 }} className="flex items-center gap-2">
-                  {isDark ? (<><Sun size={14} className="text-yellow-400" /> Light Mode</>) : (<><Moon size={14} className="text-indigo-500" /> Dark Mode</>)}
+                <motion.div
+                  key={theme}
+                  initial={{ y: -6, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: 6, opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex items-center gap-2"
+                >
+                  {isDark ? (
+                    <>
+                      <Sun size={14} className="text-yellow-400" /> Light Mode
+                    </>
+                  ) : (
+                    <>
+                      <Moon size={14} className="text-indigo-500" /> Dark Mode
+                    </>
+                  )}
                 </motion.div>
               </AnimatePresence>
             </button>
-            <button type="button" onClick={() => signOut({ callbackUrl: "/" })} className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2 text-xs font-bold text-red-400 transition-all hover:bg-red-500/20">
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2 text-xs font-bold text-red-400 transition-all hover:bg-red-500/20"
+            >
               <LogOut size={14} /> Sign Out
             </button>
           </div>

@@ -94,9 +94,9 @@ export default function NoorivaApp() {
       <AuroraField scene={getScene(activeScene)} />
       <ScrollScene />
 
-      <div className="relative z-10 h-full">
+      <main className="relative z-10 h-full">
         <SceneStage>{SCENE_CHILDREN}</SceneStage>
-      </div>
+      </main>
 
       <MobileNav />
 

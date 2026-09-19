@@ -1,9 +1,10 @@
-﻿'use client';
+'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Activity, ArrowLeft, ArrowRight, Baby, Beaker, Bed, BookOpen, Brain, Brush, Calendar,
   Camera, Check, ChefHat, CloudSun, Dna, Dumbbell, FileText, Flower2, GlassWater, Globe,
@@ -46,35 +47,6 @@ const FEATURES = [
     description: 'A supportive AI companion for perimenopause and menopause. Track symptoms, get culturally-aware nutrition, cooling rituals, and hormone-aware skin guidance.',
     highlights: ['Symptom tracker', 'Cooling rituals', 'Hormone-aware skin', 'Culturally adapted'],
     priority: 'high',
-  },
-  {
-    id: 'brandAmbassador',
-    icon: Star,
-    needsImage: false,
-    color: '#f59e0b',
-    tagline: 'Be Our Ambassador',
-    description: 'Love NOORIVA? Join the ambassador program. Share your glow, earn points, unlock rewards, and grow with the brand — open to creators with 5,000+ engaged followers.',
-    highlights: ['5K+ followers', 'Points & rewards', 'Creator perks', 'Early drops'],
-    priority: 'high',
-  },
-  {
-    id: 'noorivaClub',
-    icon: Heart,
-    needsImage: false,
-    color: '#f472b6',
-    tagline: 'NOORIVA Club',
-    description: 'The girls gang, unfiltered. Heart-to-heart discussions, women empowerment circles, Lady of the Day, Week & Month spotlights — your safe space to glow together.',
-    highlights: ['Girls gang', 'Empowerment circles', 'Lady of the Day', 'Heart-to-heart'],
-    priority: 'high',
-  },
-  {
-    id: 'apiHub',
-    icon: Globe,
-    needsImage: false,
-    color: '#f59e0b',
-    tagline: 'API Hub',
-    description: 'Your live console of 20+ free APIs — nutrition, recipes, weather, prayer times, trivia, and more.',
-    highlights: ['Live APIs', 'No keys', 'Food & weather'],
   },
   // ═══ MERGED FEATURES (6) ═══
   {
@@ -581,12 +553,8 @@ const FEATURE_CATEGORY_MAP = {
   skincareRoutineCard: 'skin',
   recoveryScore: 'fitness',
   pregnancyWellness: 'skin',
-  apiHub: 'hub',
   stressCortisol: 'wellness',
   smoothMenopause: 'wellness',
-  brandAmbassador: 'community',
-  noorivaClub: 'community',
-  apiHub: 'hub',
 };
 
 /* ══════════════════════════════════════════════════════════════
@@ -605,24 +573,6 @@ const SUGGESTED_PROMPTS = {
     'Recommend cooling rituals',
     'Hormone-aware skincare tips',
     'What should I eat this phase?',
-  ],
-  brandAmbassador: [
-    'How do I become an ambassador?',
-    'Check my rewards status',
-    'Explain the creator perks',
-    'How do points work?',
-  ],
-  noorivaClub: [
-    'Join the girls gang',
-    'Today’s empowerment circle',
-    'Who is Lady of the Day?',
-    'Start a heart-to-heart',
-  ],
-  apiHub: [
-    'Explore the 20+ free wellness APIs',
-    'How do I authenticate with the API?',
-    'What endpoints are available for hydration?',
-    'View weather and prayer time schemas',
   ],
   skinIntelligence: [
     'Analyze my skin for acne',
@@ -1260,6 +1210,9 @@ function CounterField({ field, value, onChange }) {
    ══════════════════════════════════════════════════════════════ */
 
 export default function NoorixChat() {
+  // Client-side navigation so the route veil plays. window.location.href causes
+  // a full document load, which remounts React and skips PageTransition entirely.
+  const router = useRouter();
   const { data: session } = useSession();
   var t = useT();
   var noorixOpen = useStore(function(s) { return s.noorixOpen; });
@@ -1278,7 +1231,7 @@ export default function NoorixChat() {
   var handleCloseNoorix = function() {
     closeNoorix();
     if (typeof window !== 'undefined') {
-      window.location.href = '/';
+      router.push('/');
     }
   };
 
@@ -1392,7 +1345,7 @@ export default function NoorixChat() {
 
     const handleSelectTemplate = useCallback((featureId, template) => {
     if (featureId === 'apiHub') {
-      window.location.href = '/api-hub';
+      router.push('/api-hub');
       return;
     }
     setBlocked(null);
@@ -1602,41 +1555,6 @@ export default function NoorixChat() {
         }}
       />
 
-      <Link
-        href="/"
-        className="fixed top-20 left-6 z-30 flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/70 border border-white/10 backdrop-blur-xl hover:bg-white transition-all duration-300 group shadow-sm"
-      >
-        <Home size={16} className="text-white/60 group-hover:text-white transition-colors" />
-        <span className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">Home</span>
-      </Link>
-
-      <div className="fixed bottom-24 right-4 z-40 md:bottom-6 md:right-6">
-        <motion.button
-          onClick={toggleNoorix}
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.95 }}
-          className="relative flex h-14 w-14 items-center justify-center rounded-full shadow-xl overflow-hidden"
-          aria-label="Open Noorix"
-          style={{ background: 'linear-gradient(135deg, #ff8fb2, #a78bfa, #67e8f9)' }}
-        >
-          <div
-            className="absolute inset-0 opacity-20"
-            style={{ background: 'conic-gradient(from 0deg, #ff8fb2, #ffd7a1, #a78bfa, #67e8f9, #ff8fb2)', animation: 'noorix-btn-spin 4s linear infinite' }}
-          />
-          {noorixOpen
-            ? <X size={22} className="relative z-10 text-white" strokeWidth={2.5} />
-            : <div className="relative z-10 w-7 h-7 rounded-full" style={{ background: 'conic-gradient(from 0deg, #ff8fb2, #ffd7a1, #a78bfa, #67e8f9, #ff8fb2)', animation: 'noorix-btn-spin 4s linear infinite', boxShadow: '0 0 12px rgba(167,139,250,0.6)' }} />
-          }
-        </motion.button>
-        <style>{`
-          @keyframes noorix-btn-spin { to { transform: rotate(360deg); } }
-          @keyframes noorix-shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-          @keyframes quantum-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
-          @keyframes quantum-glow { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
-          @keyframes quantum-crack { 0% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); } 100% { clip-path: polygon(0 0, 45% 0, 50% 50%, 0 100%); } }
-        `}</style>
-      </div>
-
       <AnimatePresence>
         {noorixOpen && (
           <motion.div
@@ -1655,9 +1573,14 @@ export default function NoorixChat() {
                     <ArrowLeft size={18} className="text-white" />
                   </button>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <Sparkles size={18} className="text-white/60" />
-                  </div>
+                  <Link
+                    href="/"
+                    aria-label="Return to NOORIVA Sanctuary"
+                    className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/80 hover:bg-white/20 hover:text-white transition-all backdrop-blur-md"
+                  >
+                    <ArrowLeft size={14} />
+                    <span>Sanctuary</span>
+                  </Link>
                 )}
                 <div>
                   <h2 className="text-lg font-bold display-heading text-white">
@@ -1733,7 +1656,7 @@ export default function NoorixChat() {
                     exit={{ opacity: 0, y: -20 }}
                     className="h-full overflow-y-auto no-scrollbar"
                   >
-                    <div className="noorix-landing-root mx-auto max-w-6xl px-4 sm:px-6 pt-24 pb-6 md:pb-10 relative">
+                    <div className="noorix-landing-root mx-auto max-w-6xl px-4 sm:px-6 pt-6 sm:pt-8 pb-6 md:pb-10 relative">
                       <div className="noorix-aurora" aria-hidden="true" />
                       <div className="noorix-aurora noorix-aurora--alt" aria-hidden="true" />
 
@@ -1904,7 +1827,7 @@ export default function NoorixChat() {
                               feature={f}
                               index={i}
                               title={(t('noorix.feature.' + f.id) === 'noorix.feature.' + f.id) ? f.tagline : t('noorix.feature.' + f.id)}
-                              onClick={() => (f.id === 'apiHub' ? (window.location.href = '/api-hub') : openChat(f.id))}
+                              onClick={() => (f.id === 'apiHub' ? (router.push('/api-hub')) : openChat(f.id))}
                             />
                           );
                         })}
@@ -2240,7 +2163,7 @@ export default function NoorixChat() {
     }
     if (action.type === "viewProduct" && action.slug) {
       return (
-        <button key={ai} type="button" onClick={() => { window.location.href = "/drinks/" + action.slug; }} className="noorix-action-chip noorix-action-chip--accent">
+        <button key={ai} type="button" onClick={() => { router.push("/drinks/" + action.slug); }} className="noorix-action-chip noorix-action-chip--accent">
           <ArrowRight size={11} /> {action.label || "View Ritual"}
         </button>
       );

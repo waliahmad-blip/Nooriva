@@ -6,7 +6,7 @@ import { chatStructured, analyzeMedicalImage, generateImage, transcribeAudio, ch
  * ═══════════════════════════════════════════════════════════ */
 const VALID_TYPES = [
   // High Priority & Community (5)
-  'stressCortisol', 'smoothMenopause', 'brandAmbassador', 'noorivaClub', 'apiHub',
+  'stressCortisol', 'smoothMenopause',
   // Merged (6)
   'skinIntelligence', 'ingredientIntelligence', 'glowJournal', 'treatmentRoutine',
   'progressStreaks', 'wellnessToolkit',
@@ -170,12 +170,6 @@ const PROMPTS = {
   stressCortisol: BASE_RULES + '\nTrack stress and cortisol rhythm, calculate burnout risk, and provide breathwork rescue. Response: {"message":"","stressLevel":"low|moderate|high|severe","cortisolCurve":"","burnoutRisk":"low|moderate|high","recoveryScore":0,"breathwork":{"pattern":"4-7-8","duration":"5 min","steps":[""]},"noorivaTip":"","actions":[{"label":"","type":"addProduct|learnMore","payload":""}]}',
 
   smoothMenopause: BASE_RULES + '\nProvide supportive perimenopause and menopause guidance, cooling rituals, and hormone-aware skin tips. Response: {"message":"","stage":"peri|meno|post","symptomsTracked":[""],"coolingRitual":{"name":"","steps":[""]},"hormoneSkinAdvice":[""],"nutritionSupport":[""],"noorivaTip":"","actions":[{"label":"","type":"addProduct|learnMore","payload":""}]}',
-
-  brandAmbassador: BASE_RULES + '\nEvaluate creator profile for NOORIVA Ambassador Circle, suggest UGC content ideas, and explain tier rewards. Response: {"message":"","qualificationStatus":"eligible|pending|rising-creator","tier":"Gold|Platinum|VIP","ugcIdeas":[{"concept":"","hook":"","format":""}],"pointsRewards":"","nextSteps":[""],"actions":[{"label":"Apply Now","type":"openWhatsApp","payload":""}]}',
-
-  noorivaClub: BASE_RULES + '\nWelcome to the girls gang sisterhood. Offer empowerment, safe circle discussions, and Lady of the Day nominations. Response: {"message":"","vibeMatch":"","circleSpotlight":"","ladyOfTheDayNomination":"","sisterhoodEmpowerment":"","groundingRitual":"","actions":[{"label":"Join Discussion","type":"learnMore","payload":""}]}',
-
-  apiHub: BASE_RULES + '\nProvide developer and live API testing guidance across nutrition, weather, and wellness endpoints. Response: {"message":"","availableApis":["USDA Nutrition","OpenFoodFacts","Weather/UV","Prayer Times"],"endpointStatus":"online","sampleOutput":{},"actions":[{"label":"Open API Console","type":"openLink","payload":"/api-hub"}]}',
 };
 
 /* ═══════════════════════════════════════════════════════════
@@ -302,7 +296,7 @@ export async function POST(request) {
       // Use structured chat for all other features
       result = await chatStructured(allMessages, PROMPTS[type], type);
 
-      // Visual generation for 4K Diet Chart and Workout Visualizer Diagrams
+      // Visual generation for 4K Diet Chart, Workout Visualizer Diagrams, and Skincare Routine Cards
       if (type === 'aiDietChart' && result?.dietChart) {
         try {
           const imgPrompt = `4K photorealistic clean healthy Pakistani diet chart layout, fresh organic ingredients, vibrant colors, elegant presentation.`;
@@ -314,6 +308,12 @@ export async function POST(request) {
           const imgPrompt = `Clean anatomical exercise diagram showing proper exercise posture and movement vectors, minimalist aesthetic, cyan accents.`;
           const diagramImg = await generateImage(imgPrompt);
           if (diagramImg) result.visualDiagramUrl = diagramImg;
+        } catch (_) {}
+      } else if (type === 'skincareRoutineCard' && result?.routineCard) {
+        try {
+          const imgPrompt = `Luxury aesthetic skincare beauty routine card layout, glowing dewy skin botanicals, rose gold accents, clean editorial look.`;
+          const cardImg = await generateImage(imgPrompt);
+          if (cardImg) result.visualCardUrl = cardImg;
         } catch (_) {}
       }
     }

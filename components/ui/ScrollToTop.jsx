@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import { ArrowUp } from "lucide-react";
 import { playGlassPing } from "@/lib/sound";
 
 export default function ScrollToTop() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   const [scrollPercent, setScrollPercent] = useState(0);
 
@@ -27,6 +29,10 @@ export default function ScrollToTop() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  if (pathname?.startsWith("/noorix/chat")) {
+    return null;
+  }
 
   const scrollToTop = () => {
     playGlassPing();

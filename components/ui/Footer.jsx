@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   Sparkles,
   Instagram,
@@ -26,6 +27,7 @@ const shopLinks = [
 
 const exploreLinks = [
   { label: 'Meet Noorix', href: '/noorix/chat' },
+  { label: 'Subscription Plans', href: '/plans' },
   { label: 'NOORIVA Club', href: '/club' },
   { label: 'Our Origin', href: '/story' },
   { label: 'Botanicals', href: '/ingredients' },
@@ -53,9 +55,22 @@ const trustBadges = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+
+  // Suppress floating Footer completely on full-screen AI chat
+  if (pathname?.startsWith('/noorix/chat')) {
+    return null;
+  }
+
+  // On home page, MobileNav is at bottom-0 so tab sits at bottom-16.
+  // On all other routes, MobileNav is absent, so tab must anchor flush at bottom-0.
+  const isHomePage = pathname === '/';
+  const positionClass = isHomePage
+    ? 'fixed bottom-16 left-0 right-0 z-40 md:bottom-0'
+    : 'fixed bottom-0 left-0 right-0 z-40';
 
   function handleSubscribe(e) {
     e.preventDefault();
@@ -67,7 +82,7 @@ export default function Footer() {
 
   return (
     <div
-      className="fixed bottom-16 left-0 right-0 z-40 md:bottom-0"
+      className={positionClass}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >

@@ -17,6 +17,16 @@ export default function TopBar() {
   const cart = useStore((s) => s.cart);
   const soundOn = useStore((s) => s.soundOn);
 
+  // Suppress TopBar on full-screen AI chat and dedicated auth flows to eliminate dual headers
+  const isExcludedRoute =
+    pathname?.startsWith("/noorix/chat") ||
+    pathname === "/login" ||
+    pathname === "/signup";
+
+  if (isExcludedRoute) {
+    return null;
+  }
+
   const toggleSound = () => {
     const turningOn = !useStore.getState().soundOn;
     useStore.getState().toggleSound();
@@ -79,6 +89,15 @@ export default function TopBar() {
           >
             Botanicals
           </Link>
+          <Link
+            href="/plans"
+            onClick={playPop}
+            className={`transition hover:text-ink hover:scale-105 ${
+              pathname === "/plans" ? "text-ink font-extrabold underline underline-offset-4 decoration-amber-400 decoration-2" : ""
+            }`}
+          >
+            Plans
+          </Link>
         </nav>
 
         {/* Action buttons */}
@@ -87,8 +106,8 @@ export default function TopBar() {
           <button
             type="button"
             onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))}
-            className="tap-target flex items-center justify-center gap-1.5 rounded-full border border-ink/10 bg-white/60 p-2 sm:px-3.5 sm:py-2 text-xs font-semibold text-ink/70 backdrop-blur-md transition hover:bg-white hover:scale-105"
-            style={{ minWidth: "38px", minHeight: "38px" }}
+            className="tap-target hidden xs:flex sm:flex items-center justify-center gap-1.5 rounded-full border border-ink/10 bg-white/60 p-2 sm:px-3.5 sm:py-2 text-xs font-semibold text-ink/70 backdrop-blur-md transition hover:bg-white hover:scale-105"
+            style={{ minWidth: "36px", minHeight: "36px" }}
             aria-label="Search drinks and tools (Ctrl+K)"
           >
             <Search size={15} />
@@ -100,16 +119,16 @@ export default function TopBar() {
           <Link
             href="/noorix/chat"
             onClick={playPop}
-            className={`tap-target relative flex items-center justify-center gap-1.5 rounded-full px-3 py-2 sm:px-4 sm:py-2 text-xs font-bold text-white shadow-lg transition hover:scale-105 ${
+            className={`tap-target relative flex items-center justify-center gap-1.5 rounded-full px-2.5 py-1.5 sm:px-4 sm:py-2 text-xs font-bold text-white shadow-lg transition hover:scale-105 ${
               pathname?.startsWith("/noorix") ? "ring-2 ring-white ring-offset-2" : ""
             }`}
             style={{
-              minHeight: "38px",
+              minHeight: "36px",
               background: "linear-gradient(135deg, #ff8fb2, #a78bfa)",
             }}
             aria-label="Open Noorix AI"
           >
-            <Sparkles size={15} />
+            <Sparkles size={14} className="shrink-0" />
             <span className="hidden sm:inline">Noorix AI</span>
           </Link>
 

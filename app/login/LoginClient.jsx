@@ -1,5 +1,4 @@
 'use client'
-import BackToHome from "@/components/ui/BackToHome";
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -132,8 +131,7 @@ export default function LoginClient() {
 
   return (
       <div className="relative min-h-screen w-full overflow-x-hidden text-white flex items-center justify-center login-aurora">
-        <BackToHome />
-      <div className="absolute top-6 left-0 right-0 z-30 flex w-full items-center justify-between px-6 md:px-10">
+              <div className="absolute top-6 left-0 right-0 z-30 flex w-full items-center justify-between px-6 md:px-10">
         <Link href="/" className="flex items-center gap-2 group">
           <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#ff5e99] to-[#7c3aed] shadow-[0_0_20px_rgba(124,58,237,0.4)] group-hover:scale-110 transition-transform" />
           <span className="text-lg font-bold tracking-wider text-white/90">NOORIVA</span>

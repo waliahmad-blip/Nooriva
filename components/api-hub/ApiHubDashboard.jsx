@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search, Utensils, CloudSun, Sparkles, Loader2, ArrowRight, RefreshCw,
+  Search, Utensils, CloudSun, Sparkles, Loader2, ArrowRight, ArrowLeft, RefreshCw,
   GlassWater, Wind, Quote, Lightbulb, Activity, Users, Moon, Cat, MapPin,
   User as UserIcon, Globe, Music, BookOpen, HelpCircle, Newspaper, Compass,
   Sunrise, CalendarDays, Hash, HeartPulse, Salad, FlaskConical
@@ -198,7 +198,7 @@ export default function ApiHubDashboard() {
   }
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0a0a0f] text-white p-4 md:p-8 pt-24">
+    <main className="relative min-h-screen w-full bg-[#0a0a0f] text-white p-4 md:p-8 pt-24">
       {/* Aurora background */}
       <div className="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
         <motion.div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-pink-500/20 blur-[120px]" animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 16, repeat: Infinity }} />
@@ -208,14 +208,14 @@ export default function ApiHubDashboard() {
       <div className="relative z-10 mx-auto max-w-7xl">
         <motion.header initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-10 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-pink-300 backdrop-blur-md">
-            <Sparkles size={14} /> NOORIX · 50TH FEATURE
+            <Sparkles size={14} /> NOORIX · WELLNESS API ECOSYSTEM
           </span>
           <h1 className="mt-4 text-4xl font-extrabold tracking-tight md:text-6xl">AI API Hub</h1>
           <p className="mx-auto mt-3 max-w-xl text-sm text-white/60">
-            20 live free APIs for nutrition, health, lifestyle, and knowledge.
+            20 live open APIs powering nutrition, biometrics, global wellness, and environmental intelligence.
           </p>
           <Link href="/account" className="mt-5 inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-2.5 text-sm font-semibold text-white/80 backdrop-blur-md transition hover:bg-white/20">
-            <ArrowRight size={16} /> Back to Dashboard
+            <ArrowLeft size={16} /> Back to Dashboard
           </Link>
         </motion.header>
 
@@ -335,19 +335,6 @@ export default function ApiHubDashboard() {
             }}
           />
 
-          {/* 7Timer! */}
-          <ApiWidget
-            title="Astronomy Forecast"
-            icon={Compass}
-            endpoint="https://www.7timer.info/bin/astro.php?lon=74.3587&lat=31.5204&ac=0&unit=metric&output=json"
-            render={(d) => (
-              <div className="text-center">
-                <p className="text-sm text-white/60">Product: {d.product}</p>
-                <p className="text-sm text-white/60">Init: {d.init}</p>
-              </div>
-            )}
-          />
-
           {/* Quotable */}
           <ApiWidget
             title="Daily Inspiration"
@@ -359,22 +346,6 @@ export default function ApiHubDashboard() {
                 <footer className="mt-2 text-xs font-bold text-pink-400">— {q.author}</footer>
               </blockquote>
             )}
-          />
-
-          {/* ZenQuotes */}
-          <ApiWidget
-            title="Zen Quote"
-            icon={HeartPulse}
-            endpoint="https://zenquotes.io/api/random"
-            render={(d) => {
-              const q = d[0];
-              return (
-                <blockquote className="text-center">
-                  <p className="text-sm leading-relaxed text-white/80">"{q.q}"</p>
-                  <footer className="mt-2 text-xs font-bold text-emerald-400">— {q.a}</footer>
-                </blockquote>
-              );
-            }}
           />
 
           {/* Numbers API */}
@@ -519,6 +490,6 @@ export default function ApiHubDashboard() {
           <ProfileGuessCard />
         </div>
       </div>
-    </div>
+    </main>
   );
 }

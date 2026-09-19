@@ -11,6 +11,50 @@ import Script from "next/script";
 import { SessionProvider } from "next-auth/react";
 import { BRAND, COMMERCE, NOORISH_GOLD, HERO, SKUS } from "@/lib/noorishGold";
 import { SITE_URL as BASE_URL } from "@/lib/site";
+import { Instrument_Serif, Space_Grotesk, Noto_Nastaliq_Urdu, Cairo } from "next/font/google";
+
+/*
+ * Fonts are self-hosted via next/font instead of a <link> to
+ * fonts.googleapis.com. The previous approach shipped a RENDER-BLOCKING
+ * stylesheet plus two extra origins (fonts.googleapis.com and
+ * fonts.gstatic.com) in the critical path, which is a large part of the
+ * First Contentful Paint / LCP cost.
+ *
+ * next/font downloads and self-hosts these at build time, emits them from the
+ * same origin, and injects a preload for the two Latin faces used above the
+ * fold. The Urdu and Arabic faces are preload:false — they are only needed
+ * once a visitor switches language, so they must not block first paint.
+ */
+const fontDisplay = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const fontBody = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-body",
+  display: "swap",
+});
+
+const fontUrdu = Noto_Nastaliq_Urdu({
+  subsets: ["arabic"],
+  weight: ["400", "700"],
+  variable: "--font-urdu",
+  display: "swap",
+  preload: false,
+});
+
+const fontArabic = Cairo({
+  subsets: ["arabic", "latin"],
+  weight: ["400", "700"],
+  variable: "--font-arabic",
+  display: "swap",
+  preload: false,
+});
 
 // Google Analytics 4 — set NEXT_PUBLIC_GA_ID (e.g. G-XXXXXXXXXX) in Netlify
 // environment variables. No code change needed; the tag is simply omitted
@@ -190,15 +234,12 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" dir="ltr" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Cairo:wght@400;600;700;800&display=swap"
-        />
-      </head>
+    <html
+      lang="en"
+      dir="ltr"
+      suppressHydrationWarning
+      className={`${fontDisplay.variable} ${fontBody.variable} ${fontUrdu.variable} ${fontArabic.variable}`}
+    >
       <body className="bg-cream text-ink antialiased">
         <SessionProvider>
           <LenisProvider>
